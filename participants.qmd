@@ -1,0 +1,46 @@
+```{r setup_participants, include=FALSE}
+if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
+  source("R/packages.R")
+  source("R/colors.R")
+  source("R/helpers.R")
+  source("R/tables.R")
+  source("R/plots.R")
+  source("R/demographics.R")
+  source("R/data-loading.R")
+}
+```
+
+```{r participants_data, include=FALSE}
+demo_s1  <- create_demo_summary(Study1, "Study 1")
+demo_s2  <- create_demo_summary(Study2, "Study 2")
+
+demo_all <- demo_s1 %>%
+  full_join(demo_s2, by = "Characteristic") %>%
+  dplyr::select(Characteristic, `Study 1`, `Study 2`) %>%
+  filter(!(`Study 1` == "0 (0%)" & `Study 2` == "0 (0%)"))
+```
+
+## Method
+### Participants
+
+All participants were recruited through Prolific. Responses were excluded if they were incomplete, flagged by Qualtrics as likely fraudulent, contained a duplicated Prolific ID, or failed the requisite attention checks. Two pilot studies were reported in Supplementary. The two pre-registered studies used stratified sampling to ensure balanced representation across sex, age, ethnicity (based on simplified U.S. census categories), and political affiliation. The demographic characteristics for Study 1 and Study 2 are presented in Table 1. 
+
+Study 1 (*N* = `r nrow(Study1)`; pre-registered: <https://aspredicted.org/mv2z-t7dw.pdf>; data collected `r Study1_date`) and Study 2 (*N* = `r nrow(Study2)`; pre-registered: <https://aspredicted.org/z378hg.pdf>; data collected `r Study2_date`) served as the formal replication and mediation samples.
+
+```{r tbl-participants}
+#| label: tbl-participants
+#| tbl-cap: "Demographic Characteristics of Study 1 and Study 2"
+
+flextable::flextable(demo_all) |>
+  flextable::align(j = 1, part = "body", align = "left") |>
+  flextable::align(j = 2:3, part = "body", align = "center") |>
+  flextable::align(part = "header", align = "center") |>
+  flextable::border_remove() |>
+  flextable::hline_top(part = "header", border = officer::fp_border(width = 1.5)) |>
+  flextable::hline_bottom(part = "header", border = officer::fp_border(width = 1)) |>
+  flextable::hline_bottom(part = "body", border = officer::fp_border(width = 1.5)) |>
+  flextable::set_table_properties(layout = "autofit", width = 1) |>
+  flextable::width(j = 1, width = 2.5) |>
+  flextable::width(j = 2:3, width = 1.0)
+```
+

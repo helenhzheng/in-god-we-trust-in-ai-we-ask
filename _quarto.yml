@@ -1,0 +1,54 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - introduction.qmd
+    - participants.qmd
+    - question1.qmd
+    - question2.qmd
+    - question3.qmd
+    - question4.qmd
+    - discussion.qmd
+    - supplementary.qmd
+
+website:
+  title: "In God We Trust, In AI We Ask"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: introduction.qmd
+        text: Introduction
+      - href: participants.qmd
+        text: Participants
+      - href: question1.qmd
+        text: "Q1: Self-Reported Religiosity"
+      - href: question2.qmd
+        text: "Q2: Religious Behavior Score"
+      - href: question3.qmd
+        text: "Q3: Mediators"
+      - href: question4.qmd
+        text: "Q4: Moderation"
+      - href: discussion.qmd
+        text: Discussion
+      - href: supplementary.qmd
+        text: Supplementary
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 4
+    embed-resources: true
+    css: styles.css
+
+execute:
+  freeze: auto
+  cache: false
+
+knitr:
+  opts_chunk:
+    fig.path: "_build/figures/"
+
+bibliography: references.bib

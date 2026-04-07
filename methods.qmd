@@ -1,0 +1,59 @@
+```{r setup_methods, include=FALSE}
+if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
+  source("R/packages.R")
+  source("R/colors.R")
+  source("R/helpers.R")
+  source("R/tables.R")
+  source("R/demographics.R")
+  source("R/data-loading.R")
+}
+```
+
+### Materials and Procedure
+
+All participants completed the study on Qualtrics. After providing informed consent, they answered a series of questionnaires presented primarily in randomized order to reduce order effects. Demographic questions were administered at the end of the survey.
+
+The primary aim of both pre-registered studies was to test the hypothesis that religiosity, both self-reported and as indexed by behavioral frequency, positively predicts the propensity to seek moral advice and guidance from AI chatbots. Study 1 and Study 2 used the same independent variables (*self-reported religiosity* and *Religious Behavior Score*), and the same primary and secondary outcomes (frequency of and interest in seeking moral advice from AI chatbots, respectively) but differed in the set of potential mediators examined. The primary outcome was *frequency of seeking moral advice from AI chatbots* ("How often do you seek moral advice from an AI chatbot?"; 1=*never*, 7=*once a day or more*). We also assessed participants' *interest in seeking moral advice from AI chatbots* ("How interested are you in seeking moral advice or guidance from each of the below sources? "; 1=*not at all*, 7=*extremely*) as a secondary outcome; all analyses of secondary outcomes are reported in the Supplementary.
+
+To assess participants' broader disposition to moral consultation, both studies measured frequency of and interest in seeking moral advice from 18 sources. To compute each composite, we averaged across 13 non-AI, non-religious sources. Five sources were excluded to avoid criterion contamination with the outcome (“Chatbots/ AI assistants”) and predictor (three explicitly religious sources), and because internal deliberation (“Yourself”) does not constitute external guidance.
+
+Following the theoretical framework outlined in the Introduction, potential mediators were organized into six clusters: (a) moral consultation disposition (overall frequency of and interest in seeking moral advice from non-AI, non-religious sources); (b) epistemic humility (*open-mindedness on moral issues*, and in Study 1, *general curiosity* and *intellectual humility* assessed via two convergent scales); (c) moral objectivism (*belief in moral objectivity*); (d) positive perception of AI chatbots (*perceived authority of AI chatbots as moral advisors*, and in Study 1, *perceived valence of AI chatbots as moral advisors*); (e) *tendency to anthropomorphize AI chatbots* (Study 2 only); and (f) other personality traits (Study 2 only; *fear of negative judgment*, *self-reflective tendency*, and *deference to authority* via two convergent measures). Study 1 tested clusters (a)–(d). Study 2 retained clusters (a)–(d) and added clusters (e)–(f). Three measures were revised between studies: *self-reported religiosity* was rescaled from 5-point to 7-point to match the response format of all other measures; *belief in moral objectivity* was changed from a bipolar slider (-50~+50) to a 7-point Likert scale to standardize the response format; and in *perceived authority of AI chatbots as moral advisors*, the word *accurate* was removed (i.e., "trusted authorities for giving accurate moral advice" became "trusted authorities to give moral advice") to better reflect the nature of advice-seeking. Several measures from Study 1 were not included in Study 2 to narrow the research focus and reduce respondent burden. Table 2 summarizes all variables used across the two pre-registered studies.
+
+| Measure | Study 1 | Study 2 |
+|:---|:---|:---|
+| **Predictors** | | |
+| Self-Reported Religiosity | "To what extent do you consider yourself to be religious?" (1=*not at all*, 5=*very*) | "To what extent do you consider yourself to be religious?" (1=*not at all*, 7=*extremely*)  |
+| Religious Behavior Score | Average of "How often do you attend religious services/ pray?" (1=*never*, 7=*once a day or more*) | Same as Study 1 |
+| **Outcomes** | | |
+| Frequency of Seeking Moral Advice from AI Chatbots | "How often do you seek moral advice from an AI chatbot?" (1=*never*, 7=*once a day or more*) | Same as Study 1 |
+| Interest in Seeking Moral Advice from AI Chatbots† | "How interested are you in seeking moral advice from an AI chatbot?" (1=*not at all*, 7=*extremely*) | Same as Study 1 |
+| **Mediators** | | |
+| *(a) Moral consultation disposition* | | |
+| Frequency of Seeking Moral Advice | Average frequency of seeking moral advice from 13 non-AI, non-religious sources (1=*never*, 7=*once a day or more*)  | Same as Study 1 |
+| Interest in Seeking Moral Advice | Average interest in seeking moral advice from 13 non-AI, non-religious sources (1=*not at all*, 7=*extremely*)  | Same as Study 1 |
+| *(b) Epistemic humility* | | |
+| Open-Mindedness on Moral Issues | Moral Curiosity Scale [@hartman2022] | Same as Study 1 |
+| General Open-Mindedness | Curiosity and Exploration Inventory-II [@kashdan2009] | — |
+| Intellectual Humility (MMIH) | Multidimensional Intellectual Humility Scale [@alfano2017] | — |
+| Intellectual Humility (CIHS) | Comprehensive Intellectual Humility Scale [@krumrei-mancuso2016] | — |
+| *(c) Moral objectivism* | | |
+| Belief in Moral Objectivity | "To what extent do you believe that morality is objective or relative?" (slider: −50=*entirely relative* to +50=*entirely objective*) | "Do you believe that, in general, the answers to moral questions are objectively right or wrong, or they are based on people's subjective opinions and preferences?" (1=*definitely subjective*, 7=*definitely objective*) |
+| *(d) Positive perception of AI chatbots* | | |
+| Perceived Authority of AI Chatbots | "Chatbots/AI assistants are trusted authorities for giving accurate moral advice" (1=*strongly disagree*, 7=*strongly agree*) | "Do you believe that chatbots/AI assistants are trusted authorities to give moral advice?" (1=*strongly disagree*, 7=*strongly agree*) |
+| Perceived Valence of AI Chatbots | "Chatbots/AI assistants are ______ at giving moral advice" (1 = *extremely bad*, 7 = *extremely good*) | — |
+| *(e) Tendency to anthropomorphize AI chatbots* | | |
+| Tendency to Anthropomorphize AI | — | Adapted Anthropomorphism Subscale of the Godspeed Questionnaire [@bartneck2009] |
+| *(f) Other personality traits* | | |
+| Fear of Negative Judgment | — | Brief Fear of Negative Evaluation Scale [@leary1983] |
+| Self-Reflective Tendencies | — | Self-reflection subscale of the Self-Reflection and Insight Scale [@grant2002] |
+| Deference to Authority (MFQ-2) | — | Authority subscale of the Moral Foundation Questionnaire (MFQ-2) [@atari2023] |
+| Deference to Authority (MAC-Q) | — | Deference subscale of the Morality-as-Cooperation Questionnaire [@curry2019] |
+| **Moderator** | | |
+| Access to AI Chatbots | — | "How accessible do you find AI chatbots for giving moral advice or guidance?" (1=*not at all accessible*, 7=*completely accessible*) |
+| Overall Access to Moral Advice Sources | — | Average accessibility across 13 non-AI, non-religious moral advice sources (1=*not at all accessible*, 7=*completely accessible*) |
+
+: Variables Used in Study 1 and Study 2 {#tbl-methods}
+
+*† Results for Interest in Seeking Moral Advice from AI Chatbots as the outcome largely mirror those for Frequency and are reported in the Supplementary Materials.*
+
+In Study 1, clusters (a) and (c) also collected non-moral-specific parallel measures (e.g., general frequency of and interest in seeking advice from non-AI, non-religious sources; belief in factual objectivity with "truth" in place of "morality"). These measures are included in the datasets, but the analyses are omitted for brevity, as the present study focuses on moral-specific constructs. Study 2 removed these non-moral-specific measures to reduce participant fatigue and narrow research focus.  

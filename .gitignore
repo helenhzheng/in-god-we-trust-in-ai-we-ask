@@ -1,0 +1,32 @@
+# R / RStudio
+.Rhistory
+.Rproj.user/
+.RData
+.Ruserdata
+
+# Quarto build caches
+*_cache/
+*_files/
+_build/
+.quarto/
+/site_libs/
+/search.json
+
+# Word output (generated, not source)
+*.docx
+
+# Python / Scripts output
+__pycache__/
+_*.tsv
+
+# Root HTML files (only _site/ HTML should be tracked)
+/*.html
+
+# Original data archive (keep originals locally, not in repo)
+Data Collection/archive/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+/.quarto/

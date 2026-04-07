@@ -1,0 +1,88 @@
+---
+title: 'In God We Trust, In AI We Ask: Religiosity and Moral Advice Seeking in the AI Age'
+shorttitle: "In God We Trust, In AI We Ask"
+authors:
+  - name: Helen Huiting Zheng
+    corresponding: true
+    orcid: 0009-0006-2119-5531
+    email: helen.zheng@bc.edu
+    affiliation:
+      - id: id1
+        name: "Boston College"
+        department: Department of Psychology and Neuroscience
+  - name: Kyle Fiore Law
+    orcid: 0000-0001-5911-4772
+    affiliation:
+      - id: id2
+        name: "Arizona State University"
+        group: School of Sustainability
+        department: College of Global Futures
+  - name: Sara M Haman
+    affiliation:
+      - ref: id1
+  - name: David DeSteno
+    affiliation:
+      - id: id3
+        name: "Northeastern University"
+        department: Department of Psychology
+  - name: Liane Young
+    affiliation:
+      - ref: id1
+date: "1 April 2026"
+abstract: As AI chatbots increasingly enter domains long considered uniquely human, such as moral guidance, questions arise about how they intersect with traditional frameworks like religion. While it is commonly assumed that religious individuals would resist AI intrusion in the moral sphere, we found the opposite. Across two pre-registered studies with a stratified U.S. sample (*N* = 695), both self-reported religious engagement and religious belief consistently predict greater openness to seeking moral advice from AI systems. Parallel mediation models indicate that this relationship is mediated primarily by a broader disposition to seek moral guidance from multiple sources, and secondarily by perceived authority of AI as moral advisors. Rather than shielding individuals from AI's appeal in the moral domain, religiosity may systematically facilitate it. These findings carry broad societal implications for AI-mediated moral guidance, a new challenge requiring coordinated attention from technologists, faith communities, and policymakers alike.
+keywords:
+  - Religiosity
+  - Moral Advice Seeking
+  - Human-Computer Interaction
+author-note:
+  blank-lines-above-author-note: 2
+  status-changes: null
+  disclosures:
+    conflict-of-interest: The authors have no conflicts of interest to disclose.
+    financial-support: This study was supported by the Alfred P. Sloan Foundation.
+word-count: true
+mask: false
+floatsintext: true
+bibliography: references.bib
+fontsize: 12pt
+prefer-html: true
+format:
+  apaquarto-docx:
+    toc: false
+---
+
+```{r setup_manuscript, include=FALSE}
+source("R/packages.R")
+source("R/colors.R")
+source("R/helpers.R")
+source("R/tables.R")
+source("R/plots.R")
+source("R/demographics.R")
+source("R/data-loading.R")
+MANUSCRIPT_MODE <- TRUE
+```
+
+{{< include introduction.qmd >}}
+
+{{< include participants.qmd >}}
+
+{{< include methods.qmd >}}
+
+## Results
+
+{{< include question1.qmd >}}
+
+{{< include question2.qmd >}}
+
+{{< include question3.qmd >}}
+
+{{< include question4.qmd >}}
+
+{{< include discussion.qmd >}}
+
+\newpage
+
+# References
+
+::: {#refs}
+:::

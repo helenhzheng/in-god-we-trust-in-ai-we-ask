@@ -1,0 +1,62 @@
+---
+title: 'In God We Trust, In AI We Ask: Supplementary Materials'
+shorttitle: "Supplementary Materials"
+authors:
+  - name: Helen Huiting Zheng
+    corresponding: true
+    orcid: 0009-0006-2119-5531
+    email: helen.zheng@bc.edu
+    affiliation:
+      - id: id1
+        name: "Boston College"
+        department: Department of Psychology and Neuroscience
+  - name: Kyle Fiore Law
+    orcid: 0000-0001-5911-4772
+    affiliation:
+      - id: id2
+        name: "Arizona State University"
+        group: School of Sustainability
+        department: College of Global Futures\
+  - name: Sara M Haman
+    affiliation:
+      - ref: id1
+  - name: David DeSteno
+    affiliation:
+      - id: id3
+        name: "Northeastern University"
+        department: Department of Psychology
+  - name: Liane Young
+    affiliation:
+      - ref: id1
+date: "07 March 2026"
+author-note:
+  blank-lines-above-author-note: 2
+  status-changes: null
+mask: false
+floatsintext: true
+bibliography: references.bib
+fontsize: 12pt
+prefer-html: true
+format:
+  apaquarto-docx:
+    toc: false
+---
+
+```{r setup_supp_clean, include=FALSE}
+source("R/packages.R")
+source("R/colors.R")
+source("R/helpers.R")
+source("R/tables.R")
+source("R/plots.R")
+source("R/demographics.R")
+source("R/data-loading.R")
+source("R/supplementary.R")
+MANUSCRIPT_MODE <- TRUE
+```
+
+{{< include supplementary.qmd >}}
+
+# References
+
+::: {#refs}
+:::

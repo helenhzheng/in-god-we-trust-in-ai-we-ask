@@ -1,0 +1,21 @@
+/* ── Manuscript-style paragraph formatting ──────────────────────────────── */
+
+/* First-line indent + justified text for body paragraphs only */
+.quarto-document-content > p,
+#quarto-content p,
+.content p {
+  text-indent: 2em;
+  text-align: justify;
+}
+
+/* No indent for figure/table captions, alerts, or navbar text */
+.quarto-figure p,
+figcaption p,
+.callout p,
+.navbar p,
+.sidebar p,
+.panel-tabset p,
+.references p {
+  text-indent: 0;
+  text-align: left;
+}

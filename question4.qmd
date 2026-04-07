@@ -1,0 +1,72 @@
+```{r setup_q4, include=FALSE}
+if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
+  source("R/packages.R")
+  source("R/colors.R")
+  source("R/helpers.R")
+  source("R/tables.R")
+  source("R/plots.R")
+  source("R/demographics.R")
+  source("R/data-loading.R")
+}
+```
+
+```{r q4_models, include=FALSE}
+S2_mod_ai      <- lm(AI_Moral_Frequency ~ R_Score * AI_Moral_Access, data = s2_core)
+S2_mod_ai_sum  <- summary(S2_mod_ai)
+S2_mod_overall     <- lm(AI_Moral_Frequency ~ R_Score * Moral_Access, data = s2_core)
+S2_mod_overall_sum <- summary(S2_mod_overall)
+```
+
+### Question 4 — Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots? 
+
+Study 2 uniquely measured participants' access to each source of moral advice, allowing us to test whether the relationship between Religious Behavior Score and AI moral advice seeking is moderated by moral advice source accessibility. We tested two moderators: access to AI chatbots specifically, and overall access to non-AI, non-religious moral advice sources.
+
+```{r tbl-q4-moderation}
+#| label: tbl-q4-moderation
+#| tbl-cap: "Moderation Analyses: Interaction Effects on Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "Study 2 only."
+
+q4_tbl <- data.frame(
+  Moderator = c("AI Chatbot Access", "Overall Source Access"),
+  b = round(c(coef(S2_mod_ai_sum)["R_Score:AI_Moral_Access",  "Estimate"],
+              coef(S2_mod_overall_sum)["R_Score:Moral_Access", "Estimate"]), 2),
+  t = round(c(coef(S2_mod_ai_sum)["R_Score:AI_Moral_Access",  "t value"],
+              coef(S2_mod_overall_sum)["R_Score:Moral_Access", "t value"]), 2),
+  df = c(S2_mod_ai_sum$df[2], S2_mod_overall_sum$df[2]),
+  p  = c(apa_p(coef(S2_mod_ai_sum)["R_Score:AI_Moral_Access",  "Pr(>|t|)"], eq = FALSE),
+         apa_p(coef(S2_mod_overall_sum)["R_Score:Moral_Access", "Pr(>|t|)"], eq = FALSE)),
+  check.names = FALSE
+)
+names(q4_tbl) <- c("Moderator", "b", "t", "df", "p")
+
+flextable::flextable(q4_tbl) |>
+  flextable::compose(j = "b", part = "header", value = flextable::as_paragraph(flextable::as_i("b"))) |>
+  flextable::compose(j = "t", part = "header", value = flextable::as_paragraph(flextable::as_i("t"))) |>
+  flextable::compose(j = "p", part = "header", value = flextable::as_paragraph(flextable::as_i("p"))) |>
+  flextable::align(j = 1, part = "body", align = "left") |>
+  flextable::align(j = 2:5, part = "body", align = "center") |>
+  flextable::align(part = "header", align = "center") |>
+  flextable::border_remove() |>
+  flextable::hline_top(part = "header", border = officer::fp_border(width = 1.5)) |>
+  flextable::hline_bottom(part = "header", border = officer::fp_border(width = 1)) |>
+  flextable::hline_bottom(part = "body", border = officer::fp_border(width = 1.5)) |>
+  flextable::set_table_properties(layout = "autofit", width = 1)
+```
+
+```{r fig-q4-collage, fig.width=12, fig.height=5}
+#| label: fig-q4-collage
+#| fig-cap: "Religious Behavior Score → Frequency of Seeking Moral Advice from AI Chatbots, Moderated by Access"
+#| apa-note: "Left panel: moderated by access to AI chatbots. Right panel: moderated by overall access to non-AI, non-religious sources. Lines represent predicted values at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels. Shaded bands indicate 95% confidence intervals. Study 2 only."
+
+ai_vals      <- quantile(s2_core$AI_Moral_Access, probs = c(0.16, 0.50, 0.84), na.rm = TRUE)
+overall_vals <- quantile(s2_core$Moral_Access,  probs = c(0.16, 0.50, 0.84), na.rm = TRUE)
+
+plt_ai      <- make_mod_plot(S2_mod_ai, "AI_Moral_Access", ai_vals,
+                             "AI Chatbot Access") + ggtitle("AI Chatbot Access")
+plt_overall <- make_mod_plot(S2_mod_overall, "Moral_Access", overall_vals,
+                             "Overall Source Access") + ggtitle("Overall Source Access")
+
+plt_ai | plt_overall
+```
+
+Access to AI chatbots did not significantly moderate the Religious Behavior Score → AI moral advice frequency relationship, suggesting that the tendency among religiously engaged individuals to seek moral advice from AI chatbots is not substantially amplified by how accessible they perceive AI to be. However, overall access to non-AI, non-religious moral advice sources did significantly moderate this relationship: among more religiously engaged participants, those with greater access to a wider range of moral advice sources also sought moral guidance from AI chatbots more frequently. This pattern suggests that AI chatbots function as a complementary rather than substitute source of moral guidance. Religiosity is associated with broader moral consultancy behavior overall, and AI chatbots are one expression of that tendency where access permits. However, this significant moderation effect did not replicate in other relationships between self-reported religiosity or interest in seeking moral advice as presented in Supplementary Material. 

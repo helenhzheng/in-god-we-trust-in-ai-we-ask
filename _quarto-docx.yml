@@ -1,0 +1,16 @@
+project:
+  type: manuscript
+
+manuscript:
+  article: manuscript.qmd
+
+format:
+  apaquarto-docx:
+    toc: false
+
+execute:
+  freeze: auto
+  cache: true
+
+bibliography: references.bib
+fontsize: 12pt

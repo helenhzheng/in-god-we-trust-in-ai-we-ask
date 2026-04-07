@@ -1,0 +1,79 @@
+```{r setup_q2, include=FALSE}
+if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
+  source("R/packages.R")
+  source("R/colors.R")
+  source("R/helpers.R")
+  source("R/tables.R")
+  source("R/plots.R")
+  source("R/demographics.R")
+  source("R/data-loading.R")
+}
+```
+
+### Question 2 — Does Behavioral Religiosity Predict Frequency of Seeking Moral Advice from AI Chatbots?
+
+While self-reported religiosity captures individuals' global self-identification as religious, behavioral measures may provide a more nuanced and less socially desirable index of religious engagement. We constructed a **Religious Behavior Score** averaging two items: "How often do you attend religious services/ pray?" (1=*never*, 7=*once a day or more*) to capture both social and individual aspects of religious engagement. In the remaining main analyses, we use this score as the primary predictor, deferring self-reported religiosity to Supplementary.
+
+We first examined whether Religious Behavior Score predicts AI moral advice seeking across both studies.
+
+```{r tbl-q2-correlation}
+#| label: tbl-q2-correlation
+#| tbl-cap: "Pearson Correlations Between Religious Behavior Score and Frequency of Seeking Moral Advice From AI Chatbots"
+
+ct_s1 <- cor.test(s1_core$R_Score, s1_core$AI_Moral_Frequency)
+ct_s2 <- cor.test(s2_core$R_Score, s2_core$AI_Moral_Frequency)
+
+cor_tbl <- data.frame(
+  Study = c("Study 1", "Study 2"),
+  N     = c(nrow(s1_core), nrow(s2_core)),
+  r     = round(c(ct_s1$estimate, ct_s2$estimate), 2),
+  t     = round(c(ct_s1$statistic, ct_s2$statistic), 2),
+  df    = c(ct_s1$parameter, ct_s2$parameter),
+  p     = c(apa_p(ct_s1$p.value), apa_p(ct_s2$p.value)),
+  check.names = FALSE
+)
+names(cor_tbl) <- c("Study", "N", "r", "t", "df", "p")
+
+make_cor_flextable(cor_tbl)
+```
+
+```{r fig-q2-collage, fig.width=12, fig.height=5}
+#| label: fig-q2-collage
+#| fig-cap: "Religious Behavior Score and Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band in green, and a LOESS trend line with 95% confidence band in blue. Pearson correlations are annotated within each panel."
+
+s1_plt <- plot_scatter_cor(s1_core, "R_Score", "AI_Moral_Frequency",
+             x_label = "Religious Behavior Score",
+             y_label = "Frequency of Seeking Moral Advice from AI Chatbots") +
+  ggtitle("Study 1")
+
+s2_plt <- plot_scatter_cor(s2_core, "R_Score", "AI_Moral_Frequency",
+             x_label = "Religious Behavior Score",
+             y_label = "Frequency of Seeking Moral Advice from AI Chatbots") +
+  ggtitle("Study 2")
+
+s1_plt | s2_plt
+```
+
+Follow-up linear regression analyses confirmed that behavioral religiosity significantly predicted frequency of seeking moral advice from AI chatbots in both simple (Model 1) and covariate-adjusted models (Model 2), with effect sizes consistently exceeding those of self-reported religiosity. 
+
+```{r tbl-q2-regression}
+#| label: tbl-q2-regression
+#| tbl-cap: "Religious Behavior Score Predicting Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
+
+make_study_reg_table(
+  list(
+    "Study 1" = c(
+      apa_lm_summary(lm(AI_Moral_Frequency ~ R_Score, data = s1_core), "R_Score"),
+      apa_lm_summary(lm(AI_Moral_Frequency ~ R_Score + Political + Age + Income + Education + SES, data = s1_core), "R_Score")
+    ),
+    "Study 2" = c(
+      apa_lm_summary(lm(AI_Moral_Frequency ~ R_Score, data = s2_core), "R_Score"),
+      apa_lm_summary(lm(AI_Moral_Frequency ~ R_Score + Political + Age + Income + Education + SES, data = s2_core), "R_Score")
+    )
+  )
+)
+```
+
+Religious Behavior Score consistently and positively predicted the frequency of seeking moral advice from AI chatbots in Studies 1 and 2, effects that were robust to the inclusion of demographic covariates.

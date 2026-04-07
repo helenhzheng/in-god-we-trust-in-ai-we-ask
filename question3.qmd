@@ -1,0 +1,280 @@
+```{r setup_q3, include=FALSE}
+if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
+  source("R/packages.R")
+  source("R/colors.R")
+  source("R/helpers.R")
+  source("R/tables.R")
+  source("R/plots.R")
+  source("R/demographics.R")
+  source("R/data-loading.R")
+}
+```
+
+### Question 3 — What Mediates the Relationship Between Religiosity and the Frequency of Seeking Moral Advice from AI Chatbots? 
+
+To identify mechanisms driving the relationship between religiosity and AI moral advice seeking, we examined several potential mediators (Table 2). We first conducted regression analyses (simple regression and multiple regression models adjusted for demographic covariates) to establish which mediators were significantly predicted by Religious Behavior Score. We then restricted mediation analyses to those reaching significance in at least one path-a model. Finally, we estimated a parallel mediation model for each study using structural equation modeling. To minimize criterion contamination among multiple mediators within the same cluster, we selected the mediator that accounted for the largest proportion of variance mediated from each significantly predicted cluster.
+
+```{r q3-helpers, include=FALSE}
+# filter_sig_mediators defined in R/tables.R
+# build_parallel_model defined in R/supplementary.R
+```
+
+```{r tbl-s1-regression}
+#| label: tbl-s1-regression
+#| tbl-cap: "Study 1: Religious Behavior Score Predicting Each Potential Mediator"
+#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
+
+regression_table(
+  data           = s1_core,
+  x_var          = "R_Score",
+  mediator_list  = as.list(s1_mediators),
+  mediator_names = S1_MEDIATOR_NAMES
+)
+```
+
+```{r tbl-s2-regression}
+#| label: tbl-s2-regression
+#| tbl-cap: "Study 2: Religious Behavior Score Predicting Each Potential Mediator"
+#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
+
+regression_table(
+  data           = s2_core,
+  x_var          = "R_Score",
+  mediator_list  = as.list(s2_mediators),
+  mediator_names = S2_MEDIATOR_NAMES
+)
+```
+
+In Study 1, Religious Behavior Score significantly predicted most potential mediators. In both simple and multiple regression models, Religious Behavior Score predicted overall frequency of and interest in seeking moral advice from non-AI, non-religious sources (cluster a), general open-mindedness,  open-mindedness on moral issues, and intellectual humility measured by CIHS and MMIH (cluster b), belief in moral objectivity (cluster c), and perceived valence and authority of AI chatbots as moral advisors (cluster d). Intellectual humility (CIHS and MMIH; cluster b), was non-significant in both models and therefore excluded from subsequent analyses. In Study 2, Religious Behavior Score similarly predicted overall frequency of and interest in seeking moral advice (cluster a), open-mindedness on moral issues (cluster b), belief in moral objectivity (cluster c), and perceived authority of AI chatbots (cluster d). Among the newly added Study 2 measures, tendency to anthropomorphize AI chatbots (cluster e) and both measures of deference to authority (cluster f) were significantly predicted by Religious Behavior Score. Fear of negative judgment and self-reflective tendencies (cluster f) were non-significant and excluded from subsequent mediation analysis.
+
+```{r q3-filter, include=FALSE}
+sig_s1 <- filter_sig_mediators(s1_core, "R_Score", s1_mediators, S1_MEDIATOR_NAMES)
+sig_s2 <- filter_sig_mediators(s2_core, "R_Score", s2_mediators, S2_MEDIATOR_NAMES)
+```
+
+```{r tbl-s1-mediation, cache=TRUE}
+#| label: tbl-s1-mediation
+#| tbl-cap: "Study 1: Individual Mediation Analyses"
+#| apa-note: "Religious Behavior Score → mediator → frequency of seeking moral advice from AI chatbots. Only mediators significant (*p* < .05) in at least one regression model (simple or multiple) are included."
+
+mediation_table(
+  data           = s1_core,
+  x_var          = "R_Score",
+  y_var          = "AI_Moral_Frequency",
+  mediator_list  = as.list(sig_s1$mediators),
+  mediator_names = sig_s1$names,
+  sims           = 5000
+)
+```
+
+```{r tbl-s2-mediation, cache=TRUE}
+#| label: tbl-s2-mediation
+#| tbl-cap: "Study 2: Individual Mediation Analyses"
+#| apa-note: "Religious Behavior Score → mediator → frequency of seeking moral advice from AI chatbots. Only mediators significant (*p* < .05) in at least one regression model (simple or multiple) are included."
+
+mediation_table(
+  data           = s2_core,
+  x_var          = "R_Score",
+  y_var          = "AI_Moral_Frequency",
+  mediator_list  = as.list(sig_s2$mediators),
+  mediator_names = sig_s2$names,
+  sims           = 5000
+)
+```
+
+Across both studies, the relationship between Religious Behavior Score and frequency of seeking moral advice from AI chatbots was most strongly mediated by individuals' overall tendency to seek moral advice from diverse non-AI, non-religious sources (cluster a). Perceived authority of AI chatbots as moral advisors (cluster d) served as a consistent secondary mediator in both studies, and open-mindedness on moral issues (cluster b) contributed to a smaller but reliable indirect effect. Among the new mediators introduced in Study 2, deference to authority (cluster f; both MFQ-2 and MAC-Q) and tendency to anthropomorphize AI chatbots (cluster e) also emerged as significant indirect pathways. Belief in moral objectivity (cluster c), fear of negative judgment and self-reflective tendencies (cluster f; Study 2 only) do not significantly mediate the relationship between Religious Behavior Score and frequency of seeking moral advice from AI chatbots and were excluded from parallel mediation analyses.
+
+To examine the contribution of each mediator while accounting for their intercorrelations, we constructed a parallel mediation model for each study using the *lavaan* package in R [@rosseel2012]. For each study, we selected the mediator with the highest proportion of variance mediated from each cluster significantly predicted by Religious Behavior Score. For Study 1 we included three mediators: overall frequency of seeking moral advice from non-AI sources (cluster a), open-mindedness on moral issues (cluster b), and perceived authority of AI chatbots as moral advisors (cluster d). Study 2 retained these three and added tendency to anthropomorphize AI chatbots (cluster e) and deference to authority — MFQ-2 (cluster f). All mediators included were allowed to intercorrelate, making both models saturated. Specific indirect effects were estimated using 5,000 bootstrap resamples.
+
+```{r q3-parallel-setup, include=FALSE, cache=TRUE}
+# ── Study 1 lavaan model ──────────────────────────────────────
+model_s1 <- '
+  Moral_Frequency    ~ a1 * R_Score
+  Moral_Curiosity    ~ a2 * R_Score
+  AI_Authority_Moral ~ a3 * R_Score
+
+  AI_Moral_Frequency ~ b1 * Moral_Frequency +
+                       b2 * Moral_Curiosity +
+                       b3 * AI_Authority_Moral +
+                       c_prime * R_Score
+
+  Moral_Frequency    ~~ Moral_Curiosity
+  Moral_Frequency    ~~ AI_Authority_Moral
+  Moral_Curiosity    ~~ AI_Authority_Moral
+
+  ind1 := a1 * b1
+  ind2 := a2 * b2
+  ind3 := a3 * b3
+  total_indirect := ind1 + ind2 + ind3
+'
+set.seed(42)
+fit_s1 <- sem(model_s1, data = s1_core,
+              se = "bootstrap", bootstrap = 5000, missing = "listwise")
+
+# ── Study 2 lavaan model ──────────────────────────────────────
+model_s2 <- '
+  Moral_Frequency    ~ a1 * R_Score
+  Moral_Curiosity      ~ a2 * R_Score
+  AI_Authority_Moral   ~ a3 * R_Score
+  AI_Anthropomorphism  ~ a4 * R_Score
+  Authority_MFQ_2      ~ a5 * R_Score
+
+  AI_Moral_Frequency ~ b1 * Moral_Frequency +
+                       b2 * Moral_Curiosity +
+                       b3 * AI_Authority_Moral +
+                       b4 * AI_Anthropomorphism +
+                       b5 * Authority_MFQ_2 +
+                       c_prime * R_Score
+
+  Moral_Frequency    ~~ Moral_Curiosity
+  Moral_Frequency    ~~ AI_Authority_Moral
+  Moral_Frequency    ~~ AI_Anthropomorphism
+  Moral_Frequency    ~~ Authority_MFQ_2
+  Moral_Curiosity      ~~ AI_Authority_Moral
+  Moral_Curiosity      ~~ AI_Anthropomorphism
+  Moral_Curiosity      ~~ Authority_MFQ_2
+  AI_Authority_Moral   ~~ AI_Anthropomorphism
+  AI_Authority_Moral   ~~ Authority_MFQ_2
+  AI_Anthropomorphism  ~~ Authority_MFQ_2
+
+  ind1 := a1 * b1
+  ind2 := a2 * b2
+  ind3 := a3 * b3
+  ind4 := a4 * b4
+  ind5 := a5 * b5
+  total_indirect := ind1 + ind2 + ind3 + ind4 + ind5
+'
+set.seed(42)
+fit_s2 <- sem(model_s2, data = s2_core,
+              se = "bootstrap", bootstrap = 5000, missing = "listwise")
+
+# ── Coefficient extraction ─────────────────────────────────────
+ge1 <- get_edge_coefs(fit_s1)
+coefs_s1 <- list(
+  a1 = ge1("Moral_Frequency",    "R_Score"),
+  a2 = ge1("Moral_Curiosity",    "R_Score"),
+  a3 = ge1("AI_Authority_Moral", "R_Score"),
+  b1 = ge1("AI_Moral_Frequency", "Moral_Frequency"),
+  b2 = ge1("AI_Moral_Frequency", "Moral_Curiosity"),
+  b3 = ge1("AI_Moral_Frequency", "AI_Authority_Moral"),
+  cp = ge1("AI_Moral_Frequency", "R_Score")
+)
+
+ge2 <- get_edge_coefs(fit_s2)
+coefs_s2 <- list(
+  a1 = ge2("Moral_Frequency",   "R_Score"),
+  a2 = ge2("Moral_Curiosity",     "R_Score"),
+  a3 = ge2("AI_Authority_Moral",  "R_Score"),
+  a4 = ge2("AI_Anthropomorphism", "R_Score"),
+  a5 = ge2("Authority_MFQ_2",     "R_Score"),
+  b1 = ge2("AI_Moral_Frequency",  "Moral_Frequency"),
+  b2 = ge2("AI_Moral_Frequency",  "Moral_Curiosity"),
+  b3 = ge2("AI_Moral_Frequency",  "AI_Authority_Moral"),
+  b4 = ge2("AI_Moral_Frequency",  "AI_Anthropomorphism"),
+  b5 = ge2("AI_Moral_Frequency",  "Authority_MFQ_2"),
+  cp = ge2("AI_Moral_Frequency",  "R_Score")
+)
+
+# ── Indirect effects for combined table ───────────────────────
+s1_labels <- c(
+  "Overall Frequency of Seeking Moral Advice",
+  "Open-Mindedness on Moral Issues",
+  "Perceived Authority of AI Chatbots as Moral Advisors"
+)
+s2_labels <- c(
+  "Overall Frequency of Seeking Moral Advice",
+  "Open-Mindedness on Moral Issues",
+  "Perceived Authority of AI Chatbots as Moral Advisors",
+  "Tendency to Anthropomorphize AI Chatbots",
+  "Deference to Authority (MFQ-2)"
+)
+
+df_s1     <- extract_indirect(fit_s1, s1_labels, "Study 1")
+df_s2     <- extract_indirect(fit_s2, s2_labels, "Study 2")
+df_forest <- rbind(df_s1, df_s2)
+
+# ── Model fit statistics for inline prose ─────────────────────
+pe_s1 <- parameterEstimates(fit_s1, boot.ci.type = "perc", level = 0.95)
+pe_s2 <- parameterEstimates(fit_s2, boot.ci.type = "perc", level = 0.95)
+
+tie_s1    <- pe_s1[pe_s1$lhs == "total_indirect" & pe_s1$op == ":=", ]
+tie_s1_b  <- round(tie_s1$est, 3)
+tie_s1_lo <- round(tie_s1$ci.lower, 3)
+tie_s1_hi <- round(tie_s1$ci.upper, 3)
+
+tie_s2    <- pe_s2[pe_s2$lhs == "total_indirect" & pe_s2$op == ":=", ]
+tie_s2_b  <- round(tie_s2$est, 3)
+tie_s2_lo <- round(tie_s2$ci.lower, 3)
+tie_s2_hi <- round(tie_s2$ci.upper, 3)
+
+r2_s1 <- round(inspect(fit_s1, "r2")["AI_Moral_Frequency"], 3)
+r2_s2 <- round(inspect(fit_s2, "r2")["AI_Moral_Frequency"], 3)
+
+cp_s1   <- pe_s1[pe_s1$lhs == "AI_Moral_Frequency" & pe_s1$rhs == "R_Score" & pe_s1$op == "~", ]
+cp_s1_b <- round(cp_s1$est, 3)
+cp_s1_p <- apa_p(cp_s1$pvalue)
+
+cp_s2   <- pe_s2[pe_s2$lhs == "AI_Moral_Frequency" & pe_s2$rhs == "R_Score" & pe_s2$op == "~", ]
+cp_s2_b <- round(cp_s2$est, 3)
+cp_s2_p <- apa_p(cp_s2$pvalue)
+```
+
+```{r fig-q3-parallel-s1, fig.width=6.5, fig.height=5.1}
+#| label: fig-q3-parallel-s1
+#| fig-cap: "Study 1: Parallel Mediation Model"
+#| apa-note: "Edge labels show unstandardized b (standardized \u03b2 in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+
+make_path_diagram(
+  mediator_labels = c("Overall Frequency of\nSeeking Moral Advice",
+                      "Open-Mindedness on\nMoral Issues",
+                      "Perceived Authority of\nAI Chatbots"),
+  coefs = coefs_s1
+)
+```
+
+```{r tbl-q3-parallel-s1-estimates}
+#| label: tbl-q3-parallel-s1-estimates
+#| tbl-cap: "Study 1: Full Parameter Estimates — Parallel Mediation"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+
+est_s1 <- extract_all_estimates(
+  fit_s1,
+  mediator_names  = s1_labels,
+  predictor_name  = "Religious Behavior Score",
+  outcome_name    = "AI Moral Frequency"
+)
+fmt_all_estimates_table(est_s1)
+```
+
+```{r fig-q3-parallel-s2, fig.width=6.5, fig.height=6}
+#| label: fig-q3-parallel-s2
+#| fig-cap: "Study 2: Parallel Mediation Model"
+#| apa-note: "Edge labels show unstandardized b (standardized \u03b2 in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+
+make_path_diagram(
+  mediator_labels = c("Overall Frequency of\nSeeking Moral Advice",
+                      "Open-Mindedness on\nMoral Issues",
+                      "Perceived Authority of\nAI Chatbots",
+                      "Tendency to\nAnthropomorphize\nAI Chatbots",
+                      "Deference to\nAuthority (MFQ-2)"),
+  coefs = coefs_s2
+)
+```
+
+```{r tbl-q3-parallel-s2-estimates}
+#| label: tbl-q3-parallel-s2-estimates
+#| tbl-cap: "Study 2: Full Parameter Estimates — Parallel Mediation"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+
+est_s2 <- extract_all_estimates(
+  fit_s2,
+  mediator_names  = s2_labels,
+  predictor_name  = "Religious Behavior Score",
+  outcome_name    = "AI Moral Frequency"
+)
+fmt_all_estimates_table(est_s2)
+```
+
+Overall, in Study 1, the parallel mediation model explained `r round(r2_s1 * 100, 1)`% of the variance in frequency of seeking AI moral advice (*R²*=`r r2_s1`). The total indirect effect was *b*=`r tie_s1_b` (95% CI [`r tie_s1_lo`, `r tie_s1_hi`]), with a residual direct effect of *b*=`r cp_s1_b` (*p*`r cp_s1_p`). In Study 2, the model explained `r round(r2_s2 * 100, 1)`% of the variance (*R²*=`r r2_s2`), with a total indirect effect of *b*=`r tie_s2_b` (95% CI [`r tie_s2_lo`, `r tie_s2_hi`]) and a direct effect of *b*=`r cp_s2_b` (*p*`r cp_s2_p`).
+
+The parallel mediation models revealed a consistent two-pathway pattern across both studies. The indirect effect via disposition to moral consultation from non-AI, non-religious sources (cluster a) was the dominant pathway in both studies, followed by a significant indirect effect via perceived authority of AI chatbots as moral advisors (cluster d). In contrast, the indirect effect via open-mindedness on moral issues (cluster b) was not significant in either study. In Study 2, neither the indirect effect via tendency to anthropomorphize AI chatbots (cluster e) nor via deference to authority (cluster f) reached significance. 
