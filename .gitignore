@@ -18,6 +18,7 @@ _build/
 # Python / Scripts output
 __pycache__/
 _*.tsv
+*.py
 
 # Root HTML files (only _site/ HTML should be tracked)
 /*.html
