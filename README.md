@@ -19,8 +19,8 @@ As AI chatbots increasingly enter domains long considered uniquely human, such a
 - `*.qmd` — Quarto manuscript source files
 - `R/` — Analysis scripts (data loading, tables, plots, helpers)
 - `Data Collection/` — Data files (CSV) and codebook
-- `_site/` — Rendered HTML website
 - `references.bib` — Bibliography
+- [Live HTML Website](https://helenzheng.me/in-god-we-trust-in-ai-we-ask/) — Full rendered manuscript with supplementary materials
 
 ## Reproducibility
 
