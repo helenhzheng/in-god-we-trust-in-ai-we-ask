@@ -222,7 +222,7 @@ apa_cor_table(s2_core, var_names = S2_CORE_NAMES)
 :::
 
 ::: {.content-visible when-format="docx"}
-*The full correlation matrices for Study 1 and Study 2 are excluded from this document due to their size (60+ pages). They are available in the online supplementary materials.*
+*The full correlation matrices for Study 1 and Study 2 are excluded from this document due to their size (60+ pages). They are available at <https://helenzheng.me/in-god-we-trust-in-ai-we-ask/supplementary.html>.*
 :::
 
 ### Correlation Heatmaps
