@@ -1,33 +1,34 @@
-# R / RStudio
-.Rhistory
+# ==== R & RStudio ====
 .Rproj.user/
+.Rhistory
 .RData
 .Ruserdata
 
-# Quarto build caches
+# ==== Quarto & Website Builds ====
+# These are kept strictly local so they don't pollute your source code on GitHub. 
+# (The website is isolated completely to the 'gh-pages' branch)
+_site/
+.quarto/
 *_cache/
 *_files/
 _build/
-.quarto/
+/*.html
 /site_libs/
 /search.json
 
-# Word output (generated, not source)
+# ==== Manuscripts ====
+# Only tracked as source (.qmd). Final outputs are generated dynamically.
 *.docx
 
-# Python / Scripts output
+# ==== Python ====
 __pycache__/
-_*.tsv
 *.py
 
-# Root HTML files (only _site/ HTML should be tracked)
-/*.html
-
-# Original data archive (keep originals locally, not in repo)
+# ==== Temporary Files & Data ====
+# The archive folder prevents pushing un-pseudonymized originals
 Data Collection/archive/
+_*.tsv
 
-# OS files
-Thumbs.db
+# ==== OS System Files ====
 .DS_Store
-
-/.quarto/
+Thumbs.db

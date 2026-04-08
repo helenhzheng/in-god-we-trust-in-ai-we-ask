@@ -25,7 +25,7 @@ demo_all <- demo_s1 %>%
 
 All participants were recruited through Prolific. Responses were excluded if they were incomplete, flagged by Qualtrics as likely fraudulent, contained a duplicated Prolific ID, or failed the requisite attention checks. Two pilot studies were reported in Supplementary. The two pre-registered studies used stratified sampling to ensure balanced representation across sex, age, ethnicity (based on simplified U.S. census categories), and political affiliation. The demographic characteristics for Study 1 and Study 2 are presented in Table 1. 
 
-Study 1 (*N* = `r nrow(Study1)`; pre-registered: <https://aspredicted.org/mv2z-t7dw.pdf>; data collected `r Study1_date`) and Study 2 (*N* = `r nrow(Study2)`; pre-registered: <https://aspredicted.org/z378hg.pdf>; data collected `r Study2_date`) served as the formal replication and mediation samples.
+Study 1 (*N*=`r nrow(Study1)`; pre-registered: <https://aspredicted.org/mv2z-t7dw.pdf>; data collected `r Study1_date`) and Study 2 (*N*=`r nrow(Study2)`; pre-registered: <https://aspredicted.org/z378hg.pdf>; data collected `r Study2_date`) served as the formal replication and mediation samples. All data and supplementary materials are at: <https://osf.io/qfv9d/>.
 
 ```{r tbl-participants}
 #| label: tbl-participants
