@@ -9,6 +9,7 @@
 # (The website is isolated completely to the 'gh-pages' branch)
 _site/
 .quarto/
+_freeze/
 *_cache/
 *_files/
 _build/
