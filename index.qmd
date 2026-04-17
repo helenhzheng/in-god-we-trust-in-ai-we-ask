@@ -19,11 +19,12 @@ As AI chatbots increasingly enter domains long considered uniquely human, such a
 
 # Quick Links
 
-- [Introduction](introduction.qmd) — Literature review and study overview
-- [Q1: Self-Reported Religiosity](question1.qmd) — Does self-reported religiosity predict AI moral advice seeking?
-- [Q2: Religious Behavior Score](question2.qmd) — Does Religious Behavior Score predict AI moral advice frequency?
-- [Q3: Mediators](question3.qmd) — What Mediates the Relationship Between Religiosity and the Frequency of Seeking Moral Advice from AI Chatbots? 
-- [Q4: Moderation](question4.qmd) — Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots? 
-- [Discussion](discussion.qmd) — General discussion, Implication and Limitation
-- [Supplementary](supplementary.qmd) — Additional analyses
-
+-   [Introduction](introduction.qmd) — Literature review and study overview
+-   [Participants](participants.qmd) — Participant breakdown
+-   [Method](methods.qmd) — Materials and Procedure
+-   [Q1: Self-Reported Religiosity](question1.qmd) — Does self-reported religiosity predict AI moral advice seeking?
+-   [Q2: Religious Behavior Score](question2.qmd) — Does Religious Behavior Score predict AI moral advice frequency?
+-   [Q3: Mediators](question3.qmd) — What Mediates the Relationship Between Religiosity and the Frequency of Seeking Moral Advice from AI Chatbots?
+-   [Q4: Moderation](question4.qmd) — Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots?
+-   [Discussion](discussion.qmd) — General discussion, Implication and Limitation
+-   [Supplementary](supplementary.qmd) — Additional analyses

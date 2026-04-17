@@ -4,6 +4,7 @@ project:
   render:
     - index.qmd
     - introduction.qmd
+    - methods.qmd
     - participants.qmd
     - question1.qmd
     - question2.qmd
@@ -20,6 +21,8 @@ website:
         text: Home
       - href: introduction.qmd
         text: Introduction
+      - href: methods.qmd
+        text: Methods
       - href: participants.qmd
         text: Participants
       - href: question1.qmd
