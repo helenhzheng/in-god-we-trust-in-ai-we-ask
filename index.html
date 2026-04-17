@@ -3828,6 +3828,10 @@ vertical-align: -.125em;
 <span class="menu-text">Introduction</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./methods.html"> 
+<span class="menu-text">Methods</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./participants.html"> 
 <span class="menu-text">Participants</span></a>
   </li>  
@@ -3907,6 +3911,8 @@ vertical-align: -.125em;
 <h1>Quick Links</h1>
 <ul>
 <li><a href="./introduction.html">Introduction</a> — Literature review and study overview</li>
+<li><a href="./participants.html">Participants</a> — Participant breakdown</li>
+<li><a href="./methods.html">Method</a> — Materials and Procedure</li>
 <li><a href="./question1.html">Q1: Self-Reported Religiosity</a> — Does self-reported religiosity predict AI moral advice seeking?</li>
 <li><a href="./question2.html">Q2: Religious Behavior Score</a> — Does Religious Behavior Score predict AI moral advice frequency?</li>
 <li><a href="./question3.html">Q3: Mediators</a> — What Mediates the Relationship Between Religiosity and the Frequency of Seeking Moral Advice from AI Chatbots?</li>
@@ -3991,7 +3997,7 @@ vertical-align: -.125em;
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/helenhzheng\.github\.io\/in-god-we-trust-in-ai-we-ask\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
