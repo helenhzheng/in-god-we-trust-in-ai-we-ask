@@ -35,7 +35,7 @@ make_apa_flextable <- function(df, col_names = NULL, spanner = NULL) {
   header_labels <- if (!is.null(col_names)) col_names else names(df)
   for (idx in seq_along(names(df))) {
     display <- header_labels[idx]
-    if (display %in% c("b", "p", "SE")) {
+    if (display %in% c("b", "p", "SE", "\u03b2", "r", "t", "d", "df")) {
       ft <- flextable::compose(
         ft, i = hdr_row, j = names(df)[idx], part = "header",
         value = flextable::as_paragraph(flextable::as_i(display))
@@ -108,8 +108,8 @@ make_study_reg_table <- function(rows_list, study_names = names(rows_list)) {
   )
 
   sub_hdr <- c(
-    "Study", "b", "SE", "95% CI LL", "95% CI UL", "p",
-    "b", "SE", "95% CI LL", "95% CI UL", "p"
+    "Study", "\u03b2", "SE", "95% CI LL", "95% CI UL", "p",
+    "\u03b2", "SE", "95% CI LL", "95% CI UL", "p"
   )
   spanner <- c(" " = 1, "Model 1" = 5, "Model 2" = 5)
 
@@ -117,7 +117,21 @@ make_study_reg_table <- function(rows_list, study_names = names(rows_list)) {
 }
 
 
-# --- Regression table: X predicting mediators ---
+# --- Study-level adjusted regression table (Model 2 only, for main text) ---
+make_study_reg_adj_table <- function(rows_list, study_names = names(rows_list), model_name = "Demographic-Adjusted Model") {
+  reg_df <- data.frame(
+    Study = study_names,
+    do.call(rbind, rows_list),
+    stringsAsFactors = FALSE
+  )
+
+  sub_hdr <- c(
+    "Study", "\u03b2", "SE", "95% CI LL", "95% CI UL", "p"
+  )
+  spanner <- c(" " = 1, model_name = 5)
+
+  make_apa_flextable(reg_df, col_names = sub_hdr, spanner = spanner)
+}# --- Regression table: X predicting mediators ---
 regression_table <- function(
   data,
   x_var,
@@ -125,21 +139,38 @@ regression_table <- function(
   mediator_names = NULL,
   adjustment_vars = c("Political", "Age", "Income", "Education", "SES")
 ) {
+  # Scale all continuous variables (x_var, mediators, adjustment_vars)
+  scale_vars <- c(x_var, names(mediator_list), adjustment_vars)
+  for (v in scale_vars) {
+    if (v %in% names(data) && is.numeric(data[[v]])) {
+      data[[v]] <- as.numeric(scale(data[[v]]))
+    }
+  }
+
   if (is.null(mediator_names)) mediator_names <- names(mediator_list)
   if (is.list(mediator_names)) mediator_names <- unlist(mediator_names, use.names = FALSE)
   stopifnot(length(mediator_names) == length(mediator_list))
+
+  threshold <- 0.05 / length(mediator_list)
 
   table_rows <- list()
   for (i in seq_along(mediator_list)) {
     m       <- names(mediator_list)[i]
     display <- mediator_names[i]
+    
     mod1    <- lm(as.formula(paste0(m, " ~ ", x_var)), data = data)
-    row1    <- apa_lm_summary(mod1, x_var)
+    p_val1  <- summary(mod1)$coefficients[x_var, "Pr(>|t|)"]
+    sig1    <- ifelse(p_val1 < threshold, "Yes", "No")
+    row1    <- c(apa_lm_summary(mod1, x_var), sig = sig1)
     names(row1) <- paste("Model1", names(row1), sep = "_")
+    
     adj_f   <- paste(m, "~", x_var, "+", paste(adjustment_vars, collapse = " + "))
     mod2    <- lm(as.formula(adj_f), data = data)
-    row2    <- apa_lm_summary(mod2, x_var)
+    p_val2  <- summary(mod2)$coefficients[x_var, "Pr(>|t|)"]
+    sig2    <- ifelse(p_val2 < threshold, "Yes", "No")
+    row2    <- c(apa_lm_summary(mod2, x_var), sig = sig2)
     names(row2) <- paste("Model2", names(row2), sep = "_")
+    
     table_rows[[display]] <- c(row1, row2)
   }
 
@@ -150,18 +181,19 @@ regression_table <- function(
   )
 
   sub_hdr <- c(
-    "Study", "b", "SE", "95% CI LL", "95% CI UL", "p",
-    "b", "SE", "95% CI LL", "95% CI UL", "p"
+    "Mediator", 
+    "\u03b2", "SE", "95% CI LL", "95% CI UL", "p", "Sig (Corrected)",
+    "\u03b2", "SE", "95% CI LL", "95% CI UL", "p", "Sig (Corrected)"
   )
 
-  spanner <- c(" " = 1, "Model 1" = 5, "Model 2" = 5)
+  spanner <- c(" " = 1, "Model 1" = 6, "Model 2" = 6)
 
   make_apa_flextable(results, col_names = sub_hdr, spanner = spanner)
 }
 
 
-# --- Individual mediation table ---
-mediation_table <- function(
+# --- Run raw mediation analyses (once) ---
+run_mediation_analyses <- function(
   data,
   x_var,
   y_var,
@@ -174,13 +206,24 @@ mediation_table <- function(
   stopifnot(length(mediator_names) == length(mediator_list))
 
   results_df <- data.frame(
-    Mediators = character(), path_a = character(), path_b = character(),
-    indirect_ab = character(), LL = character(), UL = character(),
-    direct_c = character(), prop.med = character(),
+    ColumnName    = character(),
+    Mediator      = character(),
+    path_a        = numeric(),
+    path_a_p      = numeric(),
+    path_b        = numeric(),
+    path_b_p      = numeric(),
+    indirect_ab   = numeric(),
+    indirect_ab_p = numeric(),
+    LL            = numeric(),
+    UL            = numeric(),
+    direct_c      = numeric(),
+    direct_c_p    = numeric(),
+    prop.med      = numeric(),
     stringsAsFactors = FALSE
   )
 
   for (i in seq_along(mediator_list)) {
+    m_col   <- names(mediator_list)[i]
     temp    <- data.frame(Y = data[[y_var]], X = data[[x_var]], M = mediator_list[[i]])
     temp    <- na.omit(temp)
     model_m <- lm(M ~ X, data = temp)
@@ -205,17 +248,37 @@ mediation_table <- function(
     pm    <- ie / med_out$tau.coef * 100
 
     results_df <- rbind(results_df, data.frame(
-      Mediators   = mediator_names[i],
-      path_a      = sprintf("%.2f%s", path_a,  add_stars(path_a_p)),
-      path_b      = sprintf("%.2f%s", path_b,  add_stars(path_b_p)),
-      indirect_ab = sprintf("%.2f%s", ie,      add_stars(ie_p)),
-      LL          = sprintf("%.2f",   ci_l),
-      UL          = sprintf("%.2f",   ci_u),
-      direct_c    = sprintf("%.2f%s", path_cp, add_stars(path_cp_p)),
-      prop.med    = sprintf("%.2f%%", pm),
+      ColumnName    = m_col,
+      Mediator      = mediator_names[i],
+      path_a        = path_a,
+      path_a_p      = path_a_p,
+      path_b        = path_b,
+      path_b_p      = path_b_p,
+      indirect_ab   = ie,
+      indirect_ab_p = ie_p,
+      LL            = ci_l,
+      UL            = ci_u,
+      direct_c      = path_cp,
+      direct_c_p    = path_cp_p,
+      prop.med      = pm,
       stringsAsFactors = FALSE
     ))
   }
+
+  results_df
+}# --- Format raw mediation results as an APA flextable ---
+mediation_table_from_results <- function(results_df, selected_mediators = NULL) {
+  formatted_df <- data.frame(
+    Mediators   = results_df$Mediator,
+    path_a      = sprintf("%.2f%s", results_df$path_a,  add_stars(results_df$path_a_p)),
+    path_b      = sprintf("%.2f%s", results_df$path_b,  add_stars(results_df$path_b_p)),
+    indirect_ab = sprintf("%.2f%s", results_df$indirect_ab, add_stars(results_df$indirect_ab_p)),
+    LL          = sprintf("%.2f",   results_df$LL),
+    UL          = sprintf("%.2f",   results_df$UL),
+    direct_c    = sprintf("%.2f%s", results_df$direct_c, add_stars(results_df$direct_c_p)),
+    prop.med    = sprintf("%.2f%%", results_df$prop.med),
+    stringsAsFactors = FALSE
+  )
 
   sub_hdr <- c(
     "Mediators",
@@ -229,7 +292,66 @@ mediation_table <- function(
     "Indirect (ab)" = 3, "Direct c'" = 1, "Full Model" = 1
   )
 
-  make_apa_flextable(results_df, col_names = sub_hdr, spanner = spanner)
+  if (!is.null(selected_mediators)) {
+    formatted_df$Selected <- ifelse(results_df$ColumnName %in% selected_mediators, "Yes", "No")
+    sub_hdr <- c(sub_hdr, "Selected for SEM")
+    spanner <- c(spanner, " " = 1)
+  }
+
+  make_apa_flextable(formatted_df, col_names = sub_hdr, spanner = spanner)
+}
+
+
+# --- Individual mediation table (Backwards-compatible wrapper) ---
+mediation_table <- function(
+  data,
+  x_var,
+  y_var,
+  mediator_list,
+  mediator_names = NULL,
+  sims = 5000,
+  selected_mediators = NULL
+) {
+  raw_results <- run_mediation_analyses(data, x_var, y_var, mediator_list, mediator_names, sims)
+  mediation_table_from_results(raw_results, selected_mediators = selected_mediators)
+}
+
+
+# --- Select one representative mediator per cluster from pre-computed raw mediation results ---
+# results_df: data frame output from run_mediation_analyses()
+# data      : the data frame containing the raw core variables (e.g. s1_core)
+# exclude   : optional vector of column names to exclude
+# Returns a list: list(mediators = data[, selected_cols], names = selected_display_names)
+select_representatives <- function(results_df, data, exclude = NULL) {
+  # 1. Filter for significant bootstrap indirect effect (indirect_ab_p < 0.05)
+  sig_res <- results_df[results_df$indirect_ab_p < 0.05, ]
+
+  if (!is.null(exclude)) {
+    sig_res <- sig_res[!(sig_res$ColumnName %in% exclude), ]
+  }
+
+  if (nrow(sig_res) == 0) {
+    return(list(
+      mediators = data[, character(0), drop = FALSE],
+      names     = character(0)
+    ))
+  }
+
+  # 2. Map ColumnName to clusters (using MEDIATOR_CLUSTERS)
+  sig_res$Cluster <- MEDIATOR_CLUSTERS[sig_res$ColumnName]
+
+  # 3. For each cluster, pick the one with highest absolute proportion mediated
+  selected_rows <- do.call(rbind, lapply(split(sig_res, sig_res$Cluster), function(sub_df) {
+    sub_df[which.max(abs(sub_df$prop.med)), ]
+  }))
+
+  # Sort by cluster for consistency
+  selected_rows <- selected_rows[order(selected_rows$Cluster), ]
+
+  list(
+    mediators = data[, selected_rows$ColumnName, drop = FALSE],
+    names     = selected_rows$Mediator
+  )
 }
 
 
@@ -274,9 +396,6 @@ apa_cor_table <- function(data, var_names = NULL) {
 }
 
 
-# --- Filter mediators significantly predicted by a given predictor ---
-# Used in question3.qmd and supplementary.qmd.
-# Returns list(mediators = df_subset, names = character_subset)
 filter_sig_mediators <- function(data, predictor, mediator_df, mediator_names,
                                  adj_vars = c(
                                    "Political", "Age", "Income",
@@ -287,6 +406,9 @@ filter_sig_mediators <- function(data, predictor, mediator_df, mediator_names,
   mediator_df   <- mediator_df[, not_self, drop = FALSE]
   mediator_names <- mediator_names[not_self]
 
+  n_tests <- ncol(mediator_df)
+  threshold <- 0.05 / n_tests
+
   keep <- vapply(seq_along(mediator_df), function(i) {
     m    <- names(mediator_df)[i]
     mod1 <- lm(as.formula(paste0(m, " ~ ", predictor)), data = data)
@@ -294,7 +416,7 @@ filter_sig_mediators <- function(data, predictor, mediator_df, mediator_names,
     f2   <- paste0(m, " ~ ", predictor, " + ", paste(adj_vars, collapse = " + "))
     mod2 <- lm(as.formula(f2), data = data)
     p2   <- coef(summary(mod2))[predictor, "Pr(>|t|)"]
-    p1 < .05 | p2 < .05
+    p1 < threshold | p2 < threshold
   }, logical(1))
 
   list(
@@ -489,4 +611,176 @@ fmt_all_estimates_table <- function(est_df) {
       border = officer::fp_border(width = 1.5)
     ) |>
     flextable::set_table_properties(layout = "autofit", width = 1)
+}
+
+
+# ── Shared SEM/lavaan model building & extraction helpers ─────────────────────
+
+# --- Build a lavaan parallel mediation model string ---
+# predictor     : name of the X variable (string)
+# outcome       : name of the Y variable (string)
+# mediator_names: character vector of mediator column names
+# Returns a lavaan model string ready for sem().
+build_parallel_model <- function(predictor, outcome, mediator_names) {
+  n  <- length(mediator_names)
+  ms <- mediator_names
+
+  # a paths: predictor -> each mediator
+  a_lines <- paste0("  ", ms, " ~ a", seq_len(n), " * ", predictor)
+
+  # b paths: each mediator -> outcome, plus direct path
+  b_terms <- paste0("b", seq_len(n), " * ", ms, collapse = " +\n                       ")
+  b_line  <- paste0(
+    "  ", outcome, " ~ ", b_terms,
+    " +\n                       c_prime * ", predictor
+  )
+
+  # mediator covariances (all pairs)
+  cov_lines <- character(0)
+  if (n > 1) {
+    for (i in 1:(n - 1)) {
+      for (j in (i + 1):n) {
+        cov_lines <- c(cov_lines, paste0("  ", ms[i], " ~~ ", ms[j]))
+      }
+    }
+  }
+
+  # defined indirect effects and total
+  ind_lines  <- paste0("  ind", seq_len(n), " := a", seq_len(n), " * b", seq_len(n))
+  total_line <- paste0(
+    "  total_indirect := ",
+    paste0("ind", seq_len(n), collapse = " + ")
+  )
+
+  paste(c(a_lines, b_line, cov_lines, ind_lines, total_line), collapse = "\n")
+}
+
+
+# ── Label-based coefficient extractor for supplementary path diagrams ────────
+# Unlike get_edge_coefs() (which looks up by lhs/rhs variable name and can
+# return "?" if names don't match exactly), this function looks up coefficients
+# by the parameter *label* (a1, b1, c_prime) that build_parallel_model()
+# writes explicitly — guaranteeing a match every time.
+#
+# Arguments:
+#   fit : fitted lavaan sem object
+#   n   : number of mediators in the model
+#
+# Returns a named list ready to pass directly as `coefs` to make_path_diagram():
+#   a1 ... an  (predictor → mediator paths)
+#   b1 ... bn  (mediator → outcome paths)
+#   cp         (direct path)
+extract_path_coefs <- function(fit, n) {
+  pe  <- parameterEstimates(fit, boot.ci.type = "perc", level = 0.95)
+  std <- standardizedSolution(fit)
+  pe$beta <- std$est.std[match(
+    paste(pe$lhs, pe$op, pe$rhs),
+    paste(std$lhs, std$op, std$rhs)
+  )]
+
+  fn <- function(x, d = 2) {
+    if (length(x) == 0 || all(is.na(x))) return("--")
+    formatC(round(x[1], d), format = "f", digits = d)
+  }
+
+  get_by_label <- function(lbl) {
+    row <- pe[pe$label == lbl, ]
+    if (nrow(row) == 0) return(list(b = "?", beta = "?", lo = "?", hi = "?"))
+    list(
+      b    = fn(row$est[1]),
+      beta = fn(row$beta[1]),
+      lo   = fn(row$ci.lower[1]),
+      hi   = fn(row$ci.upper[1])
+    )
+  }
+
+  c(
+    setNames(lapply(seq_len(n), function(i) get_by_label(paste0("a", i))),
+             paste0("a", seq_len(n))),
+    setNames(lapply(seq_len(n), function(i) get_by_label(paste0("b", i))),
+             paste0("b", seq_len(n))),
+    list(cp = get_by_label("c_prime"))
+  )
+}
+
+
+# --- Filter to mediators with a significant bootstrap indirect effect ---
+# Takes the output of filter_sig_mediators() (defined in tables.R) and keeps
+# only mediators where the bootstrap indirect effect p < alpha (default .05).
+# Returns list(mediators, names) with the same structure.
+filter_sig_indirect <- function(sig_list, predictor, outcome, data,
+                                sims = 5000, alpha = 0.05) {
+  med_df  <- sig_list$mediators
+  med_nms <- sig_list$names
+
+  keep <- vapply(seq_along(med_df), function(i) {
+    tmp <- data.frame(
+      Y = data[[outcome]], X = data[[predictor]],
+      M = med_df[[i]]
+    )
+    tmp   <- na.omit(tmp)
+    mod_m <- lm(M ~ X, data = tmp)
+    mod_y <- lm(Y ~ X + M, data = tmp)
+    med   <- mediate(mod_m, mod_y,
+      treat = "X", mediator = "M",
+      boot = TRUE, sims = sims
+    )
+    med$d0.p < alpha
+  }, logical(1))
+
+  list(
+    mediators = med_df[, keep, drop = FALSE],
+    names     = med_nms[keep]
+  )
+}
+
+
+# --- Select one representative mediator per cluster ---
+# Uses MEDIATOR_CLUSTERS (defined in data-loading.R) to map columns to clusters.
+# Within each cluster, selects the mediator with the highest proportion mediated
+# (|indirect / total|) from mediate() — consistent with filter_sig_indirect().
+# Optional exclude: character vector of column names to drop before selection.
+# Returns list(mediators, names).
+pick_cluster_reps <- function(ind_list, predictor, outcome, data,
+                              exclude = NULL, sims = 5000) {
+  med_df  <- ind_list$mediators
+  med_nms <- ind_list$names
+
+  if (!is.null(exclude)) {
+    keep_idx <- !(names(med_df) %in% exclude)
+    med_df   <- med_df[, keep_idx, drop = FALSE]
+    med_nms  <- med_nms[keep_idx]
+  }
+
+  col_names <- names(med_df)
+  clusters  <- MEDIATOR_CLUSTERS[col_names] # named vector from data-loading.R
+
+  selected <- c()
+  for (cl in unique(clusters)) {
+    idx <- which(clusters == cl)
+    if (length(idx) == 1L) {
+      selected <- c(selected, idx)
+    } else {
+      pms <- sapply(idx, function(i) {
+        tmp <- data.frame(
+          Y = data[[outcome]], X = data[[predictor]],
+          M = med_df[[i]]
+        )
+        tmp   <- na.omit(tmp)
+        mod_m <- lm(M ~ X, data = tmp)
+        mod_y <- lm(Y ~ X + M, data = tmp)
+        med   <- mediate(mod_m, mod_y,
+          treat = "X", mediator = "M",
+          boot = TRUE, sims = sims
+        )
+        abs(med$d0 / med$tau.coef) # proportion mediated
+      })
+      selected <- c(selected, idx[which.max(pms)])
+    }
+  }
+
+  list(
+    mediators = med_df[, selected, drop = FALSE],
+    names     = med_nms[selected]
+  )
 }

@@ -5,7 +5,7 @@
 .Ruserdata
 
 # ==== Quarto & Website Builds ====
-# These are kept strictly local so they don't pollute your source code on GitHub. 
+# These are kept strictly local so they don't pollute your source code on GitHub.
 # (The website is isolated completely to the 'gh-pages' branch)
 _site/
 .quarto/
@@ -20,6 +20,7 @@ _build/
 # ==== Manuscripts ====
 # Only tracked as source (.qmd). Final outputs are generated dynamically.
 *.docx
+*.rmarkdown
 
 # ==== Python ====
 __pycache__/

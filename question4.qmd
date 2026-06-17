@@ -19,7 +19,9 @@ S2_mod_overall_sum <- summary(S2_mod_overall)
 
 ### Question 4 — Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots? 
 
-Study 2 uniquely measured participants' access to each source of moral advice, allowing us to test whether the relationship between Religious Behavior Score and AI moral advice seeking is moderated by moral advice source accessibility. We tested two moderators: access to AI chatbots specifically, and overall access to non-AI, non-religious moral advice sources.
+Why do religiously engaged individuals seek moral advice from AI chatbots? One possibility is a *substitution* account: individuals might turn to AI chatbots for moral consultation primarily because they lack access to traditional sources of moral advice (i.e., AI serves as a functional replacement in a "moral consultation desert"). Alternatively, under a *complementarity* account, AI chatbots might serve as an additional, easily integrated channel that religious individuals consult alongside traditional sources, driven by a general disposition toward moral consultation. In this case, access to other sources would either not inhibit, or could even amplify, the use of AI.
+
+Study 2 uniquely measured participants' self-reported access to each source of moral advice (e.g., family, friends, books, AI chatbots, etc.), allowing us to test these competing accounts by examining whether the relationship between Religious Behavior Score and AI moral advice seeking is moderated by source accessibility. We tested two distinct moderators: access to AI chatbots specifically, and overall access to non-AI, non-religious moral advice sources. If the substitution account holds, we would expect a negative interaction, where the relationship between religiosity and AI advice seeking is strongest among those with *low* access to traditional sources. If the complementarity account holds, we would expect either no interaction or a positive interaction, where access to traditional sources does not suppress (and may even facilitate) AI moral advice seeking.
 
 ```{r tbl-q4-moderation}
 #| label: tbl-q4-moderation

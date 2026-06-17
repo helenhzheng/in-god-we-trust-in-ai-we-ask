@@ -13,6 +13,53 @@ if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
 
 # Supplementary Materials
 
+## Discrepancies from Pre-Registration
+
+Our studies were pre-registered on AsPredicted ([Study 1](https://aspredicted.org/mv2z-t7dw.pdf), [Study 2](https://aspredicted.org/z378hg.pdf)). To maintain a focused presentation of analysis results and prevent scope creep, several analyses and presentation formats deviate from the initial pre-registration documents. The table below details these deviations and their justifications.
+
+| Topic / Variable | Pre-registered Plan | Actual Implementation in Main Text | Justification |
+|:---|:---|:---|:---|
+| **Primary Predictor Choice** | Test both self-reported religiosity and religious behavior frequency. | Focused on **Religious Behavior Score** (RBS) as the primary predictor in main text for Question 3 and 4. Self-reported religiosity results are reported in the Supplementary Materials. | RBS measures concrete frequency of attendance and prayer, anchoring on frequency from never to more than once every day. It also exhibited consistently larger effect sizes.|
+| **Outcome (DV) Selection** | Test both frequency of and interest in seeking moral advice from AI chatbots. | Focused on **Frequency** as the primary outcome in the main text. Interest-based results are reported in the Supplementary Materials. | Moving the secondary interest outcome to the supplement reduces main-text length and redundancy, as results for Interest largely mirror those for Frequency. |
+| **Model Presentation** | Simple linear regressions for primary hypotheses. | Presented the multiple regression models controlling for demographic covariates in the main text and simple regressionsin the Supplementary Material for Questions 1 and 2. | Control for demographic covariates is more conservative and robust. Moving simple regressions to the supplement reduces main-text table size and redundancy. |
+| **Exploratory Parallel Mediation** | Pre-registered parallel mediation as exploratory. | Saturated parallel models with cluster-representative mediators. | The pre-registration did not specify how to structure the parallel models. We chose the candidate mediator explaining the largest proportion of variance from each cluster to minimize criterion contamination among highly correlated scales. |
+| **Study 1 General Topic Data** | Collect and analyze general (non-moral) advice seeking and truth objectivity. | Excluded general-topic analyses from the text. | Study 1 collected 12 split hypotheses across general vs. moral and self-reported vs. behavioral religiosity. To prevent the scope from getting out of hand, we omitted general-topic analyses. All raw data and codebooks are published on OSF for public review. |
+
+: Discrepancies from Pre-Registration {#tbl-pre-reg-deviations}
+
+
+## Primary Simple Linear Regression Models (without Covariates)
+
+The following tables present the simple linear regression models (without demographic covariates) for the primary relationships reported in the main manuscript for Questions 1 and 2: Self-Reported Religiosity predicting Frequency of Seeking Moral Advice from AI Chatbots, and Religious Behavior Score predicting Frequency of Seeking Moral Advice from AI Chatbots.
+
+```{r tbl-supp-q1-simple-regression}
+#| label: tbl-supp-q1-simple-regression
+#| tbl-cap: "Simple Linear Regression: Self-Reported Religiosity Predicting Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "Predicting frequency of seeking moral advice from AI chatbots from self-reported religiosity without covariates."
+
+make_study_reg_adj_table(
+  list(
+    "Study 1" = apa_lm_summary(lm(AI_Moral_Frequency ~ Religiosity, data = s1_core), "Religiosity"),
+    "Study 2" = apa_lm_summary(lm(AI_Moral_Frequency ~ Religiosity, data = s2_core), "Religiosity")
+  ),
+  model_name = "Simple Regression Model"
+)
+```
+
+```{r tbl-supp-q2-simple-regression}
+#| label: tbl-supp-q2-simple-regression
+#| tbl-cap: "Simple Linear Regression: Religious Behavior Score Predicting Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "Predicting frequency of seeking moral advice from AI chatbots from Religious Behavior Score without covariates."
+
+make_study_reg_adj_table(
+  list(
+    "Study 1" = apa_lm_summary(lm(AI_Moral_Frequency ~ R_Score, data = s1_core), "R_Score"),
+    "Study 2" = apa_lm_summary(lm(AI_Moral_Frequency ~ R_Score, data = s2_core), "R_Score")
+  ),
+  model_name = "Simple Regression Model"
+)
+```
+
 ## Pilot Studies
 
 Two pilot studies provided initial evidence for the relationship between religiosity and seeking moral advice from AI chatbots. Pilot 1 (*N* = `r nrow(P1)`, `r P1_date`) and Pilot 2 (*N* = `r nrow(P2)`, `r P2_date`) recruited participants through Prolific. In both pilot studies, seeking moral guidance from AI chatbots was assessed with the item *"How much do you usually seek moral guidance from Chatbot/AI assistant?"* (1 = *None at all*, 5 = *A great deal*), and self-reported religiosity was measured on a scale of 1 (*Not at all*) to 4 (*Very*). Demographic characteristics for the pilot studies are presented below.
@@ -405,120 +452,100 @@ The regression of Religious Behavior Score onto each potential mediator is repor
 
 ### Individual Mediation Analyses
 
-```{r supp-med-filter-setup, include=FALSE}
+For the individual mediation analyses, potential mediators were included only if they were significantly associated with the focal predictor (applying the same conservative Bonferroni correction used in the main manuscript: $p < .05 / `r ncol(s1_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s1_mediators)))`$ in Study 1; $p < .05 / `r ncol(s2_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s2_mediators)))`$ in Study 2) in either the simple (Model 1) or demographic-adjusted (Model 2) regression models.
 
-# Step 1: Filter to mediators with a significant a path (predictor → mediator).
-sig_rel_s1 <- filter_sig_mediators(s1_core, "Religiosity", s1_mediators, S1_MEDIATOR_NAMES)
-sig_rel_s2 <- filter_sig_mediators(s2_core, "Religiosity", s2_mediators, S2_MEDIATOR_NAMES)
-sig_rs_s1  <- filter_sig_mediators(s1_core, "R_Score",     s1_mediators, S1_MEDIATOR_NAMES)
-sig_rs_s2  <- filter_sig_mediators(s2_core, "R_Score",     s2_mediators, S2_MEDIATOR_NAMES)
 
-# Step 2 (parallel mediation only): Also require a significant b path (mediator → outcome).
-# ind_* = mediators individually significant on BOTH paths.
-ind_qs1_s1 <- filter_sig_indirect(sig_rel_s1, "Religiosity", "AI_Moral_Frequency", s1_core)
-ind_qs1_s2 <- filter_sig_indirect(sig_rel_s2, "Religiosity", "AI_Moral_Frequency", s2_core)
-ind_qs2_s1 <- filter_sig_indirect(sig_rs_s1,  "R_Score",     "AI_Moral_Interest",  s1_core)
-ind_qs2_s2 <- filter_sig_indirect(sig_rs_s2,  "R_Score",     "AI_Moral_Interest",  s2_core)
-ind_qs3_s1 <- filter_sig_indirect(sig_rel_s1, "Religiosity", "AI_Moral_Interest",  s1_core)
-ind_qs3_s2 <- filter_sig_indirect(sig_rel_s2, "Religiosity", "AI_Moral_Interest",  s2_core)
-
-# Step 3 (parallel mediation only): Select one representative per cluster
-# (highest proportion mediated from mediate()), matching the Q3 approach.
-rep_qs1_s1 <- pick_cluster_reps(ind_qs1_s1, "Religiosity", "AI_Moral_Frequency", s1_core)
-rep_qs1_s2 <- pick_cluster_reps(ind_qs1_s2, "Religiosity", "AI_Moral_Frequency", s2_core, exclude = "Moral_Objectivity")
-rep_qs2_s1 <- pick_cluster_reps(ind_qs2_s1, "R_Score",     "AI_Moral_Interest",  s1_core)
-rep_qs2_s2 <- pick_cluster_reps(ind_qs2_s2, "R_Score",     "AI_Moral_Interest",  s2_core, exclude = "Moral_Objectivity")
-rep_qs3_s1 <- pick_cluster_reps(ind_qs3_s1, "Religiosity", "AI_Moral_Interest",  s1_core)
-rep_qs3_s2 <- pick_cluster_reps(ind_qs3_s2, "Religiosity", "AI_Moral_Interest",  s2_core, exclude = "Moral_Objectivity")
-```
 
 #### Self-Reported Religiosity → Mediator → AI Moral Frequency
+
+```{r setup-qs1-mediation, include=FALSE, cache=TRUE}
+sig_rel_s1 <- filter_sig_mediators(s1_core, "Religiosity", s1_mediators, S1_MEDIATOR_NAMES)
+sig_rel_s2 <- filter_sig_mediators(s2_core, "Religiosity", s2_mediators, S2_MEDIATOR_NAMES)
+
+res_qs1_s1 <- run_mediation_analyses(s1_core, "Religiosity", "AI_Moral_Frequency", as.list(sig_rel_s1$mediators), sig_rel_s1$names, sims = 5000)
+res_qs1_s2 <- run_mediation_analyses(s2_core, "Religiosity", "AI_Moral_Frequency", as.list(sig_rel_s2$mediators), sig_rel_s2$names, sims = 5000)
+
+rep_qs1_s1 <- select_representatives(res_qs1_s1, s1_core)
+rep_qs1_s2 <- select_representatives(res_qs1_s2, s2_core)
+```
 
 ```{r QS1_S1_med, cache=TRUE}
 #| label: tbl-rel-freq-s1-mediation
 #| tbl-cap: "Study 1: Mediation — Self-Reported Religiosity → Mediator → AI Moral Frequency"
 
-mediation_table(
-  data = s1_core,
-  x_var = "Religiosity",
-  y_var = "AI_Moral_Frequency",
-  mediator_list  = as.list(sig_rel_s1$mediators),
-  mediator_names = sig_rel_s1$names
-)
+mediation_table_from_results(res_qs1_s1, selected_mediators = names(rep_qs1_s1$mediators))
 ```
 
 ```{r QS1_S2_med, cache=TRUE}
 #| label: tbl-rel-freq-s2-mediation
 #| tbl-cap: "Study 2: Mediation — Self-Reported Religiosity → Mediator → AI Moral Frequency"
 
-mediation_table(
-  data = s2_core,
-  x_var = "Religiosity",
-  y_var = "AI_Moral_Frequency",
-  mediator_list  = as.list(sig_rel_s2$mediators),
-  mediator_names = sig_rel_s2$names
-)
+mediation_table_from_results(res_qs1_s2, selected_mediators = names(rep_qs1_s2$mediators))
 ```
 
 #### Religious Behavior Score → Mediator → AI Moral Interest
+
+```{r setup-qs2-mediation, include=FALSE, cache=TRUE}
+sig_rs_s1  <- filter_sig_mediators(s1_core, "R_Score",     s1_mediators, S1_MEDIATOR_NAMES)
+sig_rs_s2  <- filter_sig_mediators(s2_core, "R_Score",     s2_mediators, S2_MEDIATOR_NAMES)
+
+res_qs2_s1 <- run_mediation_analyses(s1_core, "R_Score",     "AI_Moral_Interest",  as.list(sig_rs_s1$mediators),  sig_rs_s1$names,  sims = 5000)
+res_qs2_s2 <- run_mediation_analyses(s2_core, "R_Score",     "AI_Moral_Interest",  as.list(sig_rs_s2$mediators),  sig_rs_s2$names,  sims = 5000)
+
+rep_qs2_s1 <- select_representatives(res_qs2_s1, s1_core)
+rep_qs2_s2 <- select_representatives(res_qs2_s2, s2_core)
+```
 
 ```{r QS2_S1_med, cache=TRUE}
 #| label: tbl-rs-int-s1-mediation
 #| tbl-cap: "Study 1: Mediation — Religious Behavior Score → Mediator → AI Moral Interest"
 
-mediation_table(
-  data = s1_core,
-  x_var = "R_Score",
-  y_var = "AI_Moral_Interest",
-  mediator_list  = as.list(sig_rs_s1$mediators),
-  mediator_names = sig_rs_s1$names
-)
+mediation_table_from_results(res_qs2_s1, selected_mediators = names(rep_qs2_s1$mediators))
 ```
 
 ```{r QS2_S2_med, cache=TRUE}
 #| label: tbl-rs-int-s2-mediation
 #| tbl-cap: "Study 2: Mediation — Religious Behavior Score → Mediator → AI Moral Interest"
 
-mediation_table(
-  data = s2_core,
-  x_var = "R_Score",
-  y_var = "AI_Moral_Interest",
-  mediator_list  = as.list(sig_rs_s2$mediators),
-  mediator_names = sig_rs_s2$names
-)
+mediation_table_from_results(res_qs2_s2, selected_mediators = names(rep_qs2_s2$mediators))
 ```
 
 #### Self-Reported Religiosity → Mediator → AI Moral Interest
+
+```{r setup-qs3-mediation, include=FALSE, cache=TRUE}
+res_qs3_s1 <- run_mediation_analyses(s1_core, "Religiosity", "AI_Moral_Interest",  as.list(sig_rel_s1$mediators), sig_rel_s1$names, sims = 5000)
+res_qs3_s2 <- run_mediation_analyses(s2_core, "Religiosity", "AI_Moral_Interest",  as.list(sig_rel_s2$mediators), sig_rel_s2$names, sims = 5000)
+
+rep_qs3_s1 <- select_representatives(res_qs3_s1, s1_core)
+rep_qs3_s2 <- select_representatives(res_qs3_s2, s2_core)
+```
 
 ```{r tbl-rel-int-s1-mediation, cache=TRUE}
 #| label: tbl-rel-int-s1-mediation
 #| tbl-cap: "Study 1: Mediation — Self-Reported Religiosity → Mediator → AI Moral Interest"
 
-mediation_table(
-  data = s1_core,
-  x_var = "Religiosity",
-  y_var = "AI_Moral_Interest",
-  mediator_list  = as.list(sig_rel_s1$mediators),
-  mediator_names = sig_rel_s1$names
-)
+mediation_table_from_results(res_qs3_s1, selected_mediators = names(rep_qs3_s1$mediators))
 ```
 
 ```{r tbl-rel-int-s2-mediation, cache=TRUE}
 #| label: tbl-rel-int-s2-mediation
 #| tbl-cap: "Study 2: Mediation — Self-Reported Religiosity → Mediator → AI Moral Interest"
 
-mediation_table(
-  data = s2_core,
-  x_var = "Religiosity",
-  y_var = "AI_Moral_Interest",
-  mediator_list  = as.list(sig_rel_s2$mediators),
-  mediator_names = sig_rel_s2$names
-)
+mediation_table_from_results(res_qs3_s2, selected_mediators = names(rep_qs3_s2$mediators))
 ```
+
 
 ### Parallel Mediation Analyses
 
-To examine the unique contribution of each mediator simultaneously, we estimated parallel mediation models for all three supplementary predictor–outcome combinations using structural equation modeling with the lavaan package in R. For each combination, we included only mediators that significantly predicted the focal predictor (*p* < .05 in at least one regression model). Specific indirect effects were estimated using 5,000 bootstrap resamples.
+To examine the unique contribution of each mediator while accounting for their intercorrelations, we estimated parallel mediation models for all three supplementary predictor–outcome combinations using structural equation modeling with the *lavaan* package in R [@rosseel2012]. 
+
+For each combination, we applied a three-step selection procedure to choose the final set of mediators:
+Step 1: We restricted candidates to mediators significantly predicted by the predictor under the Bonferroni-corrected threshold ($p < .05 / `r ncol(s1_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s1_mediators)))`$ in Study 1; $p < .05 / `r ncol(s2_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s2_mediators)))`$ in Study 2) in either the simple or demographic-adjusted models.
+Step 2: We further restricted candidates to those with a significant bootstrap indirect effect ($a \times b$ path) at $p < .05$ in the individual mediation analyses.
+Step 3: To minimize multicollinearity and redundancy among multiple mediators within the same conceptual cluster, we selected exactly one representative mediator per cluster. The representative selected was the mediator that accounted for the largest proportion of mediated variance (calculated as $|a \times b \,/\, \text{total effect}|$) from the individual mediation bootstrap simulations.
+
+All included mediators in a model were allowed to intercorrelate, and specific indirect effects were estimated using 5,000 bootstrap resamples.
+
 
 ```{r supp-parallel-setup, include=FALSE, cache=TRUE}
 

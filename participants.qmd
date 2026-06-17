@@ -18,14 +18,22 @@ demo_all <- demo_s1 %>%
   full_join(demo_s2, by = "Characteristic") %>%
   dplyr::select(Characteristic, `Study 1`, `Study 2`) %>%
   filter(!(`Study 1` == "0 (0%)" & `Study 2` == "0 (0%)"))
+
+s1_n <- nrow(Study1)
+s2_n <- nrow(Study2)
+
+s1_r_obs <- cor(s1_core$Religiosity, s1_core$AI_Moral_Frequency, use = "complete.obs")
+s2_r_obs <- cor(s2_core$Religiosity, s2_core$AI_Moral_Frequency, use = "complete.obs")
 ```
 
 ## Method
 ### Participants
 
-All participants were recruited through Prolific. Responses were excluded if they were incomplete, flagged by Qualtrics as likely fraudulent, contained a duplicated Prolific ID, or failed the requisite attention checks. Two pilot studies were reported in Supplementary. The two pre-registered studies used stratified sampling to ensure balanced representation across sex, age, ethnicity (based on simplified U.S. census categories), and political affiliation. The demographic characteristics for Study 1 and Study 2 are presented in Table 1. 
+All participants were recruited through Prolific. Responses were excluded if they were incomplete, flagged by Qualtrics as likely fraudulent, contained a duplicated Prolific ID, or failed the requisite attention checks. Two pilot studies are reported in the Supplementary Materials. The two pre-registered studies used stratified sampling to ensure balanced representation across sex, age, ethnicity (based on simplified U.S. census categories), and political affiliation. The demographic characteristics for Study 1 and Study 2 are presented in Table 1. 
 
-Study 1 (*N*=`r nrow(Study1)`; pre-registered: <https://aspredicted.org/mv2z-t7dw.pdf>; data collected `r Study1_date`) and Study 2 (*N*=`r nrow(Study2)`; pre-registered: <https://aspredicted.org/z378hg.pdf>; data collected `r Study2_date`) served as the formal replication and mediation samples. All data and supplementary materials are at: <https://osf.io/qfv9d/>.
+Study 1 (*N*=`r nrow(Study1)`; pre-registered: <https://aspredicted.org/mv2z-t7dw.pdf>; data collected `r Study1_date`) and Study 2 (*N*=`r nrow(Study2)`; pre-registered: <https://aspredicted.org/z378hg.pdf>; data collected `r Study2_date`) served as the formal replication and extended mediation sample. Target sample sizes were determined by a priori power analyses detailed in the pre-registration documents. Post-hoc power analysis are detailed in the result section. 
+
+All data and supplementary materials are publicly accessible on the Open Science Framework (OSF) at: <https://osf.io/qfv9d/>. Detailed discrepancies between the pre-registrations and the reported analyses are transparently documented in the Supplementary Materials.
 
 ```{r tbl-participants}
 #| label: tbl-participants

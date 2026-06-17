@@ -180,36 +180,21 @@ Columns that were collected but not analyzed in the manuscript are marked in bol
 | 165 | `MDMIH_23_R` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - A disagreement is like a war. | Mediator (Intellectual Humility / MMIH) |
 | 166 | `Truth Objectivity _1` | Objective truth means something is true regardless of what people believe. Some argue that truth is objective—fixed and independent of opinion. Others believe truth is subjective or relative—it depends on personal or cultural perspectives. To what extent do you believe that truth is objective or relative? - Truth is | Collected, not reported |
 | 167 | `Moral Objectivity _1` | Objective morality means something is either good or bad regardless of what people believe. Some argue that morality is objective—fixed and independent of opinion. Others believe morality is subjective or relative—it depends on personal or cultural perspectives. To what extent do you believe that morality is objective or relative? - Morality is | Mediator (Belief in Moral Objectivity) |
-| 168 | `NFC_S_1` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I don’t like situations that are uncertain. | Collected, not reported |
-| 169 | `NFC_S_2` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I dislike questions which could be answered in many different ways. | Collected, not reported |
-| 170 | `NFC_S_3` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I find that a well ordered life with regular hours suits my temperament. | Collected, not reported |
-| 171 | `NFC_S_4` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I feel uncomfortable when I don’t understand the reason why an event occurred in my life. | Collected, not reported |
-| 172 | `NFC_S_5` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I feel irritated when one person disagrees with what everyone else in a group believes. | Collected, not reported |
-| 173 | `NFC_S_6` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I don’t like to go into a situation without knowing what I can expect from it. | Collected, not reported |
-| 174 | `NFC_S_7` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - When I have made a decision, I feel relieved. | Collected, not reported |
-| 175 | `NFC_S_8` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - When I am confronted with a problem, I’m dying to reach a solution very quickly. | Collected, not reported |
-| 176 | `NFC_S_9` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I would quickly become impatient and irritated if I would not find a solution to a problem immediately. | Collected, not reported |
-| 177 | `NFC_S_10` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I don’t like to be with people who are capable of unexpected actions. | Collected, not reported |
-| 178 | `NFC_S_11` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I dislike it when a person’s statement could mean many different things. | Collected, not reported |
-| 179 | `NFC_S_12` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I find that establishing a consistent routine enables me to enjoy life more. | Collected, not reported |
-| 180 | `NFC_S_13` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I enjoy having a clear and structured mode of life. | Collected, not reported |
-| 181 | `NFC_S_14` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I do not usually consult many different opinions before forming my own view. | Collected, not reported |
-| 182 | `NFC_S_15` | Read each of the following statements and decide how much you agree with each according to
-your beliefs and experiences. - I dislike unpredictable situations. | Collected, not reported |
+| 168 | `NFC_S_1` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I don’t like situations that are uncertain. | Collected, not reported |
+| 169 | `NFC_S_2` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I dislike questions which could be answered in many different ways. | Collected, not reported |
+| 170 | `NFC_S_3` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I find that a well ordered life with regular hours suits my temperament. | Collected, not reported |
+| 171 | `NFC_S_4` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I feel uncomfortable when I don’t understand the reason why an event occurred in my life. | Collected, not reported |
+| 172 | `NFC_S_5` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I feel irritated when one person disagrees with what everyone else in a group believes. | Collected, not reported |
+| 173 | `NFC_S_6` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I don’t like to go into a situation without knowing what I can expect from it. | Collected, not reported |
+| 174 | `NFC_S_7` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - When I have made a decision, I feel relieved. | Collected, not reported |
+| 175 | `NFC_S_8` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - When I am confronted with a problem, I’m dying to reach a solution very quickly. | Collected, not reported |
+| 176 | `NFC_S_9` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I would quickly become impatient and irritated if I would not find a solution to a problem immediately. | Collected, not reported |
+| 177 | `NFC_S_10` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I don’t like to be with people who are capable of unexpected actions. | Collected, not reported |
+| 178 | `NFC_S_11` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I dislike it when a person’s statement could mean many different things. | Collected, not reported |
+| 179 | `NFC_S_12` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I find that establishing a consistent routine enables me to enjoy life more. | Collected, not reported |
+| 180 | `NFC_S_13` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I enjoy having a clear and structured mode of life. | Collected, not reported |
+| 181 | `NFC_S_14` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I do not usually consult many different opinions before forming my own view. | Collected, not reported |
+| 182 | `NFC_S_15` | Read each of the following statements and decide how much you agree with each according to your beliefs and experiences. - I dislike unpredictable situations. | Collected, not reported |
 | 183 | `AI-Authority ` | Chatbots/ AI assistants are trusted authorities for giving accurate advice | Collected, not reported |
 | 184 | `AI_Authority_Moral` | Chatbots/ AI assistants are trusted authorities for giving accurate moral advice | Mediator (Perceived Authority of AI) |
 | 185 | `AI_Valence` | Chatbots/ AI assistants are _____ at giving advice | Collected, not reported |
