@@ -81,7 +81,7 @@ s1_q1_beta  <- apa_lm_summary(fit_q1_s1, "Religiosity", standardized = TRUE)["Es
 s2_q1_beta  <- apa_lm_summary(fit_q1_s2, "Religiosity", standardized = TRUE)["Estimate"]
 ```
 
-Follow-up linear regression analyses confirmed that behavioral religiosity significantly predicted the frequency of seeking moral advice from AI chatbots.The simple linear regression models (without covariates) are detailed in the Supplementary Materials, the multiple regression models controlling for age, edcuation, income, SES and political leaning are presented in Table 2. In these adjusted models, Religious Behavior Score remained a significant predictor in both Study 1 (standardized $\beta = `r s1_q2_beta`$, $p `r s1_q2_p`$, $R^2 = `r s1_q2_r2`$) and Study 2 (standardized $\beta = `r s2_q2_beta`$, $p `r s2_q2_p`$, $R^2 = `r s2_q2_r2`$). 
+Follow-up linear regression analyses confirmed that behavioral religiosity significantly predicted the frequency of seeking moral advice from AI chatbots. The simple linear regression models (without covariates) are detailed in the Supplementary Materials, the multiple regression models controlling for age, education, income, SES and political leaning are presented in Table 2. In these adjusted models, Religious Behavior Score remained a significant predictor in both Study 1 (standardized $\beta = `r s1_q2_beta`$, $p `r s1_q2_p`$, $R^2 = `r s1_q2_r2`$) and Study 2 (standardized $\beta = `r s2_q2_beta`$, $p `r s2_q2_p`$, $R^2 = `r s2_q2_r2`$). 
 
 ```{r tbl-q2-regression}
 #| label: tbl-q2-regression
@@ -90,10 +90,11 @@ Follow-up linear regression analyses confirmed that behavioral religiosity signi
 
 make_study_reg_adj_table(
   list(
-    "Study 1" = apa_lm_summary(fit_q2_s1, "R_Score"),
-    "Study 2" = apa_lm_summary(fit_q2_s2, "R_Score")
-  )
+    "Study 1" = fit_q2_s1,
+    "Study 2" = fit_q2_s2
+  ),
+  predictor = "R_Score"
 )
 ```
 
-Religious Behavior Score consistently and positively predicted the frequency of seeking moral advice from AI chatbots in Studies 1 and 2, effects that were robust to the inclusion of demographic covariates. Although self-reported religiosity reflects symbolic self-identification of being religious, we cannot deduce how they engage with religion in day to day life. In contrast,the constructed Religious Behavior Score averages concrete, self-reported frequencies of attendance and prayer with frequency anchors ranging from never to once a day or more, capturing both social (attendance) and individual (prayer) facets of religious practice. In both studies, the effect sizes for Religious Behavior Score consistently exceeded those of self-reported religiosity (multiple regression models: Study 1, $\beta_{RBS} = `r s1_q2_beta`$ vs. $\beta_{Religiosity} = `r s1_q1_beta`$; Study 2, $\beta_{RBS} = `r s2_q2_beta`$ vs. $\beta_{Religiosity} = `r s2_q1_beta`$). This pattern suggests that active, ongoing religious behavior, rather than passive identity alone, is the stronger predictor of the inclination to consult AI chatbots on moral issues. From now on, we are presenting Religious Behavior Score results in the main manuscript and include the self-reported religiosity results in the Supplementary Materials.
+Religious Behavior Score consistently and positively predicted the frequency of seeking moral advice from AI chatbots in Studies 1 and 2, effects that were robust to the inclusion of demographic covariates. Although self-reported religiosity reflects symbolic self-identification of being religious, we cannot deduce how they engage with religion in day to day life. In contrast, the constructed Religious Behavior Score averages concrete, self-reported frequencies of attendance and prayer with frequency anchors ranging from never to once a day or more, capturing both social (attendance) and individual (prayer) facets of religious practice. In both studies, the effect sizes for Religious Behavior Score consistently exceeded those of self-reported religiosity (multiple regression models: Study 1, $\beta_{RBS} = `r s1_q2_beta`$ vs. $\beta_{Religiosity} = `r s1_q1_beta`$; Study 2, $\beta_{RBS} = `r s2_q2_beta`$ vs. $\beta_{Religiosity} = `r s2_q1_beta`$). This pattern suggests that active, ongoing religious behavior, rather than passive identity alone, is the stronger predictor of the inclination to consult AI chatbots on moral issues. From now on, we are presenting Religious Behavior Score results in the main manuscript and including the self-reported religiosity results in the Supplementary Materials.

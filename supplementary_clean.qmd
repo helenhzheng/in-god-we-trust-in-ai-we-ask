@@ -34,6 +34,7 @@ author-note:
   status-changes: null
 mask: false
 floatsintext: true
+number-sections: true
 bibliography: references.bib
 fontsize: 12pt
 prefer-html: true
@@ -56,7 +57,7 @@ MANUSCRIPT_MODE <- TRUE
 
 {{< include supplementary.qmd >}}
 
-# References
+# References {.unnumbered}
 
 ::: {#refs}
 :::

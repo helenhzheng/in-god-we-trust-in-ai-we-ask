@@ -77,8 +77,9 @@ Follow-up linear regression analyses confirmed that self-reported religiosity si
 
 make_study_reg_adj_table(
   list(
-    "Study 1" = apa_lm_summary(fit_q1_s1, "Religiosity"),
-    "Study 2" = apa_lm_summary(fit_q1_s2, "Religiosity")
-  )
+    "Study 1" = fit_q1_s1,
+    "Study 2" = fit_q1_s2
+  ),
+  predictor = "Religiosity"
 )
 ```

@@ -26,13 +26,13 @@ website:
       - href: participants.qmd
         text: Participants
       - href: question1.qmd
-        text: "Q1: Self-Reported Religiosity"
+        text: "Question 1 — Does Self-Reported Religiosity Predict Frequency of Seeking Moral Advice from AI Chatbots?"
       - href: question2.qmd
-        text: "Q2: Religious Behavior Score"
+        text: "Question 2 — Does Behavioral Religiosity Predict Frequency of Seeking Moral Advice from AI Chatbots?"
       - href: question3.qmd
-        text: "Q3: Mediators"
+        text: "Question 3 — What Explains the Relationship Between Religiosity and the Frequency of Seeking Moral Advice from AI Chatbots? (Exploratory Indirect Associations)"
       - href: question4.qmd
-        text: "Q4: Moderation"
+        text: "Question 4 — Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots?"
       - href: discussion.qmd
         text: Discussion
       - href: supplementary.qmd
@@ -43,6 +43,8 @@ format:
     theme: cosmo
     toc: true
     toc-depth: 4
+    number-sections: true
+    number-offset: 1
     embed-resources: true
     css: styles.css
 

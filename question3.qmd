@@ -151,7 +151,7 @@ cp_s2_p <- apa_p(cp_s2$pvalue)
 ```{r fig-q3-parallel-s1, fig.width=6.5, fig.height=5.1}
 #| label: fig-q3-parallel-s1
 #| fig-cap: "Study 1: Parallel Mediation Model"
-#| apa-note: "Edge labels show unstandardized b (standardized \u03b2 in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+#| apa-note: "Edge labels show unstandardized b (standardized \u03b2 in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity.The full parameter estimates for the Study 1 parallel mediation model are presented in the Supplementary Materials."
 
 make_path_diagram(
   mediator_labels = rep_s1$names,
@@ -159,43 +159,16 @@ make_path_diagram(
 )
 ```
 
-```{r tbl-q3-parallel-s1-estimates}
-#| label: tbl-q3-parallel-s1-estimates
-#| tbl-cap: "Study 1: Full Parameter Estimates — Parallel Mediation"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
-
-est_s1 <- extract_all_estimates(
-  fit_s1,
-  mediator_names  = s1_labels,
-  predictor_name  = "Religious Behavior Score",
-  outcome_name    = "AI Moral Frequency"
-)
-fmt_all_estimates_table(est_s1)
-```
 
 ```{r fig-q3-parallel-s2, fig.width=6.5, fig.height=6}
 #| label: fig-q3-parallel-s2
 #| fig-cap: "Study 2: Parallel Mediation Model"
-#| apa-note: "Edge labels show unstandardized b (standardized \u03b2 in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+#| apa-note: "Edge labels show unstandardized b (standardized \u03b2 in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity. The full parameter estimates for the Study 2 parallel mediation model are presented in the Supplementary Materials"
 
 make_path_diagram(
   mediator_labels = rep_s2$names,
   coefs = coefs_s2
 )
-```
-
-```{r tbl-q3-parallel-s2-estimates}
-#| label: tbl-q3-parallel-s2-estimates
-#| tbl-cap: "Study 2: Full Parameter Estimates — Parallel Mediation"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
-
-est_s2 <- extract_all_estimates(
-  fit_s2,
-  mediator_names  = s2_labels,
-  predictor_name  = "Religious Behavior Score",
-  outcome_name    = "AI Moral Frequency"
-)
-fmt_all_estimates_table(est_s2)
 ```
 
 Overall, in Study 1, the parallel statistical model explained `r round(r2_s1 * 100, 1)`% of the variance in the frequency of seeking AI moral advice (*R²*=`r r2_s1`). The total indirect effect was *b*=`r tie_s1_b` (95% CI [`r tie_s1_lo`, `r tie_s1_hi`]), with a residual direct association of *b*=`r cp_s1_b` (*p*`r cp_s1_p`). In Study 2, the model explained `r round(r2_s2 * 100, 1)`% of the variance (*R²*=`r r2_s2`), with a total indirect effect of *b*=`r tie_s2_b` (95% CI [`r tie_s2_lo`, `r tie_s2_hi`]) and a direct association of *b*=`r cp_s2_b` (*p*`r cp_s2_p`).

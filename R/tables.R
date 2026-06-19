@@ -117,20 +117,29 @@ make_study_reg_table <- function(rows_list, study_names = names(rows_list)) {
 }
 
 
-# --- Study-level adjusted regression table (Model 2 only, for main text) ---
-make_study_reg_adj_table <- function(rows_list, study_names = names(rows_list), model_name = "Demographic-Adjusted Model") {
+make_study_reg_adj_table <- function(models_list, predictor, study_names = names(models_list)) {
+  rows <- lapply(models_list, function(m) {
+    coefs <- apa_lm_summary(m, predictor)
+    adj_r2 <- sprintf("%.2f", summary(m)$adj.r.squared)
+    c(coefs, adj_R2 = adj_r2)
+  })
+
   reg_df <- data.frame(
     Study = study_names,
-    do.call(rbind, rows_list),
+    do.call(rbind, rows),
     stringsAsFactors = FALSE
   )
 
   sub_hdr <- c(
-    "Study", "\u03b2", "SE", "95% CI LL", "95% CI UL", "p"
+    "Study", "\u03b2", "SE", "95% CI LL", "95% CI UL", "p", "Adjusted R\u00b2"
   )
-  spanner <- c(" " = 1, model_name = 5)
 
-  make_apa_flextable(reg_df, col_names = sub_hdr, spanner = spanner)
+  ft <- make_apa_flextable(reg_df, col_names = sub_hdr, spanner = NULL)
+  ft <- flextable::compose(
+    ft, i = 1, j = "adj_R2", part = "header",
+    value = flextable::as_paragraph("Adjusted ", flextable::as_i("R"), "\u00b2")
+  )
+  ft
 }# --- Regression table: X predicting mediators ---
 regression_table <- function(
   data,
@@ -784,3 +793,80 @@ pick_cluster_reps <- function(ind_list, predictor, outcome, data,
     names     = med_nms[selected]
   )
 }
+
+# --- Standardised Moderation Table Helper ---
+make_moderation_table <- function(mod_sum1, mod_sum2, pred_name, mod1_name, mod2_name, note_label = "Study 2 only.") {
+  get_coef_row <- function(coefs, label, term_name) {
+    data.frame(
+      Parameter = term_name,
+      b = sprintf("%.2f", coefs[label, "Estimate"]),
+      SE = sprintf("%.2f", coefs[label, "Std. Error"]),
+      t = sprintf("%.2f", coefs[label, "t value"]),
+      p = apa_p(coefs[label, "Pr(>|t|)"], eq = FALSE),
+      stringsAsFactors = FALSE
+    )
+  }
+  
+  coef_names1 <- rownames(coef(mod_sum1))
+  coef_names2 <- rownames(coef(mod_sum2))
+  
+  pred_var1 <- coef_names1[2]
+  mod_var1  <- coef_names1[3]
+  int_var1  <- coef_names1[4]
+  
+  pred_var2 <- coef_names2[2]
+  mod_var2  <- coef_names2[3]
+  int_var2  <- coef_names2[4]
+  
+  tbl_mod1 <- rbind(
+    get_coef_row(coef(mod_sum1), "(Intercept)", "Constant"),
+    get_coef_row(coef(mod_sum1), pred_var1, paste0(pred_name, " (X)")),
+    get_coef_row(coef(mod_sum1), mod_var1, paste0(mod1_name, " (W)")),
+    get_coef_row(coef(mod_sum1), int_var1, "X × W")
+  )
+  
+  tbl_mod2 <- rbind(
+    get_coef_row(coef(mod_sum2), "(Intercept)", "Constant"),
+    get_coef_row(coef(mod_sum2), pred_var2, paste0(pred_name, " (X)")),
+    get_coef_row(coef(mod_sum2), mod_var2, paste0(mod2_name, " (W)")),
+    get_coef_row(coef(mod_sum2), int_var2, "X × W")
+  )
+  
+  q4_tbl <- rbind(
+    data.frame(Model = paste0("Model 1: Moderator = ", mod1_name), tbl_mod1, stringsAsFactors = FALSE),
+    data.frame(Model = paste0("Model 2: Moderator = ", mod2_name), tbl_mod2, stringsAsFactors = FALSE)
+  )
+  
+  f_stat1 <- mod_sum1$fstatistic
+  f_p1 <- pf(f_stat1[1], f_stat1[2], f_stat1[3], lower.tail = FALSE)
+  f_stat2 <- mod_sum2$fstatistic
+  f_p2 <- pf(f_stat2[1], f_stat2[2], f_stat2[3], lower.tail = FALSE)
+  
+  n_obs <- sum(mod_sum1$df[1:2]) + 1
+  
+  note_text <- sprintf(
+    "Model 1: R² = %.3f, Adj. R² = %.3f, F(%.0f, %.0f) = %.2f, p %s. Model 2: R² = %.3f, Adj. R² = %.3f, F(%.0f, %.0f) = %.2f, p %s. %s (N = %.0f).",
+    mod_sum1$r.squared, mod_sum1$adj.r.squared, f_stat1[2], f_stat1[3], f_stat1[1], apa_p(f_p1),
+    mod_sum2$r.squared, mod_sum2$adj.r.squared, f_stat2[2], f_stat2[3], f_stat2[1], apa_p(f_p2),
+    note_label, n_obs
+  )
+  
+  ft <- flextable::as_grouped_data(q4_tbl, groups = "Model") |>
+    flextable::as_flextable() |>
+    flextable::compose(j = "b", part = "header", value = flextable::as_paragraph(flextable::as_i("b"))) |>
+    flextable::compose(j = "SE", part = "header", value = flextable::as_paragraph(flextable::as_i("SE"))) |>
+    flextable::compose(j = "t", part = "header", value = flextable::as_paragraph(flextable::as_i("t"))) |>
+    flextable::compose(j = "p", part = "header", value = flextable::as_paragraph(flextable::as_i("p"))) |>
+    flextable::align(j = 1, part = "body", align = "left") |>
+    flextable::align(j = 2:5, part = "body", align = "center") |>
+    flextable::align(part = "header", align = "center") |>
+    flextable::border_remove() |>
+    flextable::hline_top(part = "header", border = officer::fp_border(width = 1.5)) |>
+    flextable::hline_bottom(part = "header", border = officer::fp_border(width = 1)) |>
+    flextable::hline_bottom(part = "body", border = officer::fp_border(width = 1.5)) |>
+    flextable::add_footer_lines(note_text) |>
+    flextable::set_table_properties(layout = "autofit", width = 1)
+  
+  ft
+}
+
