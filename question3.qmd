@@ -21,8 +21,8 @@ To identify plausible psychological pathways and statistical mediators of the re
 
 ```{r tbl-s1-regression}
 #| label: tbl-s1-regression
-#| tbl-cap: "Study 1: Religious Behavior Score Predicting Each Potential Mediator"
-#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
+#| tbl-cap: "Study 1: Religious Behavior Score Predicting Each Candidate Mediator"
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
 regression_table(
   data           = s1_core,
@@ -34,8 +34,8 @@ regression_table(
 
 ```{r tbl-s2-regression}
 #| label: tbl-s2-regression
-#| tbl-cap: "Study 2: Religious Behavior Score Predicting Each Potential Mediator"
-#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
+#| tbl-cap: "Study 2: Religious Behavior Score Predicting Each Candidate Mediator"
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
 regression_table(
   data           = s2_core,

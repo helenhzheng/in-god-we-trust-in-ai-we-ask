@@ -33,7 +33,7 @@ The following tables present the simple linear regression models (without demogr
 ```{r tbl-supp-q1-simple-regression}
 #| label: tbl-supp-q1-simple-regression
 #| tbl-cap: "Simple Linear Regression: Self-Reported Religiosity Predicting Frequency of Seeking Moral Advice from AI Chatbots"
-#| apa-note: "Predicting frequency of seeking moral advice from AI chatbots from self-reported religiosity without covariates."
+#| apa-note: "All regression coefficients are standardized. Predicting frequency of seeking moral advice from AI chatbots from self-reported religiosity without covariates."
 
 make_study_reg_adj_table(
   list(
@@ -47,7 +47,7 @@ make_study_reg_adj_table(
 ```{r tbl-supp-q2-simple-regression}
 #| label: tbl-supp-q2-simple-regression
 #| tbl-cap: "Simple Linear Regression: Religious Behavior Score Predicting Frequency of Seeking Moral Advice from AI Chatbots"
-#| apa-note: "Predicting frequency of seeking moral advice from AI chatbots from Religious Behavior Score without covariates."
+#| apa-note: "All regression coefficients are standardized. Predicting frequency of seeking moral advice from AI chatbots from Religious Behavior Score without covariates."
 
 make_study_reg_adj_table(
   list(
@@ -138,7 +138,7 @@ p1_plt | p2_plt
 ```{r tbl-pilot-regression}
 #| label: tbl-pilot-regression
 #| tbl-cap: "Pilot Studies: Self-Reported Religiosity Predicting Seeking Moral Guidance From AI Chatbots"
-#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
 make_study_reg_table(
   list(
@@ -373,7 +373,7 @@ We report regression analyses for both supplementary outcome models: Religious B
 ```{r tbl-qs2-regression}
 #| label: tbl-qs2-regression
 #| tbl-cap: "Religious Behavior Score Predicting Interest in Seeking Moral Advice From AI Chatbots"
-#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
 make_study_reg_table(
   list(
@@ -394,7 +394,7 @@ make_study_reg_table(
 ```{r tbl-qs3-regression}
 #| label: tbl-qs3-regression
 #| tbl-cap: "Self-Reported Religiosity Predicting Interest in Seeking Moral Advice From AI Chatbots"
-#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
 make_study_reg_table(
   list(
@@ -416,12 +416,12 @@ make_study_reg_table(
 
 ### Self-Reported Religiosity → Mediators
 
-The following tables report the regression of Self-Reported Religiosity onto each potential mediator. These results underlie both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways, as the Religiosity → Mediator path is identical across both.
+The following tables report the regression of Self-Reported Religiosity onto each candidate mediator. These results underlie both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways, as the Religiosity → Mediator path is identical across both.
 
 ```{r tbl-supp-rel-med-s1}
 #| label: tbl-supp-rel-med-s1
 #| tbl-cap: "Study 1: Self-Reported Religiosity Predicting Each Mediator"
-#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation. These estimates apply to both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways."
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation. These estimates apply to both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways."
 
 regression_table(
   data = s1_core,
@@ -434,7 +434,7 @@ regression_table(
 ```{r tbl-supp-rel-med-s2}
 #| label: tbl-supp-rel-med-s2
 #| tbl-cap: "Study 2: Self-Reported Religiosity Predicting Each Mediator"
-#| apa-note: "Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation. These estimates apply to both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways."
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation. These estimates apply to both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways."
 
 regression_table(
   data = s2_core,
@@ -446,11 +446,11 @@ regression_table(
 
 ### Religious Behavior Score → Mediators
 
-The regression of Religious Behavior Score onto each potential mediator is reported in the main manuscript (Tables 6 and 7). Because the predictor → mediator path is identical regardless of the downstream outcome, those estimates also underlie the Religious Behavior Score → Interest mediation analyses reported below.
+The regression of Religious Behavior Score onto each candidate mediator is reported in the main manuscript (Tables 6 and 7). Because the predictor → mediator path is identical regardless of the downstream outcome, those estimates also underlie the Religious Behavior Score → Interest mediation analyses reported below.
 
 ## Individual Mediation Analyses
 
-For the individual mediation analyses, potential mediators were included only if they were significantly associated with the focal predictor (applying the same conservative Bonferroni correction used in the main manuscript: $p < .05 / `r ncol(s1_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s1_mediators)))`$ in Study 1; $p < .05 / `r ncol(s2_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s2_mediators)))`$ in Study 2) in either the simple (Model 1) or demographic-adjusted (Model 2) regression models.
+For the individual mediation analyses, candidate mediators were included only if they were significantly associated with the focal predictor (applying the same conservative Bonferroni correction used in the main manuscript: $p < .05 / `r ncol(s1_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s1_mediators)))`$ in Study 1; $p < .05 / `r ncol(s2_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s2_mediators)))`$ in Study 2) in either the simple (Model 1) or demographic-adjusted (Model 2) regression models.
 
 ### Self-Reported Religiosity → Mediator → AI Moral Frequency
 

@@ -73,7 +73,7 @@ Follow-up linear regression analyses confirmed that self-reported religiosity si
 ```{r tbl-q1-regression}
 #| label: tbl-q1-regression
 #| tbl-cap: "Self-Reported Religiosity Predicting Frequency of Seeking Moral Advice from AI Chatbots"
-#| apa-note: "Covariates controlled for include age, education, income, SES, and political orientation. The simple regression models without covariates are reported in the Supplementary Materials."
+#| apa-note: "All regression coefficients are standardized. Covariates controlled for include age, education, income, SES, and political orientation. The simple regression models without covariates are reported in the Supplementary Materials."
 
 make_study_reg_adj_table(
   list(
