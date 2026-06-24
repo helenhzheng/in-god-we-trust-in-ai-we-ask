@@ -17,8 +17,7 @@ authors:
     affiliation:
       - id: id2
         name: "University of Utah"
-        group: Department of Psychology
-        department: College of Global Futures
+        department: Department of Psychology
   - name: Sara M Haman
     roles: [Validation, Writing - reviewing & editing]
     affiliation:
