@@ -81,7 +81,7 @@ s1_q1_beta  <- apa_lm_summary(fit_q1_s1, "Religiosity", standardized = TRUE)["Es
 s2_q1_beta  <- apa_lm_summary(fit_q1_s2, "Religiosity", standardized = TRUE)["Estimate"]
 ```
 
-Follow-up linear regression analyses confirmed that behavioral religiosity significantly predicted the frequency of seeking moral advice from AI chatbots. The simple linear regression models (without covariates) are detailed in the Supplementary Materials, the multiple regression models controlling for age, education, income, SES and political leaning are presented in Table 2. In these adjusted models, Religious Behavior Score remained a significant predictor in both Study 1 (standardized $\beta = `r s1_q2_beta`$, $p `r s1_q2_p`$, $R^2 = `r s1_q2_r2`$) and Study 2 (standardized $\beta = `r s2_q2_beta`$, $p `r s2_q2_p`$, $R^2 = `r s2_q2_r2`$). 
+Follow-up linear regression analyses confirmed that behavioral religiosity significantly positively predicted the frequency of seeking moral advice from AI chatbots. The simple linear regression models (without covariates) are detailed in the Supplementary Materials, and the multiple regression models controlling for age, education, income, SES and political leaning are presented in Table 2. In these adjusted models, Religious Behavior Score remained a significant predictor in both Study 1 (standardized $\beta = `r s1_q2_beta`$, $p `r s1_q2_p`$, $R^2 = `r s1_q2_r2`$) and Study 2 (standardized $\beta = `r s2_q2_beta`$, $p `r s2_q2_p`$, $R^2 = `r s2_q2_r2`$). 
 
 ```{r tbl-q2-regression}
 #| label: tbl-q2-regression
