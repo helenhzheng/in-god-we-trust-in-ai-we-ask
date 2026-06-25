@@ -371,7 +371,7 @@ return {
                 role["vocab-term"] = "writing – original draft"
               end
               if role.role == "Writing - reviewing & editing" or role.role == "writing - reviewing & editing" then
-                role["vocab-term"] = "Writing – reviewing & editing"
+                role["vocab-term"] = "writing – reviewing & editing"
               end
 
               if role["vocab-term"] then

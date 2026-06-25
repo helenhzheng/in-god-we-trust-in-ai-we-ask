@@ -9,20 +9,30 @@ apa_p <- function(x, eq = TRUE) {
 
 # --- Significance stars ---
 add_stars <- function(p) {
-  if (is.na(p)) return("")
-  if (p < 0.001) return("***")
-  if (p < 0.01)  return("**")
-  if (p < 0.05)  return("*")
-  return("")
+  ifelse(is.na(p), "",
+         ifelse(p < 0.001, "***",
+                ifelse(p < 0.01, "**",
+                       ifelse(p < 0.05, "*", ""))))
 }
 
 # --- Extract APA-formatted lm coefficients ---
-apa_lm_summary <- function(model, predictor) {
+apa_lm_summary <- function(model, predictor, standardized = TRUE) {
   coef_sum <- summary(model)$coefficients
   est   <- coef_sum[predictor, "Estimate"]
   se    <- coef_sum[predictor, "Std. Error"]
   p_val <- coef_sum[predictor, "Pr(>|t|)"]
   ci    <- confint(model)[predictor, ]
+
+  if (standardized) {
+    mf <- model.frame(model)
+    sd_x <- sd(mf[[predictor]], na.rm = TRUE)
+    sd_y <- sd(mf[[1]], na.rm = TRUE)
+    if (sd_y > 0) {
+      est <- est * (sd_x / sd_y)
+      se  <- se * (sd_x / sd_y)
+      ci  <- ci * (sd_x / sd_y)
+    }
+  }
 
   c(
     Estimate = sprintf("%.2f", est),

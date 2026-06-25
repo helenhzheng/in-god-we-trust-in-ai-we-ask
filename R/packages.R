@@ -5,7 +5,7 @@
 required_packages <- c(
   "knitr", "psych", "ggplot2", "tidyr", "dplyr", "patchwork",
   "forcats", "tibble", "mediation", "lavaan", "readr",
-  "stringr", "scales", "flextable", "officer"
+  "stringr", "scales", "flextable", "officer", "pwr"
 )
 
 # Check and install any missing packages

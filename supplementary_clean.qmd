@@ -6,34 +6,43 @@ authors:
     corresponding: true
     orcid: 0009-0006-2119-5531
     email: helen.zheng@bc.edu
+    roles: [Conceptualization, Data Curation, Formal Analysis, Funding Acquisition, Methodology, Project Administration, Visualization, Writing - original draft, Writing - reviewing & editing]
     affiliation:
       - id: id1
         name: "Boston College"
         department: Department of Psychology and Neuroscience
   - name: Kyle Fiore Law
     orcid: 0000-0001-5911-4772
+    email: kyle.fiore.law@utah.edu
+    roles: [Conceptualization, Methodology, Writing - reviewing & editing]
     affiliation:
       - id: id2
-        name: "Arizona State University"
-        group: School of Sustainability
-        department: College of Global Futures\
+        name: "University of Utah"
+        department: Department of Psychology
   - name: Sara M Haman
+    email: sara.haman@utah.edu
+    roles: [Validation, Writing - reviewing & editing]
     affiliation:
       - ref: id1
   - name: David DeSteno
+    email: d.desteno@northeastern.edu
+    roles: [Methodology, Writing - reviewing & editing]
     affiliation:
       - id: id3
         name: "Northeastern University"
         department: Department of Psychology
   - name: Liane Young
+    email: liane.young@bc.edu
+    roles: [Conceptualization, Funding Acquisition, Methodology, Supervision, Writing - reviewing & editing]
     affiliation:
       - ref: id1
-date: "07 March 2026"
+date: "24 June 2026"
 author-note:
   blank-lines-above-author-note: 2
   status-changes: null
-mask: false
+mask: true
 floatsintext: true
+number-sections: true
 bibliography: references.bib
 fontsize: 12pt
 prefer-html: true
@@ -56,7 +65,7 @@ MANUSCRIPT_MODE <- TRUE
 
 {{< include supplementary.qmd >}}
 
-# References
+# References {.unnumbered}
 
 ::: {#refs}
 :::
