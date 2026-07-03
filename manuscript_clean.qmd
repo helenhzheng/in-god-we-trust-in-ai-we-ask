@@ -93,10 +93,6 @@ MANUSCRIPT_MODE <- TRUE
 
 \newpage
 
-{{< include declaration.qmd >}}
-
-\newpage
-
 # References {.unnumbered}
 
 ::: {#refs}

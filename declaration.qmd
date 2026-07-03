@@ -1,3 +1,0 @@
-# Declaration of Generative AI and AI-Assisted Technologies in the Manuscript Preparation Process {.unnumbered}
-
-During the preparation of this work, the authors used Google Gemini in order to trace and translate one original source in Arabic cited in References. After using this tool/service, the authors corroborated with multiple secondary sources to ensure the correctness and edited the content as needed. The authors also used Gemini 3.5 Flash for grammar checking, editing, and formatting throughout the preparation of this manuscript. The authors take full responsibility for the content of the published article.
