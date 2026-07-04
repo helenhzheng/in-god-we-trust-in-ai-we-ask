@@ -20,7 +20,7 @@ authors:
         name: "University of Utah"
         department: Department of Psychology
   - name: Sara M Haman
-    email: sara.haman@utah.edu
+    email: sara.haman@bc.edu
     roles: [Validation, Writing - reviewing & editing]
     affiliation:
       - ref: id1
@@ -37,7 +37,7 @@ authors:
     affiliation:
       - ref: id1
 date: "24 June 2026"
-abstract: As AI chatbots increasingly enter domains long considered uniquely human, such as moral guidance, questions arise about how they intersect with traditional frameworks like religion. While it is commonly assumed that religious individuals would resist AI intrusion in the moral sphere, we found the opposite. Across two pre-registered studies with a stratified U.S. sample (*N*=695), both self-reported religious engagement and religious belief were consistently associated with greater openness to seeking moral advice from AI systems. To lay the groundwork for understanding the landscape of psychological factors that may intervene in this relationship, we conducted first-pass parallel mediation analyses using cross-sectional data. These models indicate that the relationship is statistically accounted for primarily by a broader disposition to seek moral guidance from multiple sources, and secondarily by the perceived authority of AI as moral advisors. As we make no causal claims in this study, we invite future experimental work that manipulates these mediators to establish potential causal relationships. Rather than shielding individuals from AI's appeal in the moral domain, this study indicates that religiosity may systematically facilitate it. These findings carry broad societal implications for AI-mediated moral guidance, a new challenge requiring coordinated attention from technologists, faith communities, and policymakers alike.
+abstract: As AI chatbots enter traditionally human domains like moral guidance, questions arise about their intersection with traditional frameworks like religion. While many assume religious individuals will resist AI intrusion in the moral sphere, we found the opposite. Across two pre-registered studies (stratified U.S. sample, *N*=695), religious engagement and identity were consistently associated with greater openness to seeking moral advice from AI. To understand intervening psychological factors, we conducted first-pass parallel mediation analyses using cross-sectional data. These models indicate the relationship is statistically accounted for primarily by a disposition to seek multi-source moral guidance, and secondarily by perceived authority of AI. Making no causal claims, we invite future experimental work manipulating these mediators to establish causality. Rather than shielding individuals from AI's moral appeal, this study indicates religiosity may systematically facilitate it. These findings carry broad societal implications for AI-mediated moral guidance, requiring coordinated attention from technologists, faith communities, and policymakers.
 keywords:
   - Religiosity
   - Moral Advice Seeking
@@ -47,7 +47,7 @@ author-note:
   status-changes: null
   disclosures:
     conflict-of-interest: The authors have no conflicts of interest to disclose.
-    financial-support: This study was supported by the Alfred P. Sloan Foundation.
+    financial-support: This study was supported by the Alfred P. Sloan Foundation (G-2024-22462).
     gratitude: We thank Ehri Ryu for statistics advice, Tal Eyal and two anonymous reviewers for feedback on an earlier version of this manuscript.
 word-count: true
 mask: true
