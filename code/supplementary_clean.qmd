@@ -63,7 +63,7 @@ source("R/supplementary.R")
 MANUSCRIPT_MODE <- TRUE
 ```
 
-{{< include supplementary.qmd >}}
+{{< include qmd/supplementary.qmd >}}
 
 # References {.unnumbered}
 

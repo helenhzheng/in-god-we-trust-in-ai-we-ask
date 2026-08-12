@@ -13,9 +13,10 @@ _freeze/
 *_cache/
 *_files/
 _build/
-/*.html
-/site_libs/
-/search.json
+*.html
+site_libs/
+search.json
+*.ps1
 
 # ==== Manuscripts ====
 # Only tracked as source (.qmd). Final outputs are generated dynamically.

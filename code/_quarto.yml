@@ -1,17 +1,18 @@
 project:
   type: website
   output-dir: _site
+  execute-dir: project
   render:
     - index.qmd
-    - introduction.qmd
-    - methods.qmd
-    - participants.qmd
-    - question1.qmd
-    - question2.qmd
-    - question3.qmd
-    - question4.qmd
-    - discussion.qmd
-    - supplementary.qmd
+    - qmd/introduction.qmd
+    - qmd/methods.qmd
+    - qmd/participants.qmd
+    - qmd/question1.qmd
+    - qmd/question2.qmd
+    - qmd/question3.qmd
+    - qmd/question4.qmd
+    - qmd/discussion.qmd
+    - qmd/supplementary.qmd
 
 website:
   title: "In God We Trust, In AI We Ask"
@@ -19,23 +20,23 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: introduction.qmd
+      - href: qmd/introduction.qmd
         text: Introduction
-      - href: methods.qmd
+      - href: qmd/methods.qmd
         text: Methods
-      - href: participants.qmd
+      - href: qmd/participants.qmd
         text: Participants
-      - href: question1.qmd
+      - href: qmd/question1.qmd
         text: "Question 1 — Does Self-Reported Religiosity Predict Frequency of Seeking Moral Advice from AI Chatbots?"
-      - href: question2.qmd
+      - href: qmd/question2.qmd
         text: "Question 2 — Does Behavioral Religiosity Predict Frequency of Seeking Moral Advice from AI Chatbots?"
-      - href: question3.qmd
+      - href: qmd/question3.qmd
         text: "Question 3 — What Explains the Relationship Between Religiosity and the Frequency of Seeking Moral Advice from AI Chatbots? (Exploratory Indirect Associations)"
-      - href: question4.qmd
+      - href: qmd/question4.qmd
         text: "Question 4 — Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots?"
-      - href: discussion.qmd
+      - href: qmd/discussion.qmd
         text: Discussion
-      - href: supplementary.qmd
+      - href: qmd/supplementary.qmd
         text: Supplementary
 
 format:

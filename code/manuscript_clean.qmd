@@ -73,23 +73,23 @@ source("R/data-loading.R")
 MANUSCRIPT_MODE <- TRUE
 ```
 
-{{< include introduction.qmd >}}
+{{< include qmd/introduction.qmd >}}
 
-{{< include participants.qmd >}}
+{{< include qmd/participants.qmd >}}
 
-{{< include methods.qmd >}}
+{{< include qmd/methods.qmd >}}
 
 ## Results
 
-{{< include question1.qmd >}}
+{{< include qmd/question1.qmd >}}
 
-{{< include question2.qmd >}}
+{{< include qmd/question2.qmd >}}
 
-{{< include question3.qmd >}}
+{{< include qmd/question3.qmd >}}
 
-{{< include question4.qmd >}}
+{{< include qmd/question4.qmd >}}
 
-{{< include discussion.qmd >}}
+{{< include qmd/discussion.qmd >}}
 
 \newpage
 

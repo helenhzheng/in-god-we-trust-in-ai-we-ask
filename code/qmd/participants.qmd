@@ -33,7 +33,7 @@ All participants were recruited through Prolific. Responses were excluded if the
 
 Study 1 (*N*=`r nrow(Study1)`; pre-registered: <https://aspredicted.org/mv2z-t7dw.pdf>; data collected `r Study1_date`) and Study 2 (*N*=`r nrow(Study2)`; pre-registered: <https://aspredicted.org/z378hg.pdf>; data collected `r Study2_date`) served as the formal replication and extended mediation sample. Target sample sizes were determined by a priori power analyses detailed in the pre-registration documents. Post-hoc power analyses are detailed in the result section. 
 
-All data and supplementary materials are publicly accessible on the Open Science Framework (OSF) at: <https://osf.io/qfv9d/>. Detailed discrepancies between the pre-registrations and the reported analyses are transparently documented in the Supplementary Materials.
+All data and supplementary materials are publicly accessible on the Open Science Framework (OSF) at: <https://osf.io/qfv9d/overview?view_only=cfacef5f0d7647458ad928f54f43a54f>. Detailed discrepancies between the pre-registrations and the reported analyses are transparently documented in the Supplementary Materials.
 
 ```{r tbl-participants}
 #| label: tbl-participants
