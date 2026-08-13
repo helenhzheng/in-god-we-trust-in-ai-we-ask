@@ -20,7 +20,6 @@ As AI chatbots increasingly enter domains long considered uniquely human, such a
 # Quick Links
 
 -   [Introduction](qmd/introduction.qmd) — Literature review and study overview
--   [Participants](qmd/participants.qmd) — Participant breakdown
 -   [Method](qmd/methods.qmd) — Materials and Procedure
 -   [Q1: Self-Reported Religiosity](qmd/question1.qmd) — Does self-reported religiosity predict AI moral advice seeking?
 -   [Q2: Religious Behavior Score](qmd/question2.qmd) — Does Religious Behavior Score predict AI moral advice frequency?

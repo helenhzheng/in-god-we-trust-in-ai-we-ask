@@ -6,7 +6,6 @@ project:
     - index.qmd
     - qmd/introduction.qmd
     - qmd/methods.qmd
-    - qmd/participants.qmd
     - qmd/question1.qmd
     - qmd/question2.qmd
     - qmd/question3.qmd
@@ -24,8 +23,6 @@ website:
         text: Introduction
       - href: qmd/methods.qmd
         text: Methods
-      - href: qmd/participants.qmd
-        text: Participants
       - href: qmd/question1.qmd
         text: "Question 1 — Does Self-Reported Religiosity Predict Frequency of Seeking Moral Advice from AI Chatbots?"
       - href: qmd/question2.qmd

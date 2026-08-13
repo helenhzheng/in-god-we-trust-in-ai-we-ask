@@ -36,7 +36,7 @@ authors:
     roles: [Conceptualization, Funding Acquisition, Methodology, Supervision, Writing - reviewing & editing]
     affiliation:
       - ref: id1
-date: "4 July 2026"
+date: "August 12 2026"
 abstract: As AI chatbots enter traditionally human domains like moral guidance, questions arise about their intersection with traditional frameworks like religion. While intuition might suggest religious individuals would resist the intrusion of AI into the moral sphere, we found the opposite. Across two pre-registered studies (stratified U.S. samples, N=695), religious engagement and identity were consistently associated with greater openness to seeking AI moral advice, not lesser. In a first-pass attempt to understand intervening psychological factors, parallel mediation models suggested the relationship was statistically accounted for primarily by a disposition to seek multi-source moral guidance, and secondarily by heightened perceptions of authority surrounding AI. Without making causal claims (given our cross-sectional data), we invite future experiments to manipulate these candidate mechanisms to test whether AI’s moral appeal is facilitated, rather than shielded by, religiosity. These findings carry societal implications for AI-mediated moral guidance, requiring coordinated attention from technologists, faith communities, and policymakers.
 keywords:
   - Religiosity
@@ -44,13 +44,16 @@ keywords:
   - Human-Computer Interaction
 author-note:
   blank-lines-above-author-note: 2
-  status-changes: null
   disclosures:
-    conflict-of-interest: The authors have no conflicts of interest to disclose.
-    financial-support: This study was supported by the Alfred P. Sloan Foundation (G-2024-22462).
-    gratitude: We thank Ehri Ryu for statistics advice, Tal Eyal and two anonymous reviewers for feedback on an earlier version of this manuscript.
+    study-registration: "Both studies were pre-registered at AsPredicted (Study 1: https://aspredicted.org/mv2z-t7dw.pdf; Study 2: https://aspredicted.org/z378hg.pdf)."
+    data-sharing: "Datasets, code, and other research materials can be found at (https://osf.io/qfv9d)."
+    related-report: "A preprint of this manuscript is available at (https://osf.io/preprints/psyarxiv/z3y5d_v3)."
+    conflict-of-interest: "The authors have no conflicts of interest to disclose."
+    financial-support: "This study was supported by the Alfred P. Sloan Foundation (G-2024-22462)."
+    gratitude: "We thank Ehri Ryu for statistics advice, Tal Eyal and two anonymous reviewers for feedback on an earlier version of this manuscript."
 word-count: true
-mask: true
+mask: false
+suppress-credit-statement: true
 floatsintext: true
 number-sections: true
 number-offset: 1
@@ -75,8 +78,6 @@ MANUSCRIPT_MODE <- TRUE
 
 {{< include qmd/introduction.qmd >}}
 
-{{< include qmd/participants.qmd >}}
-
 {{< include qmd/methods.qmd >}}
 
 ## Results
@@ -90,8 +91,6 @@ MANUSCRIPT_MODE <- TRUE
 {{< include qmd/question4.qmd >}}
 
 {{< include qmd/discussion.qmd >}}
-
-\newpage
 
 # References {.unnumbered}
 

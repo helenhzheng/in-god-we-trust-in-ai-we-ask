@@ -12,47 +12,24 @@ if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
 
 ### Question 3 — What Explains the Relationship Between Religiosity and the Frequency of Seeking Moral Advice from AI Chatbots? (Exploratory Indirect Associations)
 
-To identify plausible psychological pathways and statistical mediators of the relationship between religiosity and AI moral advice seeking, we examined several candidate mediators (Table 2). As our data are cross-sectional, we present these mediation models as exploratory, first-pass statistical tests of *plausible* indirect associations rather than confirmatory test of causal mechanisms. We first conducted regression analyses (simple regression and multiple regression models adjusted for demographic covariates) to establish which candidate mediators were significantly associated with the Religious Behavior Score. Even though we pre-registered the analysis, because of the large number of candidate mediators tested (`r ncol(s1_mediators)` in Study 1, `r ncol(s2_mediators)` in Study 2), we applied a highly conservative Bonferroni correction to avoid false positives in our first-pass selection. We then restricted mediation analyses to those reaching significance under this corrected threshold ($p < .05 / `r ncol(s1_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s1_mediators)))`$ in Study 1; $p < .05 / `r ncol(s2_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s2_mediators)))`$ in Study 2) in at least one path-a model. Finally, we estimated parallel mediation models for each study using structural equation modeling. The parallel mediation models were pre-registered as exploratory (without specifying a priori how to structure the parallel models). To minimize criterion contamination and multicollinearity among multiple mediators within the same cluster, we selected the mediator that accounted for the largest proportion of variance from each significantly associated cluster.
+To identify plausible psychological pathways and statistical mediators of the relationship between religiosity and AI moral advice seeking, we examined the candidate mediators outlined in the method section. As our data are cross-sectional, we present these mediation models as exploratory, first-pass statistical tests of *plausible* indirect associations rather than confirmatory test of causal mechanisms. We first conducted regression analyses (simple regression and multiple regression models adjusted for demographic covariates) to establish which candidate mediators were significantly associated with the Religious Behavior Score. Even though we pre-registered the analysis, because of the large number of candidate mediators tested (`r ncol(s1_mediators)` in Study 1, `r ncol(s2_mediators)` in Study 2), we applied a highly conservative Bonferroni correction to avoid false positives in our first-pass selection. We then restricted mediation analyses to those reaching significance under this corrected threshold ($p < .05 / `r ncol(s1_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s1_mediators)))`$ in Study 1; $p < .05 / `r ncol(s2_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s2_mediators)))`$ in Study 2) in at least one path-a model. The detailed regression tables showing the association between the Religious Behavior Score and each candidate mediator are presented in the Supplementary Materials. Finally, we estimated parallel mediation models for each study using structural equation modeling. The parallel mediation models were pre-registered as exploratory (without specifying a priori how to structure the parallel models). To minimize criterion contamination and multicollinearity among multiple mediators within the same cluster, we selected the mediator that accounted for the largest proportion of variance from each significantly associated cluster.
 
 ```{r q3-helpers, include=FALSE}
 # filter_sig_mediators defined in R/tables.R
 # build_parallel_model defined in R/supplementary.R
 ```
 
-```{r tbl-s1-regression}
-#| label: tbl-s1-regression
-#| tbl-cap: "Study 1: Religious Behavior Score Predicting Each Candidate Mediator"
-#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
-
-regression_table(
-  data           = s1_core,
-  x_var          = "R_Score",
-  mediator_list  = as.list(s1_mediators),
-  mediator_names = S1_MEDIATOR_NAMES
-)
-```
-
-```{r tbl-s2-regression}
-#| label: tbl-s2-regression
-#| tbl-cap: "Study 2: Religious Behavior Score Predicting Each Candidate Mediator"
-#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
-
-regression_table(
-  data           = s2_core,
-  x_var          = "R_Score",
-  mediator_list  = as.list(s2_mediators),
-  mediator_names = S2_MEDIATOR_NAMES
-)
-```
-
-In Study 1, Religious Behavior Score was significantly associated with most candidate mediators. In both simple and multiple regression models (where continuous variables were standardized to report $\beta$ coefficients to facilitate comparison), Religious Behavior Score predicted overall frequency of and interest in seeking moral advice from non-AI, non-religious sources (cluster a), general open-mindedness, open-mindedness on moral issues, and intellectual humility measured by CIHS and MMIH (cluster b), belief in moral objectivity (cluster c), and perceived valence and authority of AI chatbots as moral advisors (cluster d). Intellectual humility (CIHS and MMIH; cluster b) did not reach significance under the corrected threshold and was therefore excluded from subsequent analyses. In Study 2, Religious Behavior Score similarly predicted overall frequency of and interest in seeking moral advice (cluster a), belief in moral objectivity (cluster c), and perceived authority of AI chatbots (cluster d). Among the newly added Study 2 measures, tendency to anthropomorphize AI chatbots (cluster e) and both measures of deference to authority (cluster f) were significantly associated with Religious Behavior Score. Open-mindedness on moral issues (cluster b), fear of negative judgment, and self-reflective tendencies (cluster f) did not reach significance under the corrected threshold and were excluded from subsequent statistical mediation analyses.
+In Study 1, Religious Behavior Score was significantly associated with most candidate mediators. (See Supplementary Materials for detailed results.) In both simple and multiple regression models, Religious Behavior Score predicted overall frequency of and interest in seeking moral advice from non-AI, non-religious sources (cluster a), general open-mindedness, open-mindedness on moral issues, and intellectual humility measured by CIHS and MMIH (cluster b), belief in moral objectivity (cluster c), and perceived valence and authority of AI chatbots as moral advisors (cluster d). Intellectual humility (CIHS and MMIH; cluster b) did not reach significance under the corrected threshold and was therefore excluded from subsequent analyses. In Study 2, Religious Behavior Score similarly predicted overall frequency of and interest in seeking moral advice (cluster a), belief in moral objectivity (cluster c), and perceived authority of AI chatbots (cluster d). Among the newly added Study 2 measures, tendency to anthropomorphize AI chatbots (cluster e) and both measures of deference to authority (cluster f) were significantly associated with Religious Behavior Score. Open-mindedness on moral issues (cluster b), fear of negative judgment, and self-reflective tendencies (cluster f) did not reach significance under the corrected threshold and were excluded from subsequent statistical mediation analyses.
 
 ```{r q3-mediation-setup, include=FALSE, cache=TRUE}
 sig_s1 <- filter_sig_mediators(s1_core, "R_Score", s1_mediators, S1_MEDIATOR_NAMES)
 sig_s2 <- filter_sig_mediators(s2_core, "R_Score", s2_mediators, S2_MEDIATOR_NAMES)
 
+s1_core_std <- as.data.frame(lapply(s1_core, function(x) if(is.numeric(x)) as.numeric(scale(x)) else x))
+s2_core_std <- as.data.frame(lapply(s2_core, function(x) if(is.numeric(x)) as.numeric(scale(x)) else x))
+
 res_s1 <- run_mediation_analyses(
-  data           = s1_core,
+  data           = s1_core_std,
   x_var          = "R_Score",
   y_var          = "AI_Moral_Frequency",
   mediator_list  = as.list(sig_s1$mediators),
@@ -61,7 +38,7 @@ res_s1 <- run_mediation_analyses(
 )
 
 res_s2 <- run_mediation_analyses(
-  data           = s2_core,
+  data           = s2_core_std,
   x_var          = "R_Score",
   y_var          = "AI_Moral_Frequency",
   mediator_list  = as.list(sig_s2$mediators),
@@ -69,27 +46,30 @@ res_s2 <- run_mediation_analyses(
   sims           = 5000
 )
 
-rep_s1 <- select_representatives(res_s1, s1_core)
-rep_s2 <- select_representatives(res_s2, s2_core)
+rep_s1 <- select_representatives(res_s1, s1_core_std)
+rep_s2 <- select_representatives(res_s2, s2_core_std)
+
+# --- Individual mediation formatter variables ---
+fmt_ind_raw <- function(df, mediator_name) {
+  row <- df[df$Mediator == mediator_name, ]
+  if (nrow(row) == 0) return("")
+  paste0("$\\beta$ = ", formatC(row$indirect_ab, format = "f", digits = 3), ", 95% CI [", 
+         formatC(row$LL, format = "f", digits = 3), ", ", 
+         formatC(row$UL, format = "f", digits = 3), "]")
+}
+
+s1_ind_freq <- fmt_ind_raw(res_s1, "Overall Frequency of Seeking Moral Advice")
+s1_ind_auth <- fmt_ind_raw(res_s1, "Perceived Authority of AI Chatbots as Moral Advisors")
+s1_ind_open <- fmt_ind_raw(res_s1, "Open-Mindedness on Moral Issues")
+
+s2_ind_freq <- fmt_ind_raw(res_s2, "Overall Frequency of Seeking Moral Advice")
+s2_ind_auth <- fmt_ind_raw(res_s2, "Perceived Authority of AI Chatbots as Moral Advisors")
+s2_ind_anth <- fmt_ind_raw(res_s2, "Tendency to Anthropomorphize AI Chatbots")
+s2_ind_mfq  <- fmt_ind_raw(res_s2, "Deference to Authority (MFQ-2)")
+s2_ind_mac  <- fmt_ind_raw(res_s2, "Deference to Authority (MAC-Q)")
 ```
 
-```{r tbl-s1-mediation, cache=TRUE}
-#| label: tbl-s1-mediation
-#| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses"
-#| apa-note: "Religious Behavior Score → candidate mediator → frequency of seeking moral advice from AI chatbots. Only mediators significant (*p* < .05) in at least one regression model (simple or multiple) are included."
-
-mediation_table_from_results(res_s1, selected_mediators = names(rep_s1$mediators))
-```
-
-```{r tbl-s2-mediation, cache=TRUE}
-#| label: tbl-s2-mediation
-#| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses"
-#| apa-note: "Religious Behavior Score → candidate mediator → frequency of seeking moral advice from AI chatbots. Only mediators significant (*p* < .05) in at least one regression model (simple or multiple) are included."
-
-mediation_table_from_results(res_s2, selected_mediators = names(rep_s2$mediators))
-```
-
-Across both studies, the association between Religious Behavior Score and frequency of seeking moral advice from AI chatbots was most strongly accounted statistically for by an indirect effect via individuals' overall tendency to seek moral advice from diverse non-AI, non-religious sources (cluster a). Perceived authority of AI chatbots as moral advisors (cluster d) served as a consistent secondary indirect pathway in both studies. Additionally, in Study 1, open-mindedness on moral issues (cluster b) contributed to a smaller but reliable indirect association (whereas in Study 2, it did not survive the initial Bonferroni correction and was not tested). Among the new candidate mediators introduced in Study 2, deference to authority (cluster f; both MFQ-2 and MAC-Q) and tendency to anthropomorphize AI chatbots (cluster e) also emerged as significant individual indirect pathways. Belief in moral objectivity (cluster c), fear of negative judgment and self-reflective tendencies (cluster f; Study 2 only) did not significantly mediate the relationship between Religious Behavior Score and frequency of seeking moral advice from AI chatbots and were excluded from parallel mediation analyses.
+Across both studies, the association between Religious Behavior Score and frequency of seeking moral advice from AI chatbots was most strongly accounted statistically for by an indirect effect via individuals' overall tendency to seek moral advice from diverse non-AI, non-religious sources (cluster a; Study 1: `r s1_ind_freq`; Study 2: `r s2_ind_freq`). Perceived authority of AI chatbots as moral advisors (cluster d) served as a consistent secondary indirect pathway in both studies (Study 1: `r s1_ind_auth`; Study 2: `r s2_ind_auth`). Additionally, in Study 1, open-mindedness on moral issues (cluster b) contributed to a smaller but reliable indirect association (`r s1_ind_open`; whereas in Study 2, it did not survive the initial Bonferroni correction and was not tested). Among the new candidate mediators introduced in Study 2, deference to authority (cluster f; MFQ-2: `r s2_ind_mfq`; MAC-Q: `r s2_ind_mac`) and tendency to anthropomorphize AI chatbots (cluster e; `r s2_ind_anth`) also emerged as significant individual indirect pathways. Belief in moral objectivity (cluster c), fear of negative judgment and self-reflective tendencies (cluster f; Study 2 only) did not significantly mediate the relationship between Religious Behavior Score and frequency of seeking moral advice from AI chatbots and were excluded from parallel mediation analyses.
 
 To examine the unique statistically contribution of each candidate mediator while accounting for their intercorrelations, we estimated a parallel statistical mediation model for each study using the *lavaan* package in R [@rosseel2012]. For each study, we selected the mediator with the highest proportion of variance explained from each cluster significantly predicted by Religious Behavior Score under our conservative Bonferroni correction. For Study 1, we included three mediators: overall frequency of seeking moral advice from non-AI sources (cluster a), open-mindedness on moral issues (cluster b), and perceived authority of AI chatbots as moral advisors (cluster d). For Study 2, we included four mediators: overall frequency of seeking moral advice from non-AI sources (cluster a), perceived authority of AI chatbots as moral advisors (cluster d), tendency to anthropomorphize AI chatbots (cluster e), and deference to authority — MFQ-2 (cluster f) (open-mindedness on moral issues [cluster b] was excluded as it did not survive the Bonferroni correction). All mediators included were allowed to intercorrelate, making both models saturated. Specific indirect effects were estimated using 5,000 bootstrap resamples.
 
@@ -118,59 +98,75 @@ coefs_s2 <- extract_path_coefs(fit_s2, length(rep_s2$names))
 s1_labels <- rep_s1$names
 s2_labels <- rep_s2$names
 
-df_s1     <- extract_indirect(fit_s1, s1_labels, "Study 1")
-df_s2     <- extract_indirect(fit_s2, s2_labels, "Study 2")
+# Helper to extract standardized solution
+extract_std_indirect <- function(fit, labels, study_label) {
+  std <- standardizedSolution(fit)
+  inds <- std[std$op == ":=" & grepl("^ind", std$lhs), ]
+  data.frame(
+    Study = study_label, Mediator = labels,
+    est = inds$est.std, lwr = inds$ci.lower,
+    upr = inds$ci.upper
+  )
+}
+
+df_s1     <- extract_std_indirect(fit_s1, s1_labels, "Study 1")
+df_s2     <- extract_std_indirect(fit_s2, s2_labels, "Study 2")
 df_forest <- rbind(df_s1, df_s2)
 
-# ── Model fit statistics for inline prose ─────────────────────
-pe_s1 <- parameterEstimates(fit_s1, boot.ci.type = "perc", level = 0.95)
-pe_s2 <- parameterEstimates(fit_s2, boot.ci.type = "perc", level = 0.95)
+# ── Model fit statistics for inline prose (standardized) ──────
+std_s1 <- standardizedSolution(fit_s1)
+std_s2 <- standardizedSolution(fit_s2)
 
-tie_s1    <- pe_s1[pe_s1$lhs == "total_indirect" & pe_s1$op == ":=", ]
-tie_s1_b  <- round(tie_s1$est, 3)
+tie_s1    <- std_s1[std_s1$lhs == "total_indirect" & std_s1$op == ":=", ]
+tie_s1_b  <- round(tie_s1$est.std, 3)
 tie_s1_lo <- round(tie_s1$ci.lower, 3)
 tie_s1_hi <- round(tie_s1$ci.upper, 3)
 
-tie_s2    <- pe_s2[pe_s2$lhs == "total_indirect" & pe_s2$op == ":=", ]
-tie_s2_b  <- round(tie_s2$est, 3)
+tie_s2    <- std_s2[std_s2$lhs == "total_indirect" & std_s2$op == ":=", ]
+tie_s2_b  <- round(tie_s2$est.std, 3)
 tie_s2_lo <- round(tie_s2$ci.lower, 3)
 tie_s2_hi <- round(tie_s2$ci.upper, 3)
 
 r2_s1 <- round(inspect(fit_s1, "r2")["AI_Moral_Frequency"], 3)
 r2_s2 <- round(inspect(fit_s2, "r2")["AI_Moral_Frequency"], 3)
 
-cp_s1   <- pe_s1[pe_s1$lhs == "AI_Moral_Frequency" & pe_s1$rhs == "R_Score" & pe_s1$op == "~", ]
-cp_s1_b <- round(cp_s1$est, 3)
+cp_s1   <- std_s1[std_s1$lhs == "AI_Moral_Frequency" & std_s1$rhs == "R_Score" & std_s1$op == "~", ]
+cp_s1_b <- round(cp_s1$est.std, 3)
 cp_s1_p <- apa_p(cp_s1$pvalue)
 
-cp_s2   <- pe_s2[pe_s2$lhs == "AI_Moral_Frequency" & pe_s2$rhs == "R_Score" & pe_s2$op == "~", ]
-cp_s2_b <- round(cp_s2$est, 3)
+cp_s2   <- std_s2[std_s2$lhs == "AI_Moral_Frequency" & std_s2$rhs == "R_Score" & std_s2$op == "~", ]
+cp_s2_b <- round(cp_s2$est.std, 3)
 cp_s2_p <- apa_p(cp_s2$pvalue)
+
+# --- Parallel mediation specific indirect effects ---
+ind_freq_s1 <- df_s1[df_s1$Mediator == "Overall Frequency of Seeking Moral Advice", ]
+ind_auth_s1 <- df_s1[df_s1$Mediator == "Perceived Authority of AI Chatbots as Moral Advisors", ]
+ind_open_s1 <- df_s1[df_s1$Mediator == "Open-Mindedness on Moral Issues", ]
+
+ind_freq_s2 <- df_s2[df_s2$Mediator == "Overall Frequency of Seeking Moral Advice", ]
+ind_auth_s2 <- df_s2[df_s2$Mediator == "Perceived Authority of AI Chatbots as Moral Advisors", ]
+ind_anth_s2 <- df_s2[df_s2$Mediator == "Tendency to Anthropomorphize AI Chatbots", ]
+ind_defn_s2 <- df_s2[df_s2$Mediator == "Deference to Authority (MFQ-2)", ]
+
+fmt_para <- function(row) {
+  if (nrow(row) == 0) return("")
+  paste0("$\\beta$ = ", formatC(row$est, format = "f", digits = 3), ", 95% CI [", 
+         formatC(row$lwr, format = "f", digits = 3), ", ", 
+         formatC(row$upr, format = "f", digits = 3), "]")
+}
+
+s1_para_freq <- fmt_para(ind_freq_s1)
+s1_para_auth <- fmt_para(ind_auth_s1)
+s1_para_open <- fmt_para(ind_open_s1)
+
+s2_para_freq <- fmt_para(ind_freq_s2)
+s2_para_auth <- fmt_para(ind_auth_s2)
+s2_para_anth <- fmt_para(ind_anth_s2)
+s2_para_defn <- fmt_para(ind_defn_s2)
 ```
 
-```{r fig-q3-parallel-s1, fig.width=6.5, fig.height=5.1}
-#| label: fig-q3-parallel-s1
-#| fig-cap: "Study 1: Parallel Mediation Model"
-#| apa-note: "Edge labels show unstandardized b (standardized \u03b2 in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity.The full parameter estimates for the Study 1 parallel mediation model are presented in the Supplementary Materials."
+The path diagrams and full parameter estimates for the parallel mediation models are presented in the Supplementary Materials.
 
-make_path_diagram(
-  mediator_labels = rep_s1$names,
-  coefs = coefs_s1
-)
-```
+Overall, in Study 1, the parallel statistical model explained `r round(r2_s1 * 100, 1)`% of the variance in the frequency of seeking AI moral advice (*R²*=`r r2_s1`). The total indirect effect was standardized $\beta$ = `r tie_s1_b` (95% CI [`r tie_s1_lo`, `r tie_s1_hi`]), with a residual direct association of standardized $\beta$ = `r cp_s1_b` (*p*`r cp_s1_p`). In Study 2, the model explained `r round(r2_s2 * 100, 1)`% of the variance (*R²*=`r r2_s2`), with a total indirect effect of standardized $\beta$ = `r tie_s2_b` (95% CI [`r tie_s2_lo`, `r tie_s2_hi`]) and a direct association of standardized $\beta$ = `r cp_s2_b` (*p*`r cp_s2_p`).
 
-
-```{r fig-q3-parallel-s2, fig.width=6.5, fig.height=6}
-#| label: fig-q3-parallel-s2
-#| fig-cap: "Study 2: Parallel Mediation Model"
-#| apa-note: "Edge labels show unstandardized b (standardized \u03b2 in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity. The full parameter estimates for the Study 2 parallel mediation model are presented in the Supplementary Materials"
-
-make_path_diagram(
-  mediator_labels = rep_s2$names,
-  coefs = coefs_s2
-)
-```
-
-Overall, in Study 1, the parallel statistical model explained `r round(r2_s1 * 100, 1)`% of the variance in the frequency of seeking AI moral advice (*R²*=`r r2_s1`). The total indirect effect was *b*=`r tie_s1_b` (95% CI [`r tie_s1_lo`, `r tie_s1_hi`]), with a residual direct association of *b*=`r cp_s1_b` (*p*`r cp_s1_p`). In Study 2, the model explained `r round(r2_s2 * 100, 1)`% of the variance (*R²*=`r r2_s2`), with a total indirect effect of *b*=`r tie_s2_b` (95% CI [`r tie_s2_lo`, `r tie_s2_hi`]) and a direct association of *b*=`r cp_s2_b` (*p*`r cp_s2_p`).
-
-The parallel models revealed a consistent two-pathway pattern of indirect associations across both studies. The indirect association via the disposition to moral consultation from non-AI, non-religious sources (cluster a) was the dominant pathway in both studies, followed by a significant indirect association via the perceived authority of AI chatbots as moral advisors (cluster d). In contrast, the indirect association via open-mindedness on moral issues (cluster b) was tested only in Study 1 and was not statistically significant in the parallel model. In Study 2, neither the indirect association via the tendency to anthropomorphize AI chatbots (cluster e) nor via deference to authority (cluster f) reached significance. 
+The parallel models revealed a consistent two-pathway pattern of indirect associations across both studies. The indirect association via the disposition to moral consultation from non-AI, non-religious sources (cluster a) was the dominant pathway in both studies (Study 1: `r s1_para_freq`; Study 2: `r s2_para_freq`), followed by a significant indirect association via the perceived authority of AI chatbots as moral advisors (cluster d; Study 1: `r s1_para_auth`; Study 2: `r s2_para_auth`). In contrast, the indirect association via open-mindedness on moral issues (cluster b) was tested only in Study 1 and was not statistically significant in the parallel model (`r s1_para_open`). In Study 2, neither the indirect association via the tendency to anthropomorphize AI chatbots (cluster e; `r s2_para_anth`) nor via deference to authority (cluster f; `r s2_para_defn`) reached significance. 

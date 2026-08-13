@@ -16,7 +16,7 @@ The present findings carry implications in several ways. Theoretically, they ref
 
 ## Limitations and Future Directions
 
-Although the present findings offer initial insight into religiosity and AI moral advice seeking, several limitations qualify their interpretation and suggest clear avenues for future research.
+Several limitations qualify the interpretation of the present findings and suggest avenues for future research.
 
 First, all datasets were cross-sectional, precluding causal inference. We consider our mediation analyses as first-pass statistical tests of plausible indirect associations rather than confirmed causal mechanisms. To argue for true mediation and establish the causal roles of these pathways, future research must experimentally manipulate the mediators. For instance, future studies could manipulate the perceived anthropomorphic framing of an AI chatbot (e.g., highly agentic and humanlike vs. purely tool-like) or the perceived authority of the AI (e.g., expert-vetted vs. experimental) to observe if these manipulations moderate or mediate advice-seeking behaviors, especially among religious individuals who may have higher baseline tendencies to anthropomorphize or defer to authority.
 
@@ -24,7 +24,7 @@ Second, our samples were drawn exclusively from online participants in the Unite
 
 Third, measurements were self-reported and may be influenced by social desirability. For example, religiously engaged participants may underreport seeking moral consultation from AI chatbots if they perceive such behavior as inconsistent with religious norms, a bias that would likely attenuate, rather than inflate, the observed effects.
 
-Fourth, the referent of “AI chatbot” may vary across participants. Respondents may have had different AI systems in mind (e.g., ChatGPT, Claude, Gemini), which differ substantially in design, persona, and perceived moral positioning. Future research should assess chatbot-specific behaviors and evaluate whether the pathways identified here generalize across different AI systems.
+Fourth, the referent of “AI chatbot” may vary across participants. Respondents likely had different AI systems in mind, which differ in design, persona, and perceived moral positioning, characteristics that can also shift over time even within the same provider. Future research should assess chatbot-specific behaviors and, rather than treating these dynamics as static, track them longitudinally to validate whether the pathways identified here generalize across different systems and model versions.
 
 Finally, the downstream consequences of AI moral advice seeking remain unclear. Although we make no claims that seeking moral advice from AI chatbots would lead to following moral advice from AI chatbots [see @landes2026], recent experimental evidence suggests that influence may not require explicit compliance. For example, LLM-based AI writing assistance can silently shift users' views on social issues through biased sentence completion [@williams-ceci2026]. Taken together, these findings highlight an open and urgent question regarding the long-term moral consequences of AI chatbot consultation.
 
