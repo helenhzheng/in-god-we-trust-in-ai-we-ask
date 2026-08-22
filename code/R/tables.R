@@ -72,7 +72,14 @@ make_apa_flextable <- function(df, col_names = NULL, spanner = NULL) {
 # Takes a data frame with columns: Study, N, r, t, df, p
 # Returns an APA-formatted flextable with italicised r / t / p headers.
 make_cor_flextable <- function(df) {
-  flextable::flextable(df) |>
+  ft <- flextable::flextable(df)
+  if ("Predictor" %in% names(df)) {
+    ft <- flextable::merge_v(ft, j = "Predictor")
+  }
+  left_cols <- if ("Predictor" %in% names(df)) 1:2 else 1
+  center_cols <- if ("Predictor" %in% names(df)) 3:ncol(df) else 2:ncol(df)
+
+  ft |>
     flextable::compose(
       j = "r", part = "header",
       value = flextable::as_paragraph(flextable::as_i("r"))
@@ -85,14 +92,32 @@ make_cor_flextable <- function(df) {
       j = "p", part = "header",
       value = flextable::as_paragraph(flextable::as_i("p"))
     ) |>
-    flextable::align(j = 1, part = "body", align = "left") |>
-    flextable::align(j = 2:6, part = "body", align = "center") |>
+    flextable::align(j = left_cols, part = "body", align = "left") |>
+    flextable::align(j = center_cols, part = "body", align = "center") |>
     flextable::align(part = "header", align = "center") |>
     flextable::border_remove() |>
     flextable::hline_top(part = "header", border = officer::fp_border(width = 1.5)) |>
     flextable::hline_bottom(part = "header", border = officer::fp_border(width = 1)) |>
     flextable::hline_bottom(part = "body", border = officer::fp_border(width = 1.5)) |>
     flextable::set_table_properties(layout = "autofit", width = 1)
+}
+
+# --- Build standard correlation summary data frame ---
+build_cor_table <- function(cor_rs_s1, cor_rs_s2, cor_rel_s1, cor_rel_s2, s1_data, s2_data) {
+  data.frame(
+    Predictor = c("Self-Reported Religiosity", "Self-Reported Religiosity", "Religious Behavior Score", "Religious Behavior Score"),
+    Study = c("Study 1", "Study 2", "Study 1", "Study 2"),
+    N     = c(nrow(s1_data), nrow(s2_data), nrow(s1_data), nrow(s2_data)),
+    r     = fmt_no_zero(c(cor_rel_s1$estimate, cor_rel_s2$estimate,
+                          cor_rs_s1$estimate,  cor_rs_s2$estimate), 3),
+    t     = sprintf("%.3f", c(cor_rel_s1$statistic, cor_rel_s2$statistic,
+                              cor_rs_s1$statistic,  cor_rs_s2$statistic)),
+    df    = c(cor_rel_s1$parameter, cor_rel_s2$parameter,
+              cor_rs_s1$parameter,  cor_rs_s2$parameter),
+    p     = c(apa_p(cor_rel_s1$p.value), apa_p(cor_rel_s2$p.value),
+              apa_p(cor_rs_s1$p.value),  apa_p(cor_rs_s2$p.value)),
+    check.names = FALSE
+  )
 }
 
 
@@ -117,30 +142,7 @@ make_study_reg_table <- function(rows_list, study_names = names(rows_list)) {
 }
 
 
-make_study_reg_adj_table <- function(models_list, predictor, study_names = names(models_list)) {
-  rows <- lapply(models_list, function(m) {
-    coefs <- apa_lm_summary(m, predictor)
-    adj_r2 <- sprintf("%.2f", summary(m)$adj.r.squared)
-    c(coefs, adj_R2 = adj_r2)
-  })
-
-  reg_df <- data.frame(
-    Study = study_names,
-    do.call(rbind, rows),
-    stringsAsFactors = FALSE
-  )
-
-  sub_hdr <- c(
-    "Study", "\u03b2", "SE", "95% CI LL", "95% CI UL", "p", "Adjusted R\u00b2"
-  )
-
-  ft <- make_apa_flextable(reg_df, col_names = sub_hdr, spanner = NULL)
-  ft <- flextable::compose(
-    ft, i = 1, j = "adj_R2", part = "header",
-    value = flextable::as_paragraph("Adjusted ", flextable::as_i("R"), "\u00b2")
-  )
-  ft
-}# --- Regression table: X predicting mediators ---
+# --- Regression table: X predicting mediators ---
 regression_table <- function(
   data,
   x_var,
@@ -208,7 +210,8 @@ run_mediation_analyses <- function(
   y_var,
   mediator_list,
   mediator_names = NULL,
-  sims = 5000
+  sims = BOOTSTRAP_SIMS,
+  standardize = TRUE
 ) {
   if (is.null(mediator_names)) mediator_names <- names(mediator_list)
   if (is.list(mediator_names)) mediator_names <- unlist(mediator_names, use.names = FALSE)
@@ -235,6 +238,13 @@ run_mediation_analyses <- function(
     m_col   <- names(mediator_list)[i]
     temp    <- data.frame(Y = data[[y_var]], X = data[[x_var]], M = mediator_list[[i]])
     temp    <- na.omit(temp)
+
+    if (standardize) {
+      if (is.numeric(temp$Y)) temp$Y <- as.numeric(scale(temp$Y))
+      if (is.numeric(temp$X)) temp$X <- as.numeric(scale(temp$X))
+      if (is.numeric(temp$M)) temp$M <- as.numeric(scale(temp$M))
+    }
+
     model_m <- lm(M ~ X, data = temp)
     model_y <- lm(Y ~ X + M, data = temp)
 
@@ -279,12 +289,12 @@ run_mediation_analyses <- function(
 mediation_table_from_results <- function(results_df, selected_mediators = NULL) {
   formatted_df <- data.frame(
     Mediators   = results_df$Mediator,
-    path_a      = sprintf("%.2f%s", results_df$path_a,  add_stars(results_df$path_a_p)),
-    path_b      = sprintf("%.2f%s", results_df$path_b,  add_stars(results_df$path_b_p)),
-    indirect_ab = sprintf("%.2f%s", results_df$indirect_ab, add_stars(results_df$indirect_ab_p)),
-    LL          = sprintf("%.2f",   results_df$LL),
-    UL          = sprintf("%.2f",   results_df$UL),
-    direct_c    = sprintf("%.2f%s", results_df$direct_c, add_stars(results_df$direct_c_p)),
+    path_a      = paste0(fmt_no_zero(results_df$path_a, 3),   add_stars(results_df$path_a_p)),
+    path_b      = paste0(fmt_no_zero(results_df$path_b, 3),   add_stars(results_df$path_b_p)),
+    indirect_ab = paste0(fmt_no_zero(results_df$indirect_ab, 3), add_stars(results_df$indirect_ab_p)),
+    LL          = fmt_no_zero(results_df$LL, 3),
+    UL          = fmt_no_zero(results_df$UL, 3),
+    direct_c    = paste0(fmt_no_zero(results_df$direct_c, 3), add_stars(results_df$direct_c_p)),
     prop.med    = sprintf("%.2f%%", results_df$prop.med),
     stringsAsFactors = FALSE
   )
@@ -318,7 +328,7 @@ mediation_table <- function(
   y_var,
   mediator_list,
   mediator_names = NULL,
-  sims = 5000,
+  sims = BOOTSTRAP_SIMS,
   selected_mediators = NULL
 ) {
   raw_results <- run_mediation_analyses(data, x_var, y_var, mediator_list, mediator_names, sims)
@@ -364,44 +374,100 @@ select_representatives <- function(results_df, data, exclude = NULL) {
 }
 
 
-# --- APA correlation matrix (lower triangle) ---
-apa_cor_table <- function(data, var_names = NULL) {
-  is_num   <- sapply(data, is.numeric)
-  num_data <- data[, is_num, drop = FALSE]
-  n_vars   <- ncol(num_data)
+# --- Demographic Summary Table Builder ---
+create_demo_summary <- function(dataset, dataset_name) {
+  sl <- list()
 
-  if (is.null(var_names)) {
-    var_names <- names(num_data)
-  } else {
-    stopifnot(length(var_names) == ncol(data))
-    var_names <- var_names[is_num]
+  # Date, N, Age
+  sl$`Data Collection Date` <- get_date_range(dataset)
+  sl$`Sample Size (N)` <- nrow(dataset)
+  sl$`Age (Mean +/- SD)` <- paste0(
+    round(mean(dataset$Age, na.rm = TRUE), 2), " +/- ",
+    round(sd(dataset$Age, na.rm = TRUE), 2)
+  )
+
+  # Gender
+  gc <- dataset %>% group_by(Gender) %>%
+    summarise(Count = n(), .groups = "drop") %>%
+    mutate(Pct = round((Count / sum(Count)) * 100, 2))
+  for (g in c("Woman", "Man", "Other", "Prefer not to disclose")) {
+    row <- gc %>% filter(Gender == g)
+    sl[[paste0("Gender - ", g)]] <- if (nrow(row) > 0) paste0(row$Count, " (", row$Pct, "%)") else "0 (0%)"
   }
 
-  mat <- matrix("", nrow = n_vars, ncol = n_vars)
-  rownames(mat) <- var_names
-  colnames(mat) <- var_names
+  # SES
+  sl$`SES (1-10) (Mean +/- SD)` <- paste0(
+    round(mean(dataset$SES, na.rm = TRUE), 2), " +/- ",
+    round(sd(dataset$SES, na.rm = TRUE), 2)
+  )
 
-  for (i in 1:n_vars) {
-    for (j in 1:n_vars) {
-      if (i == j) {
-        mat[i, j] <- "\u2014"
-      } else if (i > j) {
-        ct <- cor.test(num_data[[i]], num_data[[j]], method = "pearson")
-        r  <- sprintf("%.2f", ct$estimate)
-        cl <- sprintf("%.2f", ct$conf.int[1])
-        cu <- sprintf("%.2f", ct$conf.int[2])
-        mat[i, j] <- paste0(r, add_stars(ct$p.value), " [", cl, ", ", cu, "]")
-      }
+  # Political
+  sl$`Political Leaning (1-7) (Mean +/- SD)` <- paste0(
+    round(mean(dataset$Political_overall, na.rm = TRUE), 2), " +/- ",
+    round(sd(dataset$Political_overall, na.rm = TRUE), 2)
+  )
+
+  # Race/Ethnicity
+  race_cols <- dataset %>% dplyr::select(matches("^Race_Ethnicity_\\d+$")) %>% names()
+  if (length(race_cols) > 0) {
+    rs <- dataset %>%
+      dplyr::select(all_of(race_cols)) %>%
+      rowwise() %>%
+      mutate(
+        race_count = sum(c_across(all_of(race_cols)) == 1, na.rm = TRUE),
+        Race = case_when(
+          race_count == 0 ~ "Did not answer",
+          race_count > 1 ~ "Multirace",
+          TRUE ~ {
+            idx <- which(c_across(all_of(race_cols)) == 1)
+            if (length(idx) == 1) RACE_MAP[idx] else "Did not answer"
+          }
+        )
+      ) %>%
+      ungroup() %>%
+      dplyr::select(Race) %>%
+      group_by(Race) %>%
+      summarize(Count = n(), .groups = "drop") %>%
+      mutate(Pct = round((Count / sum(Count)) * 100, 2))
+
+    for (r in c(RACE_MAP, "Multirace", "Did not answer")) {
+      row <- rs %>% filter(Race == r)
+      sl[[paste0("Race - ", r)]] <- if (nrow(row) > 0) paste0(row$Count, " (", row$Pct, "%)") else "0 (0%)"
     }
   }
 
-  df <- as.data.frame(mat, stringsAsFactors = FALSE)
-  df <- data.frame(
-    Variable = var_names, df, row.names = NULL,
-    check.names = FALSE
-  )
+  # Faith
+  faith_cols <- dataset %>% dplyr::select(matches("^Faith_\\d+$")) %>% names()
+  if (length(faith_cols) > 0) {
+    fs <- dataset %>%
+      dplyr::select(all_of(faith_cols)) %>%
+      rowwise() %>%
+      mutate(
+        faith_count = sum(c_across(all_of(faith_cols)) == 1, na.rm = TRUE),
+        Faith = case_when(
+          faith_count == 0 ~ "Did not answer",
+          faith_count > 1 ~ "Multifaith",
+          TRUE ~ {
+            idx <- which(c_across(all_of(faith_cols)) == 1)
+            if (length(idx) == 1) FAITH_MAP[idx] else "Did not answer"
+          }
+        )
+      ) %>%
+      ungroup() %>%
+      dplyr::select(Faith) %>%
+      group_by(Faith) %>%
+      summarize(Count = n(), .groups = "drop") %>%
+      mutate(Pct = round((Count / sum(Count)) * 100, 2))
 
-  make_apa_flextable(df)
+    for (f in c(FAITH_MAP, "Multifaith", "Did not answer")) {
+      row <- fs %>% filter(Faith == f)
+      sl[[paste0("Faith - ", f)]] <- if (nrow(row) > 0) paste0(row$Count, " (", row$Pct, "%)") else "0 (0%)"
+    }
+  }
+
+  result <- data.frame(Characteristic = names(sl), Value = unlist(sl), row.names = NULL)
+  names(result)[2] <- dataset_name
+  return(result)
 }
 
 
@@ -469,7 +535,11 @@ extract_all_estimates <- function(fit, mediator_names,
     if (nrow(row_i) > 0) med_vars[i] <- row_i$lhs[1]
   }
 
-  fmt <- function(x, d = 3) formatC(round(x, d), format = "f", digits = d)
+  fmt_std   <- function(x, d = 3) fmt_no_zero(x, d)
+  fmt_unstd <- function(x, d = 3) {
+    if (length(x) == 0 || is.na(x[1])) return("")
+    sprintf("%.3f", x[1])
+  }
 
   rows <- list()
 
@@ -480,11 +550,11 @@ extract_all_estimates <- function(fit, mediator_names,
     rows[[length(rows) + 1]] <- data.frame(
       Path     = paste0(predictor_name, " \u2192 ", mediator_names[i]),
       Label    = paste0("a", i),
-      b        = fmt(r$est[1]),
-      beta     = fmt(r$beta[1]),
-      SE       = fmt(r$se[1]),
-      CI_Lower = fmt(r$ci.lower[1]),
-      CI_Upper = fmt(r$ci.upper[1]),
+      b        = fmt_unstd(r$est[1]),
+      beta     = fmt_std(r$beta[1]),
+      SE       = fmt_unstd(r$se[1]),
+      CI_Lower = fmt_unstd(r$ci.lower[1]),
+      CI_Upper = fmt_unstd(r$ci.upper[1]),
       p        = apa_p(r$pvalue[1], eq = FALSE),
       stringsAsFactors = FALSE
     )
@@ -497,11 +567,11 @@ extract_all_estimates <- function(fit, mediator_names,
     rows[[length(rows) + 1]] <- data.frame(
       Path     = paste0(mediator_names[i], " \u2192 ", outcome_name),
       Label    = paste0("b", i),
-      b        = fmt(r$est[1]),
-      beta     = fmt(r$beta[1]),
-      SE       = fmt(r$se[1]),
-      CI_Lower = fmt(r$ci.lower[1]),
-      CI_Upper = fmt(r$ci.upper[1]),
+      b        = fmt_unstd(r$est[1]),
+      beta     = fmt_std(r$beta[1]),
+      SE       = fmt_unstd(r$se[1]),
+      CI_Lower = fmt_unstd(r$ci.lower[1]),
+      CI_Upper = fmt_unstd(r$ci.upper[1]),
       p        = apa_p(r$pvalue[1], eq = FALSE),
       stringsAsFactors = FALSE
     )
@@ -513,11 +583,11 @@ extract_all_estimates <- function(fit, mediator_names,
     rows[[length(rows) + 1]] <- data.frame(
       Path     = paste0(predictor_name, " \u2192 ", outcome_name, " (direct)"),
       Label    = "c'",
-      b        = fmt(r$est[1]),
-      beta     = fmt(r$beta[1]),
-      SE       = fmt(r$se[1]),
-      CI_Lower = fmt(r$ci.lower[1]),
-      CI_Upper = fmt(r$ci.upper[1]),
+      b        = fmt_unstd(r$est[1]),
+      beta     = fmt_std(r$beta[1]),
+      SE       = fmt_unstd(r$se[1]),
+      CI_Lower = fmt_unstd(r$ci.lower[1]),
+      CI_Upper = fmt_unstd(r$ci.upper[1]),
       p        = apa_p(r$pvalue[1], eq = FALSE),
       stringsAsFactors = FALSE
     )
@@ -536,11 +606,11 @@ extract_all_estimates <- function(fit, mediator_names,
       rows[[length(rows) + 1]] <- data.frame(
         Path     = paste0(lbl, " ~~ ", rbl),
         Label    = paste0(cr$lhs, " ~~ ", cr$rhs),
-        b        = fmt(cr$est),
-        beta     = fmt(cr$beta),
-        SE       = fmt(cr$se),
-        CI_Lower = fmt(cr$ci.lower),
-        CI_Upper = fmt(cr$ci.upper),
+        b        = fmt_unstd(cr$est),
+        beta     = fmt_std(cr$beta),
+        SE       = fmt_unstd(cr$se),
+        CI_Lower = fmt_unstd(cr$ci.lower),
+        CI_Upper = fmt_unstd(cr$ci.upper),
         p        = apa_p(cr$pvalue, eq = FALSE),
         stringsAsFactors = FALSE
       )
@@ -555,11 +625,11 @@ extract_all_estimates <- function(fit, mediator_names,
     rows[[length(rows) + 1]] <- data.frame(
       Path     = paste0("Indirect via ", mediator_names[i]),
       Label    = lbl,
-      b        = fmt(r$est[1]),
-      beta     = fmt(r$beta[1]),
-      SE       = fmt(r$se[1]),
-      CI_Lower = fmt(r$ci.lower[1]),
-      CI_Upper = fmt(r$ci.upper[1]),
+      b        = fmt_unstd(r$est[1]),
+      beta     = fmt_std(r$beta[1]),
+      SE       = fmt_unstd(r$se[1]),
+      CI_Lower = fmt_unstd(r$ci.lower[1]),
+      CI_Upper = fmt_unstd(r$ci.upper[1]),
       p        = apa_p(r$pvalue[1], eq = FALSE),
       stringsAsFactors = FALSE
     )
@@ -571,11 +641,11 @@ extract_all_estimates <- function(fit, mediator_names,
     rows[[length(rows) + 1]] <- data.frame(
       Path     = "Total indirect effect",
       Label    = "total",
-      b        = fmt(r$est[1]),
-      beta     = fmt(r$beta[1]),
-      SE       = fmt(r$se[1]),
-      CI_Lower = fmt(r$ci.lower[1]),
-      CI_Upper = fmt(r$ci.upper[1]),
+      b        = fmt_unstd(r$est[1]),
+      beta     = fmt_std(r$beta[1]),
+      SE       = fmt_unstd(r$se[1]),
+      CI_Lower = fmt_unstd(r$ci.lower[1]),
+      CI_Upper = fmt_unstd(r$ci.upper[1]),
       p        = apa_p(r$pvalue[1], eq = FALSE),
       stringsAsFactors = FALSE
     )
@@ -687,19 +757,20 @@ extract_path_coefs <- function(fit, n) {
     paste(std$lhs, std$op, std$rhs)
   )]
 
-  fn <- function(x, d = 2) {
+  fmt_std   <- function(x, d = 3) fmt_no_zero(x, d)
+  fmt_unstd <- function(x, d = 3) {
     if (length(x) == 0 || all(is.na(x))) return("--")
-    formatC(round(x[1], d), format = "f", digits = d)
+    sprintf("%.3f", x[1])
   }
 
   get_by_label <- function(lbl) {
     row <- pe[pe$label == lbl, ]
     if (nrow(row) == 0) return(list(b = "?", beta = "?", lo = "?", hi = "?"))
     list(
-      b    = fn(row$est[1]),
-      beta = fn(row$beta[1]),
-      lo   = fn(row$ci.lower[1]),
-      hi   = fn(row$ci.upper[1])
+      b    = fmt_unstd(row$est[1]),
+      beta = fmt_std(row$beta[1]),
+      lo   = fmt_unstd(row$ci.lower[1]),
+      hi   = fmt_unstd(row$ci.upper[1])
     )
   }
 
@@ -713,95 +784,21 @@ extract_path_coefs <- function(fit, n) {
 }
 
 
-# --- Filter to mediators with a significant bootstrap indirect effect ---
-# Takes the output of filter_sig_mediators() (defined in tables.R) and keeps
-# only mediators where the bootstrap indirect effect p < alpha (default .05).
-# Returns list(mediators, names) with the same structure.
-filter_sig_indirect <- function(sig_list, predictor, outcome, data,
-                                sims = 5000, alpha = 0.05) {
-  med_df  <- sig_list$mediators
-  med_nms <- sig_list$names
-
-  keep <- vapply(seq_along(med_df), function(i) {
-    tmp <- data.frame(
-      Y = data[[outcome]], X = data[[predictor]],
-      M = med_df[[i]]
-    )
-    tmp   <- na.omit(tmp)
-    mod_m <- lm(M ~ X, data = tmp)
-    mod_y <- lm(Y ~ X + M, data = tmp)
-    med   <- mediate(mod_m, mod_y,
-      treat = "X", mediator = "M",
-      boot = TRUE, sims = sims
-    )
-    med$d0.p < alpha
-  }, logical(1))
-
-  list(
-    mediators = med_df[, keep, drop = FALSE],
-    names     = med_nms[keep]
-  )
-}
-
-
-# --- Select one representative mediator per cluster ---
-# Uses MEDIATOR_CLUSTERS (defined in data-loading.R) to map columns to clusters.
-# Within each cluster, selects the mediator with the highest proportion mediated
-# (|indirect / total|) from mediate() — consistent with filter_sig_indirect().
-# Optional exclude: character vector of column names to drop before selection.
-# Returns list(mediators, names).
-pick_cluster_reps <- function(ind_list, predictor, outcome, data,
-                              exclude = NULL, sims = 5000) {
-  med_df  <- ind_list$mediators
-  med_nms <- ind_list$names
-
-  if (!is.null(exclude)) {
-    keep_idx <- !(names(med_df) %in% exclude)
-    med_df   <- med_df[, keep_idx, drop = FALSE]
-    med_nms  <- med_nms[keep_idx]
-  }
-
-  col_names <- names(med_df)
-  clusters  <- MEDIATOR_CLUSTERS[col_names] # named vector from data-loading.R
-
-  selected <- c()
-  for (cl in unique(clusters)) {
-    idx <- which(clusters == cl)
-    if (length(idx) == 1L) {
-      selected <- c(selected, idx)
-    } else {
-      pms <- sapply(idx, function(i) {
-        tmp <- data.frame(
-          Y = data[[outcome]], X = data[[predictor]],
-          M = med_df[[i]]
-        )
-        tmp   <- na.omit(tmp)
-        mod_m <- lm(M ~ X, data = tmp)
-        mod_y <- lm(Y ~ X + M, data = tmp)
-        med   <- mediate(mod_m, mod_y,
-          treat = "X", mediator = "M",
-          boot = TRUE, sims = sims
-        )
-        abs(med$d0 / med$tau.coef) # proportion mediated
-      })
-      selected <- c(selected, idx[which.max(pms)])
-    }
-  }
-
-  list(
-    mediators = med_df[, selected, drop = FALSE],
-    names     = med_nms[selected]
-  )
-}
-
 # --- Standardised Moderation Table Helper ---
-make_moderation_table <- function(mod_sum1, mod_sum2, pred_name, mod1_name, mod2_name, note_label = "Study 2 only.") {
-  get_coef_row <- function(coefs, label, term_name) {
+make_moderation_table <- function(mod1, mod2, pred_name, mod1_name, mod2_name, note_label = "Study 2 only.") {
+  mod_sum1 <- summary(mod1)
+  mod_sum2 <- summary(mod2)
+  ci1 <- confint(mod1)
+  ci2 <- confint(mod2)
+
+  get_coef_row <- function(coefs, ci, label, term_name) {
     data.frame(
       Parameter = term_name,
-      b = sprintf("%.2f", coefs[label, "Estimate"]),
-      SE = sprintf("%.2f", coefs[label, "Std. Error"]),
-      t = sprintf("%.2f", coefs[label, "t value"]),
+      b = sprintf("%.3f", coefs[label, "Estimate"]),
+      SE = sprintf("%.3f", coefs[label, "Std. Error"]),
+      CI_Lower = sprintf("%.3f", ci[label, 1]),
+      CI_Upper = sprintf("%.3f", ci[label, 2]),
+      t = sprintf("%.3f", coefs[label, "t value"]),
       p = apa_p(coefs[label, "Pr(>|t|)"], eq = FALSE),
       stringsAsFactors = FALSE
     )
@@ -819,17 +816,29 @@ make_moderation_table <- function(mod_sum1, mod_sum2, pred_name, mod1_name, mod2
   int_var2  <- coef_names2[4]
   
   tbl_mod1 <- rbind(
-    get_coef_row(coef(mod_sum1), "(Intercept)", "Constant"),
-    get_coef_row(coef(mod_sum1), pred_var1, paste0(pred_name, " (X)")),
-    get_coef_row(coef(mod_sum1), mod_var1, paste0(mod1_name, " (W)")),
-    get_coef_row(coef(mod_sum1), int_var1, "X × W")
+    get_coef_row(coef(mod_sum1), ci1, "(Intercept)", "Constant"),
+    get_coef_row(coef(mod_sum1), ci1, pred_var1, paste0(pred_name, " (X)")),
+    get_coef_row(coef(mod_sum1), ci1, mod_var1, paste0(mod1_name, " (W)")),
+    get_coef_row(coef(mod_sum1), ci1, int_var1, "X × W")
+  )
+  
+  tbl_mod1 <- rbind(
+    tbl_mod1,
+    data.frame(Parameter = "R²", b = sprintf("%.3f", mod_sum1$r.squared), SE = "", CI_Lower = "", CI_Upper = "", t = "", p = "", stringsAsFactors = FALSE),
+    data.frame(Parameter = "Adjusted R²", b = sprintf("%.3f", mod_sum1$adj.r.squared), SE = "", CI_Lower = "", CI_Upper = "", t = "", p = "", stringsAsFactors = FALSE)
   )
   
   tbl_mod2 <- rbind(
-    get_coef_row(coef(mod_sum2), "(Intercept)", "Constant"),
-    get_coef_row(coef(mod_sum2), pred_var2, paste0(pred_name, " (X)")),
-    get_coef_row(coef(mod_sum2), mod_var2, paste0(mod2_name, " (W)")),
-    get_coef_row(coef(mod_sum2), int_var2, "X × W")
+    get_coef_row(coef(mod_sum2), ci2, "(Intercept)", "Constant"),
+    get_coef_row(coef(mod_sum2), ci2, pred_var2, paste0(pred_name, " (X)")),
+    get_coef_row(coef(mod_sum2), ci2, mod_var2, paste0(mod2_name, " (W)")),
+    get_coef_row(coef(mod_sum2), ci2, int_var2, "X × W")
+  )
+  
+  tbl_mod2 <- rbind(
+    tbl_mod2,
+    data.frame(Parameter = "R²", b = sprintf("%.3f", mod_sum2$r.squared), SE = "", CI_Lower = "", CI_Upper = "", t = "", p = "", stringsAsFactors = FALSE),
+    data.frame(Parameter = "Adjusted R²", b = sprintf("%.3f", mod_sum2$adj.r.squared), SE = "", CI_Lower = "", CI_Upper = "", t = "", p = "", stringsAsFactors = FALSE)
   )
   
   q4_tbl <- rbind(
@@ -845,7 +854,7 @@ make_moderation_table <- function(mod_sum1, mod_sum2, pred_name, mod1_name, mod2
   n_obs <- sum(mod_sum1$df[1:2]) + 1
   
   note_text <- sprintf(
-    "Model 1: R² = %.3f, Adj. R² = %.3f, F(%.0f, %.0f) = %.2f, p %s. Model 2: R² = %.3f, Adj. R² = %.3f, F(%.0f, %.0f) = %.2f, p %s. %s (N = %.0f).",
+    "Model 1: R² = %.3f, Adj. R² = %.3f, F(%.0f, %.0f) = %.3f, p %s. Model 2: R² = %.3f, Adj. R² = %.3f, F(%.0f, %.0f) = %.3f, p %s. %s (N = %.0f).",
     mod_sum1$r.squared, mod_sum1$adj.r.squared, f_stat1[2], f_stat1[3], f_stat1[1], apa_p(f_p1),
     mod_sum2$r.squared, mod_sum2$adj.r.squared, f_stat2[2], f_stat2[3], f_stat2[1], apa_p(f_p2),
     note_label, n_obs
@@ -855,10 +864,12 @@ make_moderation_table <- function(mod_sum1, mod_sum2, pred_name, mod1_name, mod2
     flextable::as_flextable() |>
     flextable::compose(j = "b", part = "header", value = flextable::as_paragraph(flextable::as_i("b"))) |>
     flextable::compose(j = "SE", part = "header", value = flextable::as_paragraph(flextable::as_i("SE"))) |>
+    flextable::compose(j = "CI_Lower", part = "header", value = flextable::as_paragraph("95% CI LL")) |>
+    flextable::compose(j = "CI_Upper", part = "header", value = flextable::as_paragraph("95% CI UL")) |>
     flextable::compose(j = "t", part = "header", value = flextable::as_paragraph(flextable::as_i("t"))) |>
     flextable::compose(j = "p", part = "header", value = flextable::as_paragraph(flextable::as_i("p"))) |>
     flextable::align(j = 1, part = "body", align = "left") |>
-    flextable::align(j = 2:5, part = "body", align = "center") |>
+    flextable::align(j = 2:7, part = "body", align = "center") |>
     flextable::align(part = "header", align = "center") |>
     flextable::border_remove() |>
     flextable::hline_top(part = "header", border = officer::fp_border(width = 1.5)) |>

@@ -45,6 +45,24 @@ recode_demographics <- function(df) {
     )
 }
 
+# --- Helper: extract survey date range string ---
+get_date_range <- function(dataset) {
+  date_col <- as.Date(dataset[[1]])  # truncate timestamps → calendar dates
+  d_min <- min(date_col, na.rm = TRUE)
+  d_max <- max(date_col, na.rm = TRUE)
+  if (d_min == d_max) return(format(d_min, "%B %d, %Y"))
+  # Same month & year → "September 19–20, 2025"
+  if (format(d_min, "%B %Y") == format(d_max, "%B %Y")) {
+    return(paste0(format(d_min, "%B %d"), "\u2013", format(d_max, "%d, %Y")))
+  }
+  # Same year → "March 27–September 20, 2025"
+  if (format(d_min, "%Y") == format(d_max, "%Y")) {
+    return(paste0(format(d_min, "%B %d"), "\u2013", format(d_max, "%B %d, %Y")))
+  }
+  # Different years → "December 30, 2024–January 2, 2025"
+  paste0(format(d_min, "%B %d, %Y"), "\u2013", format(d_max, "%B %d, %Y"))
+}
+
 # ============================================================
 # PILOT STUDY 1
 # ============================================================

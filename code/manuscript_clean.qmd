@@ -55,7 +55,7 @@ word-count: true
 mask: false
 suppress-credit-statement: true
 floatsintext: true
-number-sections: true
+number-sections: false
 number-offset: 1
 bibliography: references.bib
 fontsize: 12pt
@@ -66,13 +66,19 @@ format:
 ---
 
 ```{r setup_manuscript, include=FALSE}
+# --- Global Settings ---
+# BOOTSTRAP_SIMS: 5000 for full publication quality; set to 50 for rapid testing
+BOOTSTRAP_SIMS  <- 5000
+# PLOT_COLOR_MODE: "bw" for print submission, "color" for online materials
+PLOT_COLOR_MODE <- "bw"
 source("R/packages.R")
 source("R/colors.R")
 source("R/helpers.R")
 source("R/tables.R")
 source("R/plots.R")
-source("R/demographics.R")
 source("R/data-loading.R")
+source("R/supplementary.R")
+source("R/main-analysis.R")
 MANUSCRIPT_MODE <- TRUE
 ```
 
@@ -92,7 +98,13 @@ MANUSCRIPT_MODE <- TRUE
 
 {{< include qmd/discussion.qmd >}}
 
+{{< pagebreak >}}
+
 # References {.unnumbered}
 
 ::: {#refs}
 :::
+
+# Supplementary Materials {.unnumbered .unlisted}
+
+{{< include qmd/supplementary.qmd >}}

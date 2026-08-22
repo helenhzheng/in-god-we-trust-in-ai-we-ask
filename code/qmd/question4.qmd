@@ -5,51 +5,30 @@ if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
   source("R/helpers.R")
   source("R/tables.R")
   source("R/plots.R")
-  source("R/demographics.R")
   source("R/data-loading.R")
 }
 ```
 
-```{r q4_models, include=FALSE}
-S2_mod_ai      <- lm(AI_Moral_Frequency ~ R_Score * AI_Moral_Access, data = s2_core)
-S2_mod_ai_sum  <- summary(S2_mod_ai)
-S2_mod_overall     <- lm(AI_Moral_Frequency ~ R_Score * Moral_Access, data = s2_core)
-S2_mod_overall_sum <- summary(S2_mod_overall)
-```
+### Question 4: Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots? 
 
-### Question 4 — Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots? 
+Why do religiously engaged individuals seek moral advice from AI chatbots? One possibility is a *substitution* account: individuals turn to AI chatbots for moral consultation primarily because they lack access to traditional sources of moral advice (i.e., AI serves as a functional replacement in a "moral consultation desert"). Alternatively, under a *complementarity* account, AI chatbots serve as an additional, easily integrated channel that religious individuals consult alongside traditional sources, driven by a general disposition toward moral consultation. In this case, access to other sources would not inhibit, and may even amplify, their use of AI.
 
-Why do religiously engaged individuals seek moral advice from AI chatbots? One possibility is a *substitution* account: individuals might turn to AI chatbots for moral consultation primarily because they lack access to traditional sources of moral advice (i.e., AI serves as a functional replacement in a "moral consultation desert"). Alternatively, under a *complementarity* account, AI chatbots might serve as an additional, easily integrated channel that religious individuals consult alongside traditional sources, driven by a general disposition toward moral consultation. In this case, access to other sources would either not inhibit, or could even amplify, the use of AI.
+Study 2 measured participants' self-reported access to each source of moral advice to test whether source accessibility moderates the relationship between Religious Behavior Score and AI moral advice seeking. We tested two distinct moderators: access to AI chatbots specifically, and overall access to non-AI, non-religious moral advice sources. Under substitution account, the relationship between religiosity and AI advice seeking should be the strongest among those with *low* access to traditional sources. Under complementarity, there should either be no interaction or a positive interaction, where access to traditional sources does not suppress (and may even facilitate) AI moral advice seeking.
 
-Study 2 uniquely measured participants' self-reported access to each source of moral advice (e.g., family, friends, books, AI chatbots, etc.), allowing us to test these competing accounts by examining whether the relationship between Religious Behavior Score and AI moral advice seeking is moderated by source accessibility. We tested two distinct moderators: access to AI chatbots specifically, and overall access to non-AI, non-religious moral advice sources. If the substitution account holds, we would expect a negative interaction, where the relationship between religiosity and AI advice seeking is strongest among those with *low* access to traditional sources. If the complementarity account holds, we would expect either no interaction or a positive interaction, where access to traditional sources does not suppress (and may even facilitate) AI moral advice seeking.
-
-```{r tbl-q4-moderation}
-#| label: tbl-q4-moderation
-#| tbl-cap: "Moderation Analyses: Full Regression Results for Access to Sources Moderating the Relationship between Religious Behavior Score and Frequency of Seeking AI Moral Advice"
-
-make_moderation_table(
-  S2_mod_ai_sum,
-  S2_mod_overall_sum,
-  pred_name = "Religious Behavior Score",
-  mod1_name = "AI Chatbot Access",
-  mod2_name = "Overall Source Access"
-)
-```
-
-```{r fig-q4-collage, fig.width=12, fig.height=5}
+```{r fig-q4-collage, fig.width=12, fig.height=3.6}
 #| label: fig-q4-collage
-#| fig-cap: "Religious Behavior Score → Frequency of Seeking Moral Advice from AI Chatbots, Moderated by Access"
-#| apa-note: "Left panel: moderated by access to AI chatbots. Right panel: moderated by overall access to non-AI, non-religious sources. Lines represent predicted values at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels. Shaded bands indicate 95% confidence intervals. Study 2 only."
+#| fig-cap: "Religious Behavior Score and Frequency of Seeking AI Moral Advice Moderated by Access"
+#| apa-note: "Each panel shows predicted regression slopes at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels with 95% confidence bands."
 
 ai_vals      <- quantile(s2_core$AI_Moral_Access, probs = c(0.16, 0.50, 0.84), na.rm = TRUE)
 overall_vals <- quantile(s2_core$Moral_Access,  probs = c(0.16, 0.50, 0.84), na.rm = TRUE)
 
-plt_ai      <- make_mod_plot(S2_mod_ai, "AI_Moral_Access", ai_vals,
+plt_ai      <- make_mod_plot(moderation_rs_freq_s2_ai, "AI_Moral_Access", ai_vals,
                              "AI Chatbot Access") + ggtitle("AI Chatbot Access")
-plt_overall <- make_mod_plot(S2_mod_overall, "Moral_Access", overall_vals,
+plt_overall <- make_mod_plot(moderation_rs_freq_s2_overall, "Moral_Access", overall_vals,
                              "Overall Source Access") + ggtitle("Overall Source Access")
 
 plt_ai | plt_overall
 ```
 
-Access to AI chatbots did not significantly moderate the Religious Behavior Score → AI moral advice frequency relationship, suggesting that the tendency among religiously engaged individuals to seek moral advice from AI chatbots is not substantially amplified by how accessible they perceive AI to be. However, overall access to non-AI, non-religious moral advice sources did significantly moderate this relationship: among more religiously engaged participants, those with greater access to a wider range of moral advice sources also sought moral guidance from AI chatbots more frequently. This pattern suggests that AI chatbots function as a complementary rather than substitute source of moral guidance. Religiosity is associated with broader moral consultancy behavior overall, and AI chatbots are one expression of that tendency where access permits. However, this significant moderation effect did not replicate in other relationships between self-reported religiosity or interest in seeking moral advice as presented in the Supplementary Materials. 
+Access to AI chatbots did not significantly moderate the relationship between Religious Behavior Score and frequency to seek moral advice from AI chatbots (`r fmt_lm_apa(moderation_rs_freq_s2_ai, "R_Score:AI_Moral_Access", standardized = FALSE, include_r2 = FALSE, include_ci = TRUE)`), suggesting that the tendency for those religiously engaged to seek moral advice from AI chatbots is not substantially amplified by the accessibility of AI chatbots. However, overall access to non-AI, non-religious moral advice sources significantly moderated this relationship (`r fmt_lm_apa(moderation_rs_freq_s2_overall, "R_Score:Moral_Access", standardized = FALSE, include_r2 = FALSE, include_ci = TRUE)`): more religiously engaged participants with greater access to diverse moral advice sources sought AI moral guidance more frequently. Moderation for self-reported religiosity or interest in seeking moral advice from AI chatbots did not reach signifiance (see [Moderation Analysis](#sec-supp-moderation) in the Supplementary Materials). This pattern supports the complementarity account: religiosity reflects broader moral consultancy behavior, with AI chatbots serving as an additional channel, rather than a substitute for traditional sources of moral advice. 

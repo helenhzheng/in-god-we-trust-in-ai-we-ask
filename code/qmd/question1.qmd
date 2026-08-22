@@ -5,48 +5,18 @@ if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
   source("R/helpers.R")
   source("R/tables.R")
   source("R/plots.R")
-  source("R/demographics.R")
   source("R/data-loading.R")
 }
 ```
 
-### Question 1 — Does Self-Reported Religiosity Predict Frequency of Seeking Moral Advice from AI Chatbots?
+### Question 1: Is Self-Reported Religiosity Positively Associated With the Frequency of Seeking Moral Advice From AI Chatbots?
 
-```{r q1_correlation_calculations, include=FALSE}
-ct_q1_s1 <- cor.test(s1_core$Religiosity, s1_core$AI_Moral_Frequency)
-ct_q1_s2 <- cor.test(s2_core$Religiosity, s2_core$AI_Moral_Frequency)
+Across two pilot studies (see [Pilot Studies](#sec-supp-pilot-studies) in the Supplementary Materials) and two pre-registered studies, self-reported religiosity was positively and significantly correlated with the frequency of seeking moral advice from AI chatbots (Study 1: `r fmt_cor_apa(correlation_rel_freq_s1, power_correlation_rel_freq_s1)`; Study 2: `r fmt_cor_apa(correlation_rel_freq_s2, power_correlation_rel_freq_s2)`).
 
-s1_q1_pwr_val <- pwr::pwr.r.test(n = nrow(s1_core), r = ct_q1_s1$estimate, sig.level = 0.05)$power
-s1_q1_pwr_text <- if (s1_q1_pwr_val > 0.99) ">99%" else if (s1_q1_pwr_val > 0.95) ">95%" else sprintf(">%.0f%%", floor(s1_q1_pwr_val * 100))
-
-s2_q1_pwr_val <- pwr::pwr.r.test(n = nrow(s2_core), r = ct_q1_s2$estimate, sig.level = 0.05)$power
-s2_q1_pwr_text <- if (s2_q1_pwr_val > 0.99) ">99%" else if (s2_q1_pwr_val > 0.95) ">95%" else sprintf(">%.0f%%", floor(s2_q1_pwr_val * 100))
-```
-
-Across two pilot studies (reported in the Supplementary Materials) and two pre-registered studies, self-reported religiosity was positively and significantly correlated with the frequency of seeking moral advice from AI chatbots (Study 1: $r = `r sprintf("%.2f", ct_q1_s1$estimate)`$, `r s1_q1_pwr_text` power; Study 2: $r = `r sprintf("%.2f", ct_q1_s2$estimate)`$, `r s2_q1_pwr_text` power).
-
-```{r tbl-q1-correlation}
-#| label: tbl-q1-correlation
-#| tbl-cap: "Pearson Correlations Between Self-Reported Religiosity and Frequency of Seeking Moral Advice From AI Chatbots"
-
-cor_tbl <- data.frame(
-  Study = c("Study 1", "Study 2"),
-  N     = c(nrow(s1_core), nrow(s2_core)),
-  r     = round(c(ct_q1_s1$estimate, ct_q1_s2$estimate), 2),
-  t     = round(c(ct_q1_s1$statistic, ct_q1_s2$statistic), 2),
-  df    = c(ct_q1_s1$parameter, ct_q1_s2$parameter),
-  p     = c(apa_p(ct_q1_s1$p.value), apa_p(ct_q1_s2$p.value)),
-  check.names = FALSE
-)
-names(cor_tbl) <- c("Study", "N", "r", "t", "df", "p")
-
-make_cor_flextable(cor_tbl)
-```
-
-```{r fig-q1-collage, fig.width=12, fig.height=5}
+```{r fig-q1-collage, fig.width=12, fig.height=3.6}
 #| label: fig-q1-collage
 #| fig-cap: "Self-Reported Religiosity and Frequency of Seeking Moral Advice from AI Chatbots"
-#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band in green, and a LOESS trend line with 95% confidence band in blue. Pearson correlations are annotated within each panel."
+#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band, and a LOESS trend line with 95% confidence band."
 
 s1_plt <- plot_scatter_cor(s1_core, "Religiosity", "AI_Moral_Frequency",
              x_label = "Self-Reported Religiosity",
@@ -63,23 +33,4 @@ s2_plt <- plot_scatter_cor(s2_core, "Religiosity", "AI_Moral_Frequency",
 s1_plt | s2_plt
 ```
 
-```{r q1_regression_calculations, include=FALSE}
-fit_q1_s1 <- lm(AI_Moral_Frequency ~ Religiosity + Political + Age + Income + Education + SES, data = s1_core)
-fit_q1_s2 <- lm(AI_Moral_Frequency ~ Religiosity + Political + Age + Income + Education + SES, data = s2_core)
-```
-
-Follow-up linear regression analyses confirmed that self-reported religiosity significantly predicted the frequency of seeking moral advice from AI chatbots. The pre-registered simple linear regression models (without covariates) are detailed in the Supplementary Materials, the multiple regression models (controlling for age, education, income, socioeconomic status, and political orientation) are presented in Table 2. In these adjusted models, self-reported religiosity remained a significant predictor in both Study 1 and Study 2.
-
-```{r tbl-q1-regression}
-#| label: tbl-q1-regression
-#| tbl-cap: "Self-Reported Religiosity Predicting Frequency of Seeking Moral Advice from AI Chatbots"
-#| apa-note: "All regression coefficients are standardized. Covariates controlled for include age, education, income, SES, and political orientation. The simple regression models without covariates are reported in the Supplementary Materials."
-
-make_study_reg_adj_table(
-  list(
-    "Study 1" = fit_q1_s1,
-    "Study 2" = fit_q1_s2
-  ),
-  predictor = "Religiosity"
-)
-```
+Follow-up linear regression analyses confirmed that self-reported religiosity is positively associated with the frequency of seeking moral advice from AI chatbots. In multiple regression models controlling for age, education, income, socioeconomic status, and political orientation, self-reported religiosity remained a significant positive predictor in both Study 1 (`r fmt_lm_apa(regression_rel_freq_s1, "Religiosity", include_ci = FALSE)`) and Study 2 (`r fmt_lm_apa(regression_rel_freq_s2, "Religiosity", include_ci = FALSE)`), as shown in @tbl-rel-freq-regression in the Supplementary Materials.

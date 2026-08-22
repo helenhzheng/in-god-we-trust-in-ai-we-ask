@@ -27,8 +27,21 @@ local function count_words_in_inlines(inlines)
   end
 end
 
+local stringify = pandoc.utils.stringify
+local stop_counting = false
+
 local function processblocks(b)
   for _, block in ipairs(b) do
+    if stop_counting then return end
+
+    if block.t == "Header" then
+      local h_text = stringify(block.content):lower()
+      if h_text:find("references") or h_text:find("supplementary") or h_text:find("appendix") then
+        stop_counting = true
+        return
+      end
+    end
+
     if block.t == "Para" or block.t == "Plain" or block.t == "Header" or block.t == "BlockQuote" then
       count_words_in_inlines(block.content)
     end

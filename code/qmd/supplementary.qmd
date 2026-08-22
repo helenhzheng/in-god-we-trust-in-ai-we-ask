@@ -1,21 +1,23 @@
 ```{r setup_supp, include=FALSE}
 if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
+  if (!exists("BOOTSTRAP_SIMS")) BOOTSTRAP_SIMS <- 5000
   source("R/packages.R")
   source("R/colors.R")
   source("R/helpers.R")
   source("R/tables.R")
   source("R/plots.R")
-  source("R/demographics.R")
   source("R/data-loading.R")
   source("R/supplementary.R")
+  source("R/main-analysis.R")
 }
-```
 
-# Study 1 and Study 2
+# Force full Okabe-Ito color palette for Supplementary Materials
+set_color_scheme("color")
+```
 
 ## Discrepancies from Pre-Registration
 
-Our studies were pre-registered on AsPredicted ([Study 1](https://aspredicted.org/mv2z-t7dw.pdf), [Study 2](https://aspredicted.org/z378hg.pdf)). To maintain a focused presentation of analysis results and prevent scope creep, several analyses and presentation formats deviate from the initial pre-registration documents. The table below details these deviations and their justifications.
+Our studies were pre-registered on AsPredicted ([Study 1](https://aspredicted.org/mv2z-t7dw.pdf), [Study 2](https://aspredicted.org/z378hg.pdf)). To maintain a focused presentation of analysis results and prevent scope creep, several analyses and presentation formats deviate from the initial pre-registration documents. @tbl-pre-reg-deviations details these deviations and their justifications.
 
 | Topic / Variable | Pre-registered Plan | Actual Implementation in Main Text | Justification |
 |:---|:---|:---|:---|
@@ -29,7 +31,7 @@ Our studies were pre-registered on AsPredicted ([Study 1](https://aspredicted.or
 
 ## Variables Used in Study 1 and Study 2
 
-Three measures were revised between studies: *self-reported religiosity* was rescaled from 5-point to 7-point to match the response format of all other measures; *belief in moral objectivity* was changed from a bipolar slider (-50~+50) to a 7-point Likert scale to standardize the response format; and in *perceived authority of AI chatbots as moral advisors*, the word *accurate* was removed (i.e., "trusted authorities for giving accurate moral advice" became "trusted authorities to give moral advice") to better reflect the nature of advice-seeking. Several measures from Study 1 were not included in Study 2 to narrow the research focus and reduce respondent burden. The table below summarizes all variables used across the two pre-registered studies. 
+Three measures were revised between studies: *self-reported religiosity* was rescaled from 5-point to 7-point to match the response format of all other measures; *belief in moral objectivity* was changed from a bipolar slider (-50~+50) to a 7-point Likert scale to standardize the response format; and in *perceived authority of AI chatbots as moral advisors*, the word *accurate* was removed (i.e., "trusted authorities for giving accurate moral advice" became "trusted authorities to give moral advice") to better reflect the nature of advice-seeking. Several measures from Study 1 were not included in Study 2 to narrow the research focus and reduce respondent burden. @tbl-methods summarizes all variables used across the two pre-registered studies. 
 
 | Measure | Study 1 | Study 2 |
 |:---|:---|:---|
@@ -70,7 +72,7 @@ Three measures were revised between studies: *self-reported religiosity* was res
 
 ## Demographic Characteristics of Included Participants in Study 1 and Study 2
 
-The demographic characteristics of the included participants in Study 1 and Study 2 are presented in the table below.
+The demographic characteristics of the included participants in Study 1 and Study 2 are presented in @tbl-participants.
 
 ```{r participants_data, include=FALSE}
 demo_s1  <- create_demo_summary(Study1, "Study 1")
@@ -189,699 +191,480 @@ plot_cor_heatmap(s1_moral_interest, title = "Study 1")
 plot_cor_heatmap(s2_moral_interest, title = "Study 2")
 ```
 
-## Correlation Analyses: Predictor → AI Moral Interest
+## Correlation Analyses
 
-The following analyses examine the two secondary predictor–outcome relationships not covered in the main body: Religious Behavior Score → Interest and Self-Reported Religiosity → Interest. Correlations are presented with predictor first, then study. The primary predictor-outcome relationships is presented in the main body.
+### Predictor → AI Moral Frequency
 
-```{r tbl-supp-correlations}
-#| label: tbl-supp-correlations
-#| tbl-cap: "Pearson Correlations Between Religiosity Predictors and Interest in Seeking Moral Advice From AI Chatbots"
+@tbl-supp-freq-correlation and @fig-supp-freq-scatter present the correlation analyses between the religiosity predictors (Self-Reported Religiosity and Religious Behavior Score) and the frequency of seeking moral advice from AI chatbots across Study 1 and Study 2.
 
-ct_rs_s1  <- cor.test(s1_core$R_Score,    s1_core$AI_Moral_Interest)
-ct_rs_s2  <- cor.test(s2_core$R_Score,    s2_core$AI_Moral_Interest)
-ct_rel_s1 <- cor.test(s1_core$Religiosity, s1_core$AI_Moral_Interest)
-ct_rel_s2 <- cor.test(s2_core$Religiosity, s2_core$AI_Moral_Interest)
+```{r tbl-supp-freq-correlation}
+#| label: tbl-supp-freq-correlation
+#| tbl-cap: "Pearson Correlations Between Religiosity Predictors and Frequency of Seeking Moral Advice From AI Chatbots"
 
-cor_tbl_supp <- data.frame(
-  Predictor = c("Religious Behavior Score", "Religious Behavior Score", "Self-Reported Religiosity", "Self-Reported Religiosity"),
-  Study = c("Study 1", "Study 2", "Study 1", "Study 2"),
-  N     = c(nrow(s1_core), nrow(s2_core), nrow(s1_core), nrow(s2_core)),
-  r     = round(c(ct_rs_s1$estimate,  ct_rs_s2$estimate,
-                  ct_rel_s1$estimate, ct_rel_s2$estimate), 2),
-  t     = round(c(ct_rs_s1$statistic,  ct_rs_s2$statistic,
-                  ct_rel_s1$statistic, ct_rel_s2$statistic), 2),
-  df    = c(ct_rs_s1$parameter,  ct_rs_s2$parameter,
-            ct_rel_s1$parameter, ct_rel_s2$parameter),
-  p     = c(apa_p(ct_rs_s1$p.value),  apa_p(ct_rs_s2$p.value),
-            apa_p(ct_rel_s1$p.value), apa_p(ct_rel_s2$p.value)),
-  check.names = FALSE
-)
-
-flextable::flextable(cor_tbl_supp) |>
-  flextable::merge_v(j = "Predictor") |>
-  flextable::compose(j = "r", part = "header",
-    value = flextable::as_paragraph(flextable::as_i("r"))) |>
-  flextable::compose(j = "t", part = "header",
-    value = flextable::as_paragraph(flextable::as_i("t"))) |>
-  flextable::compose(j = "p", part = "header",
-    value = flextable::as_paragraph(flextable::as_i("p"))) |>
-  flextable::align(j = 1:2, part = "body", align = "left") |>
-  flextable::align(j = 3:7, part = "body", align = "center") |>
-  flextable::align(part = "header", align = "center") |>
-  flextable::border_remove() |>
-  flextable::hline_top(part = "header", border = officer::fp_border(width = 1.5)) |>
-  flextable::hline_bottom(part = "header", border = officer::fp_border(width = 1)) |>
-  flextable::hline_bottom(part = "body", border = officer::fp_border(width = 1.5)) |>
-  flextable::set_table_properties(layout = "autofit", width = 1)
+make_cor_flextable(table_correlation_freq)
 ```
 
-```{r fig-supp-scatter, fig.width=12, fig.height=10}
-#| label: fig-supp-scatter
-#| fig-cap: "Religious Behavior Score and Self-Reported Religiosity Predicting Interest in Seeking Moral Advice from AI Chatbots"
-#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band in green, and a LOESS trend line with 95% confidence band in blue. Pearson correlations are annotated within each panel. Top row: Religious Behavior Score → Interest. Bottom row: Self-Reported Religiosity → Interest."
+```{r fig-supp-freq-scatter, fig.width=12, fig.height=10}
+#| label: fig-supp-freq-scatter
+#| fig-cap: "Religious Behavior Score and Self-Reported Religiosity Predicting Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band, and a LOESS trend line with 95% confidence band."
 
-p_qs2_s1 <- plot_scatter_cor(s1_core, "R_Score", "AI_Moral_Interest",
+p_freq_rs_s1 <- plot_scatter_cor(s1_core, "R_Score", "AI_Moral_Frequency",
+                x_label = "Religious Behavior Score",
+                y_label = "Frequency of Seeking Moral Advice from AI") +
+  ggtitle("Study 1: Religious Behavior Score \u2192 Frequency")
+
+p_freq_rs_s2 <- plot_scatter_cor(s2_core, "R_Score", "AI_Moral_Frequency",
+                x_label = "Religious Behavior Score",
+                y_label = "Frequency of Seeking Moral Advice from AI") +
+  ggtitle("Study 2: Religious Behavior Score \u2192 Frequency")
+
+p_freq_rel_s1 <- plot_scatter_cor(s1_core, "Religiosity", "AI_Moral_Frequency",
+                 x_label = "Self-Reported Religiosity",
+                 y_label = "Frequency of Seeking Moral Advice from AI") +
+  scale_x_continuous(name = "Self-Reported Religiosity", breaks = 1:5) +
+  ggtitle("Study 1: Religiosity \u2192 Frequency")
+
+p_freq_rel_s2 <- plot_scatter_cor(s2_core, "Religiosity", "AI_Moral_Frequency",
+                 x_label = "Self-Reported Religiosity",
+                 y_label = "Frequency of Seeking Moral Advice from AI") +
+  scale_x_continuous(name = "Self-Reported Religiosity", breaks = 1:7) +
+  ggtitle("Study 2: Religiosity \u2192 Frequency")
+
+(p_freq_rs_s1 | p_freq_rs_s2) / (p_freq_rel_s1 | p_freq_rel_s2)
+```
+
+### Predictor → AI Moral Interest
+
+@tbl-supp-int-correlation and @fig-supp-int-scatter present the correlation analyses between the religiosity predictors (Self-Reported Religiosity and Religious Behavior Score) and the interest in seeking moral advice from AI chatbots across Study 1 and Study 2.
+
+```{r tbl-supp-int-correlation}
+#| label: tbl-supp-int-correlation
+#| tbl-cap: "Pearson Correlations Between Religiosity Predictors and Interest in Seeking Moral Advice From AI Chatbots"
+
+make_cor_flextable(table_correlation_int)
+```
+
+```{r fig-supp-int-scatter, fig.width=12, fig.height=10}
+#| label: fig-supp-int-scatter
+#| fig-cap: "Religious Behavior Score and Self-Reported Religiosity Predicting Interest in Seeking Moral Advice from AI Chatbots"
+#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band, and a LOESS trend line with 95% confidence band."
+
+p_int_s1 <- plot_scatter_cor(s1_core, "R_Score", "AI_Moral_Interest",
                x_label = "Religious Behavior Score",
                y_label = "Interest in Seeking Moral Advice from AI") +
   ggtitle("Study 1: Religious Behavior Score \u2192 Interest")
 
-p_qs2_s2 <- plot_scatter_cor(s2_core, "R_Score", "AI_Moral_Interest",
+p_int_s2 <- plot_scatter_cor(s2_core, "R_Score", "AI_Moral_Interest",
                x_label = "Religious Behavior Score",
                y_label = "Interest in Seeking Moral Advice from AI") +
   ggtitle("Study 2: Religious Behavior Score \u2192 Interest")
 
-p_qs3_s1 <- plot_scatter_cor(s1_core, "Religiosity", "AI_Moral_Interest",
+p_int_s1 <- plot_scatter_cor(s1_core, "Religiosity", "AI_Moral_Interest",
                x_label = "Self-Reported Religiosity",
                y_label = "Interest in Seeking Moral Advice from AI") +
   scale_x_continuous(name = "Self-Reported Religiosity", breaks = 1:5) +
   ggtitle("Study 1: Religiosity \u2192 Interest")
 
-p_qs3_s2 <- plot_scatter_cor(s2_core, "Religiosity", "AI_Moral_Interest",
+p_int_s2 <- plot_scatter_cor(s2_core, "Religiosity", "AI_Moral_Interest",
                x_label = "Self-Reported Religiosity",
                y_label = "Interest in Seeking Moral Advice from AI") +
   scale_x_continuous(name = "Self-Reported Religiosity", breaks = 1:7) +
   ggtitle("Study 2: Religiosity \u2192 Interest")
 
-(p_qs2_s1 | p_qs2_s2) / (p_qs3_s1 | p_qs3_s2)
+(p_int_s1 | p_int_s2) / (p_int_s1 | p_int_s2)
 ```
 
 ## Regression Analyses
 
-### Predictor → AI Moral Frequency
+### Self-Reported Religiosity → AI Moral Frequency
 
-#### Self-Reported Religiosity → AI Moral Frequency
+@tbl-rel-freq-regression presents both simple linear regression models (without demographic covariates) and multiple linear regression models for Self-Reported Religiosity predicting Frequency of Seeking Moral Advice from AI Chatbots.
 
-The following table presents the simple linear regression models (without demographic covariates) for the primary relationships reported in the main manuscript for Question 1. The multiple linear regression models are presented in the main body.
+```{r tbl-rel-freq-regression}
+#| label: tbl-rel-freq-regression
+#| tbl-cap: "Self-Reported Religiosity Predicting Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
-```{r tbl-supp-q1-simple-regression}
-#| label: tbl-supp-q1-simple-regression
-#| tbl-cap: "Simple Linear Regression: Self-Reported Religiosity Predicting Frequency of Seeking Moral Advice from AI Chatbots"
-#| apa-note: "All regression coefficients are standardized. Predicting frequency of seeking moral advice from AI chatbots from self-reported religiosity without covariates."
-
-make_study_reg_adj_table(
-  list(
-    "Study 1" = lm(AI_Moral_Frequency ~ Religiosity, data = s1_core),
-    "Study 2" = lm(AI_Moral_Frequency ~ Religiosity, data = s2_core)
-  ),
-  predictor = "Religiosity"
-)
+make_study_reg_table(reg_rows_rel_freq)
 ```
 
-#### Religious Behavior Score → AI Moral Frequency
+### Religious Behavior Score → AI Moral Frequency
 
-The following table presents the simple linear regression models (without demographic covariates) for the primary relationships reported in the main manuscript for Question 2. The multiple linear regression models are presented in the main body.
+@tbl-rs-freq-regression presents both simple linear regression models (without demographic covariates) and multiple linear regression models for Religious Behavior Score predicting Frequency of Seeking Moral Advice from AI Chatbots.
 
-```{r tbl-supp-q2-simple-regression}
-#| label: tbl-supp-q2-simple-regression
-#| tbl-cap: "Simple Linear Regression: Religious Behavior Score Predicting Frequency of Seeking Moral Advice from AI Chatbots"
-#| apa-note: "All regression coefficients are standardized. Predicting frequency of seeking moral advice from AI chatbots from Religious Behavior Score without covariates."
+```{r tbl-rs-freq-regression}
+#| label: tbl-rs-freq-regression
+#| tbl-cap: "Religious Behavior Score Predicting Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
-make_study_reg_adj_table(
-  list(
-    "Study 1" = lm(AI_Moral_Frequency ~ R_Score, data = s1_core),
-    "Study 2" = lm(AI_Moral_Frequency ~ R_Score, data = s2_core)
-  ),
-  predictor = "R_Score"
-)
+make_study_reg_table(reg_rows_rs_freq)
 ```
 
-#### Self-Reported Religiosity → AI Moral Interest
+### Self-Reported Religiosity → AI Moral Interest
 
-The following table presents both simple linear regression models (without demographic covariates) and multiple linear regression models for the secondary outcome model in Question 1: Self-Reported Religiosity predicting Interest in Seeking Moral Advice from AI Chatbots.
+@tbl-rel-int-regression presents both simple linear regression models (without demographic covariates) and multiple linear regression models for Self-Reported Religiosity predicting Interest in Seeking Moral Advice from AI Chatbots.
 
-```{r tbl-qs3-regression}
-#| label: tbl-qs3-regression
+```{r tbl-rel-int-regression}
+#| label: tbl-rel-int-regression
 #| tbl-cap: "Self-Reported Religiosity Predicting Interest in Seeking Moral Advice From AI Chatbots"
 #| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
-make_study_reg_table(
-  list(
-    "Study 1" = c(
-      apa_lm_summary(lm(AI_Moral_Interest ~ Religiosity, data = s1_core), "Religiosity"),
-      apa_lm_summary(lm(AI_Moral_Interest ~ Religiosity + Political + Age + Income + Education + SES, data = s1_core), "Religiosity")
-    ),
-    "Study 2" = c(
-      apa_lm_summary(lm(AI_Moral_Interest ~ Religiosity, data = s2_core), "Religiosity"),
-      apa_lm_summary(lm(AI_Moral_Interest ~ Religiosity + Political + Age + Income + Education + SES, data = s2_core), "Religiosity")
-    )
-  )
-)
+make_study_reg_table(reg_rows_rel_int)
 ```
 
-#### Religious Behavior Score → AI Moral Interest
+### Religious Behavior Score → AI Moral Interest
 
-The following table presents both simple linear regression models (without demographic covariates) and multiple linear regression models for the secondary outcome model in Question 2: Religious Behavior Score predicting Interest in Seeking Moral Advice from AI Chatbots.
+@tbl-rs-int-regression presents both simple linear regression models (without demographic covariates) and multiple linear regression models for Religious Behavior Score predicting Interest in Seeking Moral Advice from AI Chatbots.
 
-```{r tbl-qs2-regression}
-#| label: tbl-qs2-regression
+```{r tbl-rs-int-regression}
+#| label: tbl-rs-int-regression
 #| tbl-cap: "Religious Behavior Score Predicting Interest in Seeking Moral Advice From AI Chatbots"
 #| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
-make_study_reg_table(
-  list(
-    "Study 1" = c(
-      apa_lm_summary(lm(AI_Moral_Interest ~ R_Score, data = s1_core), "R_Score"),
-      apa_lm_summary(lm(AI_Moral_Interest ~ R_Score + Political + Age + Income + Education + SES, data = s1_core), "R_Score")
-    ),
-    "Study 2" = c(
-      apa_lm_summary(lm(AI_Moral_Interest ~ R_Score, data = s2_core), "R_Score"),
-      apa_lm_summary(lm(AI_Moral_Interest ~ R_Score + Political + Age + Income + Education + SES, data = s2_core), "R_Score")
-    )
-  )
-)
+make_study_reg_table(reg_rows_rs_int)
 ```
 
 ## Mediation Analyses
 
-### Regression Analyses: Predictor → Mediators
+### Path-A Regression Analyses
 
-#### Self-Reported Religiosity → Mediators
+#### Self-Reported Religiosity → Candidate Mediators
 
-The following tables report the regression of Self-Reported Religiosity onto each candidate mediator. These results underlie both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways, as the Religiosity → Mediator path is identical across both.
+@tbl-rel-patha-s1 and @tbl-rel-patha-s2 report the regression of Self-Reported Religiosity onto each candidate mediator. These results underlie both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways, as the Religiosity → Mediator path is identical across both.
 
-```{r tbl-supp-rel-med-s1}
-#| label: tbl-supp-rel-med-s1
+```{r tbl-rel-patha-s1}
+#| label: tbl-rel-patha-s1
 #| tbl-cap: "Study 1: Self-Reported Religiosity Predicting Each Candidate Mediator"
 #| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation. These estimates apply to both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways."
 
-regression_table(
-  data = s1_core,
-  x_var = "Religiosity",
-  mediator_list = as.list(s1_mediators),
-  mediator_names = S1_MEDIATOR_NAMES
-)
+path_a_table_rel_s1
 ```
 
-```{r tbl-supp-rel-med-s2}
-#| label: tbl-supp-rel-med-s2
+```{r tbl-rel-patha-s2}
+#| label: tbl-rel-patha-s2
 #| tbl-cap: "Study 2: Self-Reported Religiosity Predicting Each Candidate Mediator"
 #| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation. These estimates apply to both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways."
 
-regression_table(
-  data = s2_core,
-  x_var = "Religiosity",
-  mediator_list = as.list(s2_mediators),
-  mediator_names = S2_MEDIATOR_NAMES
-)
+path_a_table_rel_s2
 ```
 
 #### Religious Behavior Score → Candidate Mediators
 
-The following tables report the regression of Religious Behavior Score onto each candidate mediator. Because the predictor → mediator path is identical regardless of the downstream outcome, these estimates underlie both the Religious Behavior Score → Frequency and Religious Behavior Score → Interest mediation pathways.
+@tbl-rs-patha-s1 and @tbl-rs-patha-s2 report the regression of Religious Behavior Score onto each candidate mediator. Because the predictor → mediator path is identical regardless of the downstream outcome, these estimates underlie both the Religious Behavior Score → Frequency and Religious Behavior Score → Interest mediation pathways.
 
-```{r tbl-supp-rs-med-s1}
-#| label: tbl-supp-rs-med-s1
+```{r tbl-rs-patha-s1}
+#| label: tbl-rs-patha-s1
 #| tbl-cap: "Study 1: Religious Behavior Score Predicting Each Candidate Mediator"
 #| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation. These estimates apply to both the Religious Behavior Score → Frequency and Religious Behavior Score → Interest mediation pathways."
 
-regression_table(
-  data           = s1_core,
-  x_var          = "R_Score",
-  mediator_list  = as.list(s1_mediators),
-  mediator_names = S1_MEDIATOR_NAMES
-)
+path_a_table_rs_s1
 ```
 
-```{r tbl-supp-rs-med-s2}
-#| label: tbl-supp-rs-med-s2
+```{r tbl-rs-patha-s2}
+#| label: tbl-rs-patha-s2
 #| tbl-cap: "Study 2: Religious Behavior Score Predicting Each Candidate Mediator"
 #| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation. These estimates apply to both the Religious Behavior Score → Frequency and Religious Behavior Score → Interest mediation pathways."
 
-regression_table(
-  data           = s2_core,
-  x_var          = "R_Score",
-  mediator_list  = as.list(s2_mediators),
-  mediator_names = S2_MEDIATOR_NAMES
-)
+path_a_table_rs_s2
 ```
 
 ### Individual Mediation Analyses
 
 For the individual mediation analyses, candidate mediators were included only if they were significantly associated with the focal predictor (applying the same conservative Bonferroni correction used in the main manuscript: $p < .05 / `r ncol(s1_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s1_mediators)))`$ in Study 1; $p < .05 / `r ncol(s2_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s2_mediators)))`$ in Study 2) in either the simple (Model 1) or demographic-adjusted (Model 2) regression models.
 
-#### Religious Behavior Score → Mediator → AI Moral Frequency
-
-```{r setup-q3-mediation-supp, include=FALSE, cache=TRUE}
-sig_s1 <- filter_sig_mediators(s1_core, "R_Score", s1_mediators, S1_MEDIATOR_NAMES)
-sig_s2 <- filter_sig_mediators(s2_core, "R_Score", s2_mediators, S2_MEDIATOR_NAMES)
-
-res_s1 <- run_mediation_analyses(s1_core, "R_Score", "AI_Moral_Frequency", as.list(sig_s1$mediators), sig_s1$names, sims = 5000)
-res_s2 <- run_mediation_analyses(s2_core, "R_Score", "AI_Moral_Frequency", as.list(sig_s2$mediators), sig_s2$names, sims = 5000)
-
-rep_s1 <- select_representatives(res_s1, s1_core)
-rep_s2 <- select_representatives(res_s2, s2_core)
-```
-
-```{r tbl-s1-mediation, cache=TRUE}
-#| label: tbl-s1-mediation
-#| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Frequency)"
-#| apa-note: "Religious Behavior Score → candidate mediator → frequency of seeking moral advice from AI chatbots. Only mediators significant (*p* < .05) in at least one regression model (simple or multiple) are included."
-
-mediation_table_from_results(res_s1, selected_mediators = names(rep_s1$mediators))
-```
-
-```{r tbl-s2-mediation, cache=TRUE}
-#| label: tbl-s2-mediation
-#| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Frequency)"
-#| apa-note: "Religious Behavior Score → candidate mediator → frequency of seeking moral advice from AI chatbots. Only mediators significant (*p* < .05) in at least one regression model (simple or multiple) are included."
-
-mediation_table_from_results(res_s2, selected_mediators = names(rep_s2$mediators))
-```
-
 #### Self-Reported Religiosity → Mediator → AI Moral Frequency
 
-```{r setup-qs1-mediation, include=FALSE, cache=TRUE}
-sig_rel_s1 <- filter_sig_mediators(s1_core, "Religiosity", s1_mediators, S1_MEDIATOR_NAMES)
-sig_rel_s2 <- filter_sig_mediators(s2_core, "Religiosity", s2_mediators, S2_MEDIATOR_NAMES)
-
-res_qs1_s1 <- run_mediation_analyses(s1_core, "Religiosity", "AI_Moral_Frequency", as.list(sig_rel_s1$mediators), sig_rel_s1$names, sims = 5000)
-res_qs1_s2 <- run_mediation_analyses(s2_core, "Religiosity", "AI_Moral_Frequency", as.list(sig_rel_s2$mediators), sig_rel_s2$names, sims = 5000)
-
-rep_qs1_s1 <- select_representatives(res_qs1_s1, s1_core)
-rep_qs1_s2 <- select_representatives(res_qs1_s2, s2_core)
-```
-
-```{r QS1_S1_med, cache=TRUE}
+```{r tbl-rel-freq-s1-mediation, cache=TRUE}
 #| label: tbl-rel-freq-s1-mediation
-#| tbl-cap: "Study 1: Mediation — Self-Reported Religiosity → Mediator → AI Moral Frequency"
+#| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Self-Reported Religiosity → Mediator → AI Moral Frequency)"
+#| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
 
-mediation_table_from_results(res_qs1_s1, selected_mediators = names(rep_qs1_s1$mediators))
+mediation_table_from_results(ind_mediation_rel_freq_s1, selected_mediators = names(rep_mediators_rel_freq_s1$mediators))
 ```
 
-```{r QS1_S2_med, cache=TRUE}
+```{r tbl-rel-freq-s2-mediation, cache=TRUE}
 #| label: tbl-rel-freq-s2-mediation
-#| tbl-cap: "Study 2: Mediation — Self-Reported Religiosity → Mediator → AI Moral Frequency"
+#| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Self-Reported Religiosity → Mediator → AI Moral Frequency)"
+#| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
 
-mediation_table_from_results(res_qs1_s2, selected_mediators = names(rep_qs1_s2$mediators))
+mediation_table_from_results(ind_mediation_rel_freq_s2, selected_mediators = names(rep_mediators_rel_freq_s2$mediators))
 ```
 
-#### Religious Behavior Score → Mediator → AI Moral Interest
+#### Religious Behavior Score → Mediator → AI Moral Frequency
 
-```{r setup-qs2-mediation, include=FALSE, cache=TRUE}
-sig_rs_s1  <- filter_sig_mediators(s1_core, "R_Score",     s1_mediators, S1_MEDIATOR_NAMES)
-sig_rs_s2  <- filter_sig_mediators(s2_core, "R_Score",     s2_mediators, S2_MEDIATOR_NAMES)
+```{r tbl-rs-freq-s1-mediation, cache=TRUE}
+#| label: tbl-rs-freq-s1-mediation
+#| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Frequency)"
+#| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (adjusted *p < .05) in at least one regression model are included."
 
-res_qs2_s1 <- run_mediation_analyses(s1_core, "R_Score",     "AI_Moral_Interest",  as.list(sig_rs_s1$mediators),  sig_rs_s1$names,  sims = 5000)
-res_qs2_s2 <- run_mediation_analyses(s2_core, "R_Score",     "AI_Moral_Interest",  as.list(sig_rs_s2$mediators),  sig_rs_s2$names,  sims = 5000)
-
-rep_qs2_s1 <- select_representatives(res_qs2_s1, s1_core)
-rep_qs2_s2 <- select_representatives(res_qs2_s2, s2_core)
+mediation_table_from_results(ind_mediation_rs_freq_s1, selected_mediators = names(rep_mediators_rs_freq_s1$mediators))
 ```
 
-```{r QS2_S1_med, cache=TRUE}
-#| label: tbl-rs-int-s1-mediation
-#| tbl-cap: "Study 1: Mediation — Religious Behavior Score → Mediator → AI Moral Interest"
+```{r tbl-rs-freq-s2-mediation, cache=TRUE}
+#| label: tbl-rs-freq-s2-mediation
+#| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Frequency)"
+#| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (adjusted *p < .05) in at least one regression model are included."
 
-mediation_table_from_results(res_qs2_s1, selected_mediators = names(rep_qs2_s1$mediators))
-```
-
-```{r QS2_S2_med, cache=TRUE}
-#| label: tbl-rs-int-s2-mediation
-#| tbl-cap: "Study 2: Mediation — Religious Behavior Score → Mediator → AI Moral Interest"
-
-mediation_table_from_results(res_qs2_s2, selected_mediators = names(rep_qs2_s2$mediators))
+mediation_table_from_results(ind_mediation_rs_freq_s2, selected_mediators = names(rep_mediators_rs_freq_s2$mediators))
 ```
 
 #### Self-Reported Religiosity → Mediator → AI Moral Interest
 
-```{r setup-qs3-mediation, include=FALSE, cache=TRUE}
-res_qs3_s1 <- run_mediation_analyses(s1_core, "Religiosity", "AI_Moral_Interest",  as.list(sig_rel_s1$mediators), sig_rel_s1$names, sims = 5000)
-res_qs3_s2 <- run_mediation_analyses(s2_core, "Religiosity", "AI_Moral_Interest",  as.list(sig_rel_s2$mediators), sig_rel_s2$names, sims = 5000)
-
-rep_qs3_s1 <- select_representatives(res_qs3_s1, s1_core)
-rep_qs3_s2 <- select_representatives(res_qs3_s2, s2_core)
-```
-
 ```{r tbl-rel-int-s1-mediation, cache=TRUE}
 #| label: tbl-rel-int-s1-mediation
-#| tbl-cap: "Study 1: Mediation — Self-Reported Religiosity → Mediator → AI Moral Interest"
+#| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Self-Reported Religiosity → Mediator → AI Moral Interest)"
+#| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
 
-mediation_table_from_results(res_qs3_s1, selected_mediators = names(rep_qs3_s1$mediators))
+mediation_table_from_results(ind_mediation_rel_int_s1, selected_mediators = names(rep_mediators_rel_int_s1$mediators))
 ```
 
 ```{r tbl-rel-int-s2-mediation, cache=TRUE}
 #| label: tbl-rel-int-s2-mediation
-#| tbl-cap: "Study 2: Mediation — Self-Reported Religiosity → Mediator → AI Moral Interest"
+#| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Self-Reported Religiosity → Mediator → AI Moral Interest)"
+#| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
 
-mediation_table_from_results(res_qs3_s2, selected_mediators = names(rep_qs3_s2$mediators))
+mediation_table_from_results(ind_mediation_rel_int_s2, selected_mediators = names(rep_mediators_rel_int_s2$mediators))
 ```
 
+#### Religious Behavior Score → Mediator → AI Moral Interest
 
-### Parallel Mediation Analyses
+```{r tbl-rs-int-s1-mediation, cache=TRUE}
+#| label: tbl-rs-int-s1-mediation
+#| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Interest)"
+#| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
 
-#### Primary Parallel Mediation Models (Religious Behavior Score → AI Moral Frequency)
-
-Below, we present the full parameter estimates and the path diagrams for the parallel mediation models predicting the frequency of seeking AI moral advice from the Religious Behavior Score.
-
-```{r q3-parallel-setup-supp, include=FALSE, cache=TRUE}
-# Significant mediators for RBS predicting AI Moral Frequency (Question 3)
-sig_s1 <- filter_sig_mediators(s1_core, "R_Score", s1_mediators, S1_MEDIATOR_NAMES)
-sig_s2 <- filter_sig_mediators(s2_core, "R_Score", s2_mediators, S2_MEDIATOR_NAMES)
-
-res_s1 <- run_mediation_analyses(s1_core, "R_Score", "AI_Moral_Frequency", as.list(sig_s1$mediators), sig_s1$names, sims = 5000)
-res_s2 <- run_mediation_analyses(s2_core, "R_Score", "AI_Moral_Frequency", as.list(sig_s2$mediators), sig_s2$names, sims = 5000)
-
-rep_s1 <- select_representatives(res_s1, s1_core)
-rep_s2 <- select_representatives(res_s2, s2_core)
-
-# ── Study 1 lavaan model ──────────────────────────────────────
-model_s1 <- build_parallel_model("R_Score", "AI_Moral_Frequency", names(rep_s1$mediators))
-set.seed(42)
-fit_s1 <- sem(model_s1, data = s1_core, se = "bootstrap", bootstrap = 5000, missing = "listwise")
-
-# ── Study 2 lavaan model ──────────────────────────────────────
-model_s2 <- build_parallel_model("R_Score", "AI_Moral_Frequency", names(rep_s2$mediators))
-set.seed(42)
-fit_s2 <- sem(model_s2, data = s2_core, se = "bootstrap", bootstrap = 5000, missing = "listwise")
-
-s1_labels <- rep_s1$names
-s2_labels <- rep_s2$names
-
-coefs_s1 <- extract_path_coefs(fit_s1, length(rep_s1$names))
-coefs_s2 <- extract_path_coefs(fit_s2, length(rep_s2$names))
+mediation_table_from_results(ind_mediation_rs_int_s1, selected_mediators = names(rep_mediators_rs_int_s1$mediators))
 ```
 
-```{r tbl-q3-parallel-s1-estimates}
-#| label: tbl-q3-parallel-s1-estimates
-#| tbl-cap: "Study 1: Full Parameter Estimates — Parallel Mediation (Religious Behavior Score → AI Moral Frequency)"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+```{r tbl-rs-int-s2-mediation, cache=TRUE}
+#| label: tbl-rs-int-s2-mediation
+#| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Interest)"
+#| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
 
-est_s1 <- extract_all_estimates(
-  fit_s1,
-  mediator_names  = s1_labels,
-  predictor_name  = "Religious Behavior Score",
-  outcome_name    = "AI Moral Frequency"
-)
-fmt_all_estimates_table(est_s1)
+mediation_table_from_results(ind_mediation_rs_int_s2, selected_mediators = names(rep_mediators_rs_int_s2$mediators))
 ```
 
-```{r tbl-q3-parallel-s2-estimates}
-#| label: tbl-q3-parallel-s2-estimates
-#| tbl-cap: "Study 2: Full Parameter Estimates — Parallel Mediation (Religious Behavior Score → AI Moral Frequency)"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+### Parallel Mediation Analyses {#sec-supp-parallel}
 
-est_s2 <- extract_all_estimates(
-  fit_s2,
-  mediator_names  = s2_labels,
-  predictor_name  = "Religious Behavior Score",
-  outcome_name    = "AI Moral Frequency"
-)
-fmt_all_estimates_table(est_s2)
+```{r setup-supp-parallel-summaries, include=FALSE}
+# --- Pre-formatted parallel SEM model fit strings ---
+summary_str_rel_freq_s1 <- fmt_parallel_summary_apa(summary_parallel_rel_freq_s1, "AI moral frequency", full = FALSE)
+summary_str_rel_freq_s2 <- fmt_parallel_summary_apa(summary_parallel_rel_freq_s2, full = FALSE)
+
+summary_str_rs_freq_s1  <- fmt_parallel_summary_apa(summary_parallel_rs_freq_s1, "AI moral frequency", full = FALSE)
+summary_str_rs_freq_s2  <- fmt_parallel_summary_apa(summary_parallel_rs_freq_s2, full = FALSE)
+
+summary_str_rel_int_s1  <- fmt_parallel_summary_apa(summary_parallel_rel_int_s1, "AI moral interest", full = FALSE)
+summary_str_rel_int_s2  <- fmt_parallel_summary_apa(summary_parallel_rel_int_s2, full = FALSE)
+
+summary_str_rs_int_s1   <- fmt_parallel_summary_apa(summary_parallel_rs_int_s1, "AI moral interest", full = FALSE)
+summary_str_rs_int_s2   <- fmt_parallel_summary_apa(summary_parallel_rs_int_s2, full = FALSE)
 ```
 
-#### Supplementary Parallel Mediation Models
+#### Self-Reported Religiosity → AI Moral Frequency
 
-To examine the unique contribution of each mediator while accounting for their intercorrelations, we estimated parallel mediation models for all three supplementary predictor–outcome combinations using structural equation modeling with the *lavaan* package in R [@rosseel2012]. 
+In Study 1, the parallel statistical model `r summary_str_rel_freq_s1`. In Study 2, the model `r summary_str_rel_freq_s2`. Path diagrams (@fig-rel-freq-parallel-s1, @fig-rel-freq-parallel-s2) and full parameter estimate tables (@tbl-rel-freq-s1-parallel, @tbl-rel-freq-s2-parallel) present these results.
 
-For each combination, we applied a three-step selection procedure to choose the final set of mediators, same as in the primary model. First, we restricted candidates to mediators significantly predicted by the predictor under the Bonferroni-corrected threshold ($p < .05 / `r ncol(s1_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s1_mediators)))`$ in Study 1; $p < .05 / `r ncol(s2_mediators)` = `r sub("^0", "", sprintf("%.4f", 0.05 / ncol(s2_mediators)))`$ in Study 2) in either the simple or demographic-adjusted models. Second, we further restricted candidates to those with a significant bootstrap indirect effect ($a \times b$ path) at $p < .05$ in the individual mediation analyses. Finally, to minimize multicollinearity and redundancy among multiple mediators within the same conceptual cluster, we selected exactly one representative mediator per cluster. The representative selected was the mediator that accounted for the largest proportion of mediated variance (calculated as $|a \times b \,/\, \text{total effect}|$) from the individual mediation bootstrap simulations.
-
-All included mediators in a model were allowed to intercorrelate, and specific indirect effects were estimated using 5,000 bootstrap resamples.
-
-
-```{r supp-parallel-setup, include=FALSE, cache=TRUE}
-
-# rep_qs*_s* objects computed in supp-med-filter-setup: one mediator per cluster,
-# selected by highest |r(M, Y)| — matching the Q3 parallel mediation approach.
-
-# ── Fit 3 × 2 models ─────────────────────────────────────────
-set.seed(42)
-fit_qs1_s1 <- sem(build_parallel_model("Religiosity", "AI_Moral_Frequency",
-                    names(rep_qs1_s1$mediators)),
-                  data = s1_core, se = "bootstrap", bootstrap = 5000,
-                  missing = "listwise")
-fit_qs1_s2 <- sem(build_parallel_model("Religiosity", "AI_Moral_Frequency",
-                    names(rep_qs1_s2$mediators)),
-                  data = s2_core, se = "bootstrap", bootstrap = 5000,
-                  missing = "listwise")
-fit_qs2_s1 <- sem(build_parallel_model("R_Score", "AI_Moral_Interest",
-                    names(rep_qs2_s1$mediators)),
-                  data = s1_core, se = "bootstrap", bootstrap = 5000,
-                  missing = "listwise")
-fit_qs2_s2 <- sem(build_parallel_model("R_Score", "AI_Moral_Interest",
-                    names(rep_qs2_s2$mediators)),
-                  data = s2_core, se = "bootstrap", bootstrap = 5000,
-                  missing = "listwise")
-fit_qs3_s1 <- sem(build_parallel_model("Religiosity", "AI_Moral_Interest",
-                    names(rep_qs3_s1$mediators)),
-                  data = s1_core, se = "bootstrap", bootstrap = 5000,
-                  missing = "listwise")
-fit_qs3_s2 <- sem(build_parallel_model("Religiosity", "AI_Moral_Interest",
-                    names(rep_qs3_s2$mediators)),
-                  data = s2_core, se = "bootstrap", bootstrap = 5000,
-                  missing = "listwise")
-```
-
-```{r supp-parallel-stats, include=FALSE}
-# Compute model evaluation statistics for all 6 fits.
-# extract_model_stats() defined in R/supplementary.R.
-ms_qs1_s1 <- extract_model_stats(fit_qs1_s1, "AI_Moral_Frequency")
-ms_qs1_s2 <- extract_model_stats(fit_qs1_s2, "AI_Moral_Frequency")
-ms_qs2_s1 <- extract_model_stats(fit_qs2_s1, "AI_Moral_Interest")
-ms_qs2_s2 <- extract_model_stats(fit_qs2_s2, "AI_Moral_Interest")
-ms_qs3_s1 <- extract_model_stats(fit_qs3_s1, "AI_Moral_Interest")
-ms_qs3_s2 <- extract_model_stats(fit_qs3_s2, "AI_Moral_Interest")
-```
-
-##### Religious Behavior Score → AI Moral Frequency — Path Diagrams
-
-```{r fig-supp-q3-parallel-s1, fig.width=6.5, fig.height=5.1}
-#| label: fig-supp-q3-parallel-s1
-#| fig-cap: "Study 1: Parallel Mediation Model (Religious Behavior Score → AI Moral Frequency)"
-#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+```{r fig-rel-freq-parallel-s1, fig.width=6.5, fig.height=5}
+#| label: fig-rel-freq-parallel-s1
+#| fig-cap: "Study 1: Parallel Mediation Diagram (Self-Reported Religiosity → AI Moral Frequency)"
+#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and unstandardized percentile bootstrap 95% CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
 
 make_path_diagram(
-  mediator_labels = rep_s1$names,
-  coefs = coefs_s1
+  mediator_labels = rep_mediators_rel_freq_s1$names,
+  coefs = extract_path_coefs(parallel_rel_freq_s1, length(rep_mediators_rel_freq_s1$names))
 )
 ```
 
-```{r fig-supp-q3-parallel-s2, fig.width=6.5, fig.height=6}
-#| label: fig-supp-q3-parallel-s2
-#| fig-cap: "Study 2: Parallel Mediation Model (Religious Behavior Score → AI Moral Frequency)"
-#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+```{r tbl-rel-freq-s1-parallel}
+#| label: tbl-rel-freq-s1-parallel
+#| tbl-cap: "Study 1: Parameter Estimates — Parallel Mediation (Self-Reported Religiosity → AI Moral Frequency)"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval for the unstandardized coefficient (b); p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+
+fmt_all_estimates_table(estimates_parallel_rel_freq_s1)
+```
+
+```{r fig-rel-freq-parallel-s2, fig.width=6.5, fig.height=6.5}
+#| label: fig-rel-freq-parallel-s2
+#| fig-cap: "Study 2: Parallel Mediation Diagram (Self-Reported Religiosity → AI Moral Frequency)"
+#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and unstandardized percentile bootstrap 95% CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
 
 make_path_diagram(
-  mediator_labels = rep_s2$names,
-  coefs = coefs_s2
+  mediator_labels = rep_mediators_rel_freq_s2$names,
+  coefs = extract_path_coefs(parallel_rel_freq_s2, length(rep_mediators_rel_freq_s2$names))
 )
 ```
 
-##### Self-Reported Religiosity → AI Moral Frequency — Path Diagrams
+```{r tbl-rel-freq-s2-parallel}
+#| label: tbl-rel-freq-s2-parallel
+#| tbl-cap: "Study 2: Parameter Estimates — Parallel Mediation (Self-Reported Religiosity → AI Moral Frequency)"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval for the unstandardized coefficient (b); p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
 
-```{r fig-supp-qs1-parallel-s1, fig.width=6.5, fig.height=5}
-#| label: fig-supp-rel-freq-parallel-s1
-#| fig-cap: "Study 1: Parallel Mediation — Self-Reported Religiosity → AI Moral Frequency"
-#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+fmt_all_estimates_table(estimates_parallel_rel_freq_s2)
+```
+
+#### Religious Behavior Score → AI Moral Frequency
+
+In Study 1, the parallel statistical model `r summary_str_rs_freq_s1`. In Study 2, the model `r summary_str_rs_freq_s2`. Path diagrams (@fig-rs-freq-parallel-s1, @fig-rs-freq-parallel-s2) and full parameter estimate tables (@tbl-rs-freq-s1-parallel, @tbl-rs-freq-s2-parallel) present these results.
+
+```{r fig-rs-freq-parallel-s1, fig.width=6.5, fig.height=5.1}
+#| label: fig-rs-freq-parallel-s1
+#| fig-cap: "Study 1: Parallel Mediation Diagram (Religious Behavior Score → AI Moral Frequency)"
+#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and unstandardized percentile bootstrap 95% CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
 
 make_path_diagram(
-  mediator_labels = rep_qs1_s1$names,
-  coefs = extract_path_coefs(fit_qs1_s1, length(rep_qs1_s1$names))
+  mediator_labels = rep_mediators_rs_freq_s1$names,
+  coefs = extract_path_coefs(parallel_rs_freq_s1, length(rep_mediators_rs_freq_s1$names))
 )
 ```
 
-```{r tbl-supp-rel-freq-s1-estimates}
-#| label: tbl-supp-rel-freq-s1-estimates
-#| tbl-cap: "Study 1: Full Parameter Estimates — Self-Reported Religiosity → AI Moral Frequency (Parallel Mediation)"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+```{r tbl-rs-freq-s1-parallel}
+#| label: tbl-rs-freq-s1-parallel
+#| tbl-cap: "Study 1: Parameter Estimates — Parallel Mediation (Religious Behavior Score → AI Moral Frequency)"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval for the unstandardized coefficient (b); p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
 
-est_qs1_s1 <- extract_all_estimates(
-  fit_qs1_s1,
-  mediator_names  = rep_qs1_s1$names,
-  predictor_name  = "Self-Reported Religiosity",
-  outcome_name    = "AI Moral Frequency"
-)
-fmt_all_estimates_table(est_qs1_s1)
+fmt_all_estimates_table(estimates_parallel_rs_freq_s1)
 ```
 
-```{r fig-supp-rel-freq-parallel-s2, fig.width=6.5, fig.height=6.5}
-#| label: fig-supp-rel-freq-parallel-s2
-#| fig-cap: "Study 2: Parallel Mediation — Self-Reported Religiosity → AI Moral Frequency"
-#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+```{r fig-rs-freq-parallel-s2, fig.width=6.5, fig.height=6}
+#| label: fig-rs-freq-parallel-s2
+#| fig-cap: "Study 2: Parallel Mediation Diagram (Religious Behavior Score → AI Moral Frequency)"
+#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and unstandardized percentile bootstrap 95% CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
 
 make_path_diagram(
-  mediator_labels = rep_qs1_s2$names,
-  coefs = extract_path_coefs(fit_qs1_s2, length(rep_qs1_s2$names))
+  mediator_labels = rep_mediators_rs_freq_s2$names,
+  coefs = extract_path_coefs(parallel_rs_freq_s2, length(rep_mediators_rs_freq_s2$names))
 )
 ```
 
-```{r tbl-supp-rel-freq-s2-estimates}
-#| label: tbl-supp-rel-freq-s2-estimates
-#| tbl-cap: "Study 2: Full Parameter Estimates — Self-Reported Religiosity → AI Moral Frequency (Parallel Mediation)"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+```{r tbl-rs-freq-s2-parallel}
+#| label: tbl-rs-freq-s2-parallel
+#| tbl-cap: "Study 2: Parameter Estimates — Parallel Mediation (Religious Behavior Score → AI Moral Frequency)"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval for the unstandardized coefficient (b); p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
 
-est_qs1_s2 <- extract_all_estimates(
-  fit_qs1_s2,
-  mediator_names  = rep_qs1_s2$names,
-  predictor_name  = "Self-Reported Religiosity",
-  outcome_name    = "AI Moral Frequency"
-)
-fmt_all_estimates_table(est_qs1_s2)
+fmt_all_estimates_table(estimates_parallel_rs_freq_s2)
 ```
 
-The Study 1 parallel mediation model explained `r ms_qs1_s1$r2_pct`% of the variance in frequency of seeking moral advice from AI chatbots (*R²* = `r ms_qs1_s1$r2`). The total indirect effect was *b* = `r ms_qs1_s1$tie_b` (95% CI [`r ms_qs1_s1$tie_lo`, `r ms_qs1_s1$tie_hi`]), with a residual direct effect of *b* = `r ms_qs1_s1$cp_b` (*p* `r ms_qs1_s1$cp_p`). In Study 2, the model explained `r ms_qs1_s2$r2_pct`% of the variance (*R²* = `r ms_qs1_s2$r2`), with a total indirect effect of *b* = `r ms_qs1_s2$tie_b` (95% CI [`r ms_qs1_s2$tie_lo`, `r ms_qs1_s2$tie_hi`]) and a direct effect of *b* = `r ms_qs1_s2$cp_b` (*p* `r ms_qs1_s2$cp_p`).
+#### Self-Reported Religiosity → AI Moral Interest
 
-##### Religious Behavior Score → AI Moral Interest — Path Diagrams
+In Study 1, the parallel statistical model `r summary_str_rel_int_s1`. In Study 2, the model `r summary_str_rel_int_s2`. Path diagrams (@fig-rel-int-parallel-s1, @fig-rel-int-parallel-s2) and full parameter estimate tables (@tbl-rel-int-s1-parallel, @tbl-rel-int-s2-parallel) present these results.
 
-```{r fig-supp-rs-int-parallel-s1, fig.width=6.5, fig.height=5}
-#| label: fig-supp-rs-int-parallel-s1
-#| fig-cap: "Study 1: Parallel Mediation — Religious Behavior Score → AI Moral Interest"
-#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+```{r fig-rel-int-parallel-s1, fig.width=6.5, fig.height=5}
+#| label: fig-rel-int-parallel-s1
+#| fig-cap: "Study 1: Parallel Mediation Diagram (Self-Reported Religiosity → AI Moral Interest)"
+#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and unstandardized percentile bootstrap 95% CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
 
 make_path_diagram(
-  mediator_labels = rep_qs2_s1$names,
-  coefs = extract_path_coefs(fit_qs2_s1, length(rep_qs2_s1$names))
+  mediator_labels = rep_mediators_rel_int_s1$names,
+  coefs = extract_path_coefs(parallel_rel_int_s1, length(rep_mediators_rel_int_s1$names))
 )
 ```
 
-```{r tbl-supp-rs-int-s1-estimates}
-#| label: tbl-supp-rs-int-s1-estimates
-#| tbl-cap: "Study 1: Full Parameter Estimates — Religious Behavior Score → AI Moral Interest (Parallel Mediation)"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+```{r tbl-rel-int-s1-parallel}
+#| label: tbl-rel-int-s1-parallel
+#| tbl-cap: "Study 1: Parameter Estimates — Parallel Mediation (Self-Reported Religiosity → AI Moral Interest)"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval for the unstandardized coefficient (b); p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
 
-est_qs2_s1 <- extract_all_estimates(
-  fit_qs2_s1,
-  mediator_names  = rep_qs2_s1$names,
-  predictor_name  = "Religious Behavior Score",
-  outcome_name    = "AI Moral Interest"
-)
-fmt_all_estimates_table(est_qs2_s1)
+fmt_all_estimates_table(estimates_parallel_rel_int_s1)
 ```
 
-```{r fig-supp-rs-int-parallel-s2, fig.width=6.5, fig.height=5}
-#| label: fig-supp-rs-int-parallel-s2
-#| fig-cap: "Study 2: Parallel Mediation — Religious Behavior Score → AI Moral Interest"
-#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+```{r fig-rel-int-parallel-s2, fig.width=6.5, fig.height=6.5}
+#| label: fig-rel-int-parallel-s2
+#| fig-cap: "Study 2: Parallel Mediation Diagram (Self-Reported Religiosity → AI Moral Interest)"
+#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and unstandardized percentile bootstrap 95% CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
 
 make_path_diagram(
-  mediator_labels = rep_qs2_s2$names,
-  coefs = extract_path_coefs(fit_qs2_s2, length(rep_qs2_s2$names))
+  mediator_labels = rep_mediators_rel_int_s2$names,
+  coefs = extract_path_coefs(parallel_rel_int_s2, length(rep_mediators_rel_int_s2$names))
 )
 ```
 
-```{r tbl-supp-rs-int-s2-estimates}
-#| label: tbl-supp-rs-int-s2-estimates
-#| tbl-cap: "Study 2: Full Parameter Estimates — Religious Behavior Score → AI Moral Interest (Parallel Mediation)"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+```{r tbl-rel-int-s2-parallel}
+#| label: tbl-rel-int-s2-parallel
+#| tbl-cap: "Study 2: Parameter Estimates — Parallel Mediation (Self-Reported Religiosity → AI Moral Interest)"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval for the unstandardized coefficient (b); p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
 
-est_qs2_s2 <- extract_all_estimates(
-  fit_qs2_s2,
-  mediator_names  = rep_qs2_s2$names,
-  predictor_name  = "Religious Behavior Score",
-  outcome_name    = "AI Moral Interest"
-)
-fmt_all_estimates_table(est_qs2_s2)
+fmt_all_estimates_table(estimates_parallel_rel_int_s2)
 ```
 
-The Study 1 parallel mediation model explained `r ms_qs2_s1$r2_pct`% of the variance in interest in seeking moral advice from AI chatbots (*R²* = `r ms_qs2_s1$r2`). The total indirect effect was *b* = `r ms_qs2_s1$tie_b` (95% CI [`r ms_qs2_s1$tie_lo`, `r ms_qs2_s1$tie_hi`]), with a residual direct effect of *b* = `r ms_qs2_s1$cp_b` (*p* `r ms_qs2_s1$cp_p`). In Study 2, the model explained `r ms_qs2_s2$r2_pct`% of the variance (*R²* = `r ms_qs2_s2$r2`), with a total indirect effect of *b* = `r ms_qs2_s2$tie_b` (95% CI [`r ms_qs2_s2$tie_lo`, `r ms_qs2_s2$tie_hi`]) and a direct effect of *b* = `r ms_qs2_s2$cp_b` (*p* `r ms_qs2_s2$cp_p`).
+#### Religious Behavior Score → AI Moral Interest
 
-##### Self-Reported Religiosity → AI Moral Interest — Path Diagrams
+In Study 1, the parallel statistical model `r summary_str_rs_int_s1`. In Study 2, the model `r summary_str_rs_int_s2`. Path diagrams (@fig-rs-int-parallel-s1, @fig-rs-int-parallel-s2) and full parameter estimate tables (@tbl-rs-int-s1-parallel, @tbl-rs-int-s2-parallel) present these results.
 
-```{r fig-supp-rel-int-parallel-s1, fig.width=6.5, fig.height=5}
-#| label: fig-supp-rel-int-parallel-s1
-#| fig-cap: "Study 1: Parallel Mediation — Self-Reported Religiosity → AI Moral Interest"
-#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+```{r fig-rs-int-parallel-s1, fig.width=6.5, fig.height=5}
+#| label: fig-rs-int-parallel-s1
+#| fig-cap: "Study 1: Parallel Mediation Diagram (Religious Behavior Score → AI Moral Interest)"
+#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and unstandardized percentile bootstrap 95% CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
 
 make_path_diagram(
-  mediator_labels = rep_qs3_s1$names,
-  coefs = extract_path_coefs(fit_qs3_s1, length(rep_qs3_s1$names))
+  mediator_labels = rep_mediators_rs_int_s1$names,
+  coefs = extract_path_coefs(parallel_rs_int_s1, length(rep_mediators_rs_int_s1$names))
 )
 ```
 
-```{r tbl-supp-rel-int-s1-estimates}
-#| label: tbl-supp-rel-int-s1-estimates
-#| tbl-cap: "Study 1: Full Parameter Estimates — Self-Reported Religiosity → AI Moral Interest (Parallel Mediation)"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+```{r tbl-rs-int-s1-parallel}
+#| label: tbl-rs-int-s1-parallel
+#| tbl-cap: "Study 1: Parameter Estimates — Parallel Mediation (Religious Behavior Score → AI Moral Interest)"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval for the unstandardized coefficient (b); p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
 
-est_qs3_s1 <- extract_all_estimates(
-  fit_qs3_s1,
-  mediator_names  = rep_qs3_s1$names,
-  predictor_name  = "Self-Reported Religiosity",
-  outcome_name    = "AI Moral Interest"
-)
-fmt_all_estimates_table(est_qs3_s1)
+fmt_all_estimates_table(estimates_parallel_rs_int_s1)
 ```
 
-```{r fig-supp-rel-int-parallel-s2, fig.width=6.5, fig.height=6.5}
-#| label: fig-supp-rel-int-parallel-s2
+```{r fig-rs-int-parallel-s2, fig.width=6.5, fig.height=5}
+#| label: fig-rs-int-parallel-s2
 #| fig-cap: "Study 2: Parallel Mediation — Self-Reported Religiosity → AI Moral Interest"
-#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and 95% bootstrap CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
+#| apa-note: "Edge labels show unstandardized b (standardized β in parentheses) and unstandardized percentile bootstrap 95% CI in brackets based on 5,000 bootstrap simulations. Mediator intercorrelations included in the model but omitted for clarity."
 
 make_path_diagram(
-  mediator_labels = rep_qs3_s2$names,
-  coefs = extract_path_coefs(fit_qs3_s2, length(rep_qs3_s2$names))
+  mediator_labels = rep_mediators_rs_int_s2$names,
+  coefs = extract_path_coefs(parallel_rs_int_s2, length(rep_mediators_rs_int_s2$names))
 )
 ```
 
-```{r tbl-supp-rel-int-s2-estimates}
-#| label: tbl-supp-rel-int-s2-estimates
-#| tbl-cap: "Study 2: Full Parameter Estimates — Self-Reported Religiosity → AI Moral Interest (Parallel Mediation)"
-#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval; p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
+```{r tbl-rs-int-s2-parallel}
+#| label: tbl-rs-int-s2-parallel
+#| tbl-cap: "Study 2: Parameter Estimates — Parallel Mediation (Religious Behavior Score → AI Moral Interest)"
+#| apa-note: "Columns: Path = model relationship; b = unstandardized coefficient; β = standardized coefficient; SE = standard error; 95% CI LL/UL = lower and upper bounds of the percentile bootstrap 95% confidence interval for the unstandardized coefficient (b); p = p-value. Row types: Predictor → Mediator rows are a paths; Mediator → Outcome rows are b paths; the direct row is the c′ path (predictor → outcome controlling for mediators); rows with ~~ are residual covariances between mediators; Indirect via rows are specific indirect effects (a × b); Total indirect effect is the sum of all specific indirect effects."
 
-est_qs3_s2 <- extract_all_estimates(
-  fit_qs3_s2,
-  mediator_names  = rep_qs3_s2$names,
-  predictor_name  = "Self-Reported Religiosity",
-  outcome_name    = "AI Moral Interest"
-)
-fmt_all_estimates_table(est_qs3_s2)
+fmt_all_estimates_table(estimates_parallel_rs_int_s2)
 ```
 
-The Study 1 parallel mediation model explained `r ms_qs3_s1$r2_pct`% of the variance in interest in seeking moral advice from AI chatbots (*R²* = `r ms_qs3_s1$r2`). The total indirect effect was *b* = `r ms_qs3_s1$tie_b` (95% CI [`r ms_qs3_s1$tie_lo`, `r ms_qs3_s1$tie_hi`]), with a residual direct effect of *b* = `r ms_qs3_s1$cp_b` (*p* `r ms_qs3_s1$cp_p`). In Study 2, the model explained `r ms_qs3_s2$r2_pct`% of the variance (*R²* = `r ms_qs3_s2$r2`), with a total indirect effect of *b* = `r ms_qs3_s2$tie_b` (95% CI [`r ms_qs3_s2$tie_lo`, `r ms_qs3_s2$tie_hi`]) and a direct effect of *b* = `r ms_qs3_s2$cp_b` (*p* `r ms_qs3_s2$cp_p`).
+## Moderation Analyses {#sec-supp-moderation}
 
-## Moderation Analyses
+For each moderation model, we test both AI chatbot access and overall access to non-AI sources as moderators (Study 2 only).
 
-The main body (Question 4) tested whether access to moral advice sources moderates the Religious Behavior Score → frequency relationship. Here we report supplementary moderation analyses for three additional predictor–outcome combinations: Self-Reported Religiosity → Frequency, Religious Behavior Score → Interest, and Self-Reported Religiosity → Interest. For each, we test both AI chatbot access and overall access to non-AI sources as moderators (Study 2 only).
-
-```{r supp-mod-models, include=FALSE}
-# ── Religiosity × Access → Frequency (S1, S2) ───────────────
-S2_mod_rel_ai_freq      <- lm(AI_Moral_Frequency ~ Religiosity * AI_Moral_Access, data = s2_core)
-S2_mod_rel_ai_freq_sum  <- summary(S2_mod_rel_ai_freq)
-S2_mod_rel_ov_freq      <- lm(AI_Moral_Frequency ~ Religiosity * Moral_Access, data = s2_core)
-S2_mod_rel_ov_freq_sum  <- summary(S2_mod_rel_ov_freq)
-
-# ── R_Score × Access → Interest (S3, S4) ─────────────────────
-S2_mod_rs_ai_int      <- lm(AI_Moral_Interest ~ R_Score * AI_Moral_Access, data = s2_core)
-S2_mod_rs_ai_int_sum  <- summary(S2_mod_rs_ai_int)
-S2_mod_rs_ov_int      <- lm(AI_Moral_Interest ~ R_Score * Moral_Access, data = s2_core)
-S2_mod_rs_ov_int_sum  <- summary(S2_mod_rs_ov_int)
-
-# ── Religiosity × Access → Interest (S5, S6) ─────────────────
-S2_mod_rel_ai_int      <- lm(AI_Moral_Interest ~ Religiosity * AI_Moral_Access, data = s2_core)
-S2_mod_rel_ai_int_sum  <- summary(S2_mod_rel_ai_int)
-S2_mod_rel_ov_int      <- lm(AI_Moral_Interest ~ Religiosity * Moral_Access, data = s2_core)
-S2_mod_rel_ov_int_sum  <- summary(S2_mod_rel_ov_int)
-
-# ── Common moderator quantiles ────────────────────────────────
+```{r supp-mod-quantiles, include=FALSE}
 ai_vals      <- quantile(s2_core$AI_Moral_Access, probs = c(0.16, 0.50, 0.84), na.rm = TRUE)
 overall_vals <- quantile(s2_core$Moral_Access,    probs = c(0.16, 0.50, 0.84), na.rm = TRUE)
 ```
 
 ### Self-Reported Religiosity × Access → AI Moral Frequency
 
-```{r tbl-supp-mod-rel-freq}
-#| label: tbl-supp-mod-rel-freq
-#| tbl-cap: "Supplementary Moderation: Self-Reported Religiosity × Access → Frequency of Seeking Moral Advice From AI Chatbots"
+```{r tbl-rel-freq-moderation}
+#| label: tbl-rel-freq-moderation
+#| tbl-cap: "Moderation Analysis: Self-Reported Religiosity Predicting AI Moral Frequency Moderated by Access"
 
 make_moderation_table(
-  S2_mod_rel_ai_freq_sum,
-  S2_mod_rel_ov_freq_sum,
+  moderation_rel_freq_s2_ai,
+  moderation_rel_freq_s2_overall,
   pred_name = "Self-Reported Religiosity",
   mod1_name = "AI Chatbot Access",
   mod2_name = "Overall Source Access"
 )
 ```
 
-```{r fig-supp-mod-rel-freq, fig.width=12, fig.height=5}
-#| label: fig-supp-mod-rel-freq
-#| fig-cap: "Self-Reported Religiosity → Frequency of Seeking Moral Advice From AI Chatbots, Moderated by Access"
-#| apa-note: "Left panel: moderated by access to AI chatbots. Right panel: moderated by overall access to non-AI sources. Lines represent predicted values at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels. Shaded bands indicate 95% confidence intervals. Study 2 only."
+```{r fig-rel-freq-moderation, fig.width=12, fig.height=5}
+#| label: fig-rel-freq-moderation
+#| fig-cap: "Self-Reported Religiosity and Frequency of Seeking AI Moral Advice Moderated by Access"
+#| apa-note: "Each panel shows predicted regression slopes at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels with 95% confidence bands."
 
-plt_rel_ai_freq <- make_mod_plot(S2_mod_rel_ai_freq, "AI_Moral_Access", ai_vals,
+plt_rel_ai_freq <- make_mod_plot(moderation_rel_freq_s2_ai, "AI_Moral_Access", ai_vals,
                                   "AI Chatbot Access",
                                   x_var = "Religiosity",
                                   x_label = "Self-Reported Religiosity") +
   ggtitle("AI Chatbot Access")
-plt_rel_ov_freq <- make_mod_plot(S2_mod_rel_ov_freq, "Moral_Access", overall_vals,
+plt_rel_ov_freq <- make_mod_plot(moderation_rel_freq_s2_overall, "Moral_Access", overall_vals,
                                   "Overall Source Access",
                                   x_var = "Religiosity",
                                   x_label = "Self-Reported Religiosity") +
@@ -890,69 +673,69 @@ plt_rel_ov_freq <- make_mod_plot(S2_mod_rel_ov_freq, "Moral_Access", overall_val
 plt_rel_ai_freq | plt_rel_ov_freq
 ```
 
-AI chatbot access `r ifelse(coef(S2_mod_rel_ai_freq_sum)["Religiosity:AI_Moral_Access", "Pr(>|t|)"] < .05, "significantly moderated", "did not significantly moderate")` the Self-Reported Religiosity → frequency relationship (*b* = `r round(coef(S2_mod_rel_ai_freq_sum)["Religiosity:AI_Moral_Access", "Estimate"], 2)`, *t*(`r S2_mod_rel_ai_freq_sum$df[2]`) = `r round(coef(S2_mod_rel_ai_freq_sum)["Religiosity:AI_Moral_Access", "t value"], 2)`, *p* `r apa_p(coef(S2_mod_rel_ai_freq_sum)["Religiosity:AI_Moral_Access", "Pr(>|t|)"])`). Overall access to non-AI sources `r ifelse(coef(S2_mod_rel_ov_freq_sum)["Religiosity:Moral_Access", "Pr(>|t|)"] < .05, "significantly moderated", "did not significantly moderate")` this relationship (*b* = `r round(coef(S2_mod_rel_ov_freq_sum)["Religiosity:Moral_Access", "Estimate"], 2)`, *t*(`r S2_mod_rel_ov_freq_sum$df[2]`) = `r round(coef(S2_mod_rel_ov_freq_sum)["Religiosity:Moral_Access", "t value"], 2)`, *p* `r apa_p(coef(S2_mod_rel_ov_freq_sum)["Religiosity:Moral_Access", "Pr(>|t|)"])`).
+### Religious Behavior Score × Access → AI Moral Frequency
 
-### Religious Behavior Score × Access → AI Moral Interest
-
-```{r tbl-supp-mod-rs-int}
-#| label: tbl-supp-mod-rs-int
-#| tbl-cap: "Supplementary Moderation: Religious Behavior Score × Access → Interest in Seeking Moral Advice From AI Chatbots"
+```{r tbl-rs-freq-moderation-supp}
+#| label: tbl-rs-freq-moderation-supp
+#| tbl-cap: "Moderation Analysis: Religious Behavior Score Predicting AI Moral Frequency Moderated by Access"
 
 make_moderation_table(
-  S2_mod_rs_ai_int_sum,
-  S2_mod_rs_ov_int_sum,
+  moderation_rs_freq_s2_ai,
+  moderation_rs_freq_s2_overall,
   pred_name = "Religious Behavior Score",
   mod1_name = "AI Chatbot Access",
   mod2_name = "Overall Source Access"
 )
 ```
 
-```{r fig-supp-mod-rs-int, fig.width=12, fig.height=5}
-#| label: fig-supp-mod-rs-int
-#| fig-cap: "Religious Behavior Score → Interest in Seeking Moral Advice From AI Chatbots, Moderated by Access"
-#| apa-note: "Left panel: moderated by access to AI chatbots. Right panel: moderated by overall access to non-AI sources. Lines represent predicted values at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels. Shaded bands indicate 95% confidence intervals. Study 2 only."
+```{r fig-rs-freq-moderation-supp, fig.width=12, fig.height=5}
+#| label: fig-rs-freq-moderation-supp
+#| fig-cap: "Religious Behavior Score and Frequency of Seeking AI Moral Advice Moderated by Access"
+#| apa-note: "Each panel shows predicted regression slopes at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels with 95% confidence bands."
 
-plt_rs_ai_int <- make_mod_plot(S2_mod_rs_ai_int, "AI_Moral_Access", ai_vals,
+plt_rs_ai_freq <- make_mod_plot(moderation_rs_freq_s2_ai, "AI_Moral_Access", ai_vals,
                                 "AI Chatbot Access",
-                                y_label = "Interest in Seeking Moral Advice from AI Chatbots") +
+                                x_var = "R_Score",
+                                x_label = "Religious Behavior Score",
+                                y_label = "Frequency of Seeking Moral Advice from AI Chatbots") +
   ggtitle("AI Chatbot Access")
-plt_rs_ov_int <- make_mod_plot(S2_mod_rs_ov_int, "Moral_Access", overall_vals,
+plt_rs_ov_freq <- make_mod_plot(moderation_rs_freq_s2_overall, "Moral_Access", overall_vals,
                                 "Overall Source Access",
-                                y_label = "Interest in Seeking Moral Advice from AI Chatbots") +
+                                x_var = "R_Score",
+                                x_label = "Religious Behavior Score",
+                                y_label = "Frequency of Seeking Moral Advice from AI Chatbots") +
   ggtitle("Overall Source Access")
 
-plt_rs_ai_int | plt_rs_ov_int
+plt_rs_ai_freq | plt_rs_ov_freq
 ```
-
-AI chatbot access `r ifelse(coef(S2_mod_rs_ai_int_sum)["R_Score:AI_Moral_Access", "Pr(>|t|)"] < .05, "significantly moderated", "did not significantly moderate")` the Religious Behavior Score → interest relationship (*b* = `r round(coef(S2_mod_rs_ai_int_sum)["R_Score:AI_Moral_Access", "Estimate"], 2)`, *t*(`r S2_mod_rs_ai_int_sum$df[2]`) = `r round(coef(S2_mod_rs_ai_int_sum)["R_Score:AI_Moral_Access", "t value"], 2)`, *p* `r apa_p(coef(S2_mod_rs_ai_int_sum)["R_Score:AI_Moral_Access", "Pr(>|t|)"])`). Overall access to non-AI sources `r ifelse(coef(S2_mod_rs_ov_int_sum)["R_Score:Moral_Access", "Pr(>|t|)"] < .05, "significantly moderated", "did not significantly moderate")` this relationship (*b* = `r round(coef(S2_mod_rs_ov_int_sum)["R_Score:Moral_Access", "Estimate"], 2)`, *t*(`r S2_mod_rs_ov_int_sum$df[2]`) = `r round(coef(S2_mod_rs_ov_int_sum)["R_Score:Moral_Access", "t value"], 2)`, *p* `r apa_p(coef(S2_mod_rs_ov_int_sum)["R_Score:Moral_Access", "Pr(>|t|)"])`).
 
 ### Self-Reported Religiosity × Access → AI Moral Interest
 
-```{r tbl-supp-mod-rel-int}
-#| label: tbl-supp-mod-rel-int
-#| tbl-cap: "Supplementary Moderation: Self-Reported Religiosity × Access → Interest in Seeking Moral Advice From AI Chatbots"
+```{r tbl-rel-int-moderation}
+#| label: tbl-rel-int-moderation
+#| tbl-cap: "Moderation Analysis: Self-Reported Religiosity Predicting AI Moral Interest Moderated by Access"
 
 make_moderation_table(
-  S2_mod_rel_ai_int_sum,
-  S2_mod_rel_ov_int_sum,
+  moderation_rel_int_s2_ai,
+  moderation_rel_int_s2_overall,
   pred_name = "Self-Reported Religiosity",
   mod1_name = "AI Chatbot Access",
   mod2_name = "Overall Source Access"
 )
 ```
 
-```{r fig-supp-mod-rel-int, fig.width=12, fig.height=5}
-#| label: fig-supp-mod-rel-int
-#| fig-cap: "Self-Reported Religiosity → Interest in Seeking Moral Advice From AI Chatbots, Moderated by Access"
-#| apa-note: "Left panel: moderated by access to AI chatbots. Right panel: moderated by overall access to non-AI sources. Lines represent predicted values at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels. Shaded bands indicate 95% confidence intervals. Study 2 only."
+```{r fig-rel-int-moderation, fig.width=12, fig.height=5}
+#| label: fig-rel-int-moderation
+#| fig-cap: "Self-Reported Religiosity and Interest in Seeking AI Moral Advice Moderated by Access"
+#| apa-note: "Each panel shows predicted regression slopes at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels with 95% confidence bands."
 
-plt_rel_ai_int <- make_mod_plot(S2_mod_rel_ai_int, "AI_Moral_Access", ai_vals,
+plt_rel_ai_int <- make_mod_plot(moderation_rel_int_s2_ai, "AI_Moral_Access", ai_vals,
                                  "AI Chatbot Access",
                                  x_var = "Religiosity",
                                  x_label = "Self-Reported Religiosity",
                                  y_label = "Interest in Seeking Moral Advice from AI Chatbots") +
   ggtitle("AI Chatbot Access")
-plt_rel_ov_int <- make_mod_plot(S2_mod_rel_ov_int, "Moral_Access", overall_vals,
+plt_rel_ov_int <- make_mod_plot(moderation_rel_int_s2_overall, "Moral_Access", overall_vals,
                                  "Overall Source Access",
                                  x_var = "Religiosity",
                                  x_label = "Self-Reported Religiosity",
@@ -962,35 +745,41 @@ plt_rel_ov_int <- make_mod_plot(S2_mod_rel_ov_int, "Moral_Access", overall_vals,
 plt_rel_ai_int | plt_rel_ov_int
 ```
 
-AI chatbot access `r ifelse(coef(S2_mod_rel_ai_int_sum)["Religiosity:AI_Moral_Access", "Pr(>|t|)"] < .05, "significantly moderated", "did not significantly moderate")` the Self-Reported Religiosity → interest relationship (*b* = `r round(coef(S2_mod_rel_ai_int_sum)["Religiosity:AI_Moral_Access", "Estimate"], 2)`, *t*(`r S2_mod_rel_ai_int_sum$df[2]`) = `r round(coef(S2_mod_rel_ai_int_sum)["Religiosity:AI_Moral_Access", "t value"], 2)`, *p* `r apa_p(coef(S2_mod_rel_ai_int_sum)["Religiosity:AI_Moral_Access", "Pr(>|t|)"])`). Overall access to non-AI sources `r ifelse(coef(S2_mod_rel_ov_int_sum)["Religiosity:Moral_Access", "Pr(>|t|)"] < .05, "significantly moderated", "did not significantly moderate")` this relationship (*b* = `r round(coef(S2_mod_rel_ov_int_sum)["Religiosity:Moral_Access", "Estimate"], 2)`, *t*(`r S2_mod_rel_ov_int_sum$df[2]`) = `r round(coef(S2_mod_rel_ov_int_sum)["Religiosity:Moral_Access", "t value"], 2)`, *p* `r apa_p(coef(S2_mod_rel_ov_int_sum)["Religiosity:Moral_Access", "Pr(>|t|)"])`).
+### Religious Behavior Score × Access → AI Moral Interest
+
+```{r tbl-rs-int-moderation}
+#| label: tbl-rs-int-moderation
+#| tbl-cap: "Moderation Analysis: Religious Behavior Score Predicting AI Moral Interest Moderated by Access"
+
+make_moderation_table(
+  moderation_rs_int_s2_ai,
+  moderation_rs_int_s2_overall,
+  pred_name = "Religious Behavior Score",
+  mod1_name = "AI Chatbot Access",
+  mod2_name = "Overall Source Access"
+)
+```
+
+```{r fig-rs-int-moderation, fig.width=12, fig.height=5}
+#| label: fig-rs-int-moderation
+#| fig-cap: "Religious Behavior Score and Interest in Seeking AI Moral Advice Moderated by Access"
+#| apa-note: "Each panel shows predicted regression slopes at low (16th percentile), medium (50th percentile), and high (84th percentile) access levels with 95% confidence bands."
+
+plt_rs_ai_int <- make_mod_plot(moderation_rs_int_s2_ai, "AI_Moral_Access", ai_vals,
+                                "AI Chatbot Access",
+                                y_label = "Interest in Seeking Moral Advice from AI Chatbots") +
+  ggtitle("AI Chatbot Access")
+plt_rs_ov_int <- make_mod_plot(moderation_rs_int_s2_overall, "Moral_Access", overall_vals,
+                                "Overall Source Access",
+                                y_label = "Interest in Seeking Moral Advice from AI Chatbots") +
+  ggtitle("Overall Source Access")
+
+plt_rs_ai_int | plt_rs_ov_int
+```
 
 ## Study Variable Correlation Analysis
 
-### Correlation Tables
-
-::: {.content-visible when-format="html"}
-
-```{r S1_cor_table}
-#| label: tbl-s1-correlations
-#| tbl-cap: "Study 1: Pearson Correlations Between Study Variables"
-
-apa_cor_table(s1_core, var_names = S1_CORE_NAMES)
-```
-
-```{r S2_cor_table}
-#| label: tbl-s2-correlations
-#| tbl-cap: "Study 2: Pearson Correlations Between Study Variables"
-
-apa_cor_table(s2_core, var_names = S2_CORE_NAMES)
-```
-
-:::
-
-::: {.content-visible when-format="docx"}
-*The full correlation matrices for Study 1 and Study 2 are excluded from this document due to their size (60+ pages). They are available on the [accompanied project website](https://helenzheng.me/in-god-we-trust-in-ai-we-ask/supplementary.html).*
-:::
-
-### Correlation Heatmaps
+The full correlation matrices for Study 1 and Study 2 are visualized in the heatmaps below (@fig-supp-core-heatmap-s1 and @fig-supp-core-heatmap-s2). 
 
 ```{r fig-supp-core-heatmap-s1, fig.width=14, fig.height=13}
 #| label: fig-supp-core-heatmap-s1
@@ -1008,9 +797,11 @@ plot_cor_heatmap(s1_core, var_names = S1_CORE_NAMES, title = "Study 1", text_siz
 plot_cor_heatmap(s2_core, var_names = S2_CORE_NAMES, title = "Study 2", text_size = 2.5)
 ```
 
-# Pilot Studies
+## Pilot Studies {#sec-supp-pilot-studies}
 
-Two pilot studies provided initial evidence for the relationship between religiosity and seeking moral advice from AI chatbots. Pilot 1 (*N* = `r nrow(P1)`, `r P1_date`) and Pilot 2 (*N* = `r nrow(P2)`, `r P2_date`) recruited participants through Prolific. In both pilot studies, seeking moral guidance from AI chatbots was assessed with the item *"How much do you usually seek moral guidance from Chatbot/AI assistant?"* (1 = *None at all*, 5 = *A great deal*), and self-reported religiosity was measured on a scale of 1 (*Not at all*) to 4 (*Very*). Demographic characteristics for the pilot studies are presented below.
+### Demographic Characteristics of Included Participants in Pilot Study 1 and Pilot Study 2
+
+Two pilot studies provided initial evidence for the relationship between religiosity and seeking moral advice from AI chatbots. Pilot 1 (*N* = `r nrow(P1)`, `r P1_date`) and Pilot 2 (*N* = `r nrow(P2)`, `r P2_date`) recruited participants through Prolific. In both pilot studies, seeking moral guidance from AI chatbots was assessed with the item *"How much do you usually seek moral guidance from Chatbot/AI assistant?"* (1 = *None at all*, 5 = *A great deal*), and self-reported religiosity was measured on a scale of 1 (*Not at all*) to 4 (*Very*). Demographic characteristics for the pilot studies are presented in @tbl-pilot-participants.
 
 ```{r pilot_demo_data, include=FALSE}
 demo_p1  <- create_demo_summary(P1, "Pilot 1")
@@ -1039,22 +830,19 @@ flextable::flextable(demo_pilot) |>
   flextable::width(j = 2:3, width = 1.0)
 ```
 
-## Pilot Study Correlations: Self-Reported Religiosity → Seeking Moral Guidance from AI
+### Correlation Analyses
 
 ```{r tbl-pilot-correlation}
 #| label: tbl-pilot-correlation
 #| tbl-cap: "Pilot Studies: Pearson Correlations Between Self-Reported Religiosity and Seeking Moral Guidance From AI Chatbots"
 
-ct_p1 <- cor.test(P1$Religiosity, P1$Moral.Source._13)
-ct_p2 <- cor.test(P2$Religiosity, P2$Q115_15)
-
 cor_tbl_pilot <- data.frame(
   Study = c("Pilot 1", "Pilot 2"),
   N     = c(nrow(P1), nrow(P2)),
-  r     = round(c(ct_p1$estimate, ct_p2$estimate), 2),
-  t     = round(c(ct_p1$statistic, ct_p2$statistic), 2),
-  df    = c(ct_p1$parameter, ct_p2$parameter),
-  p     = c(apa_p(ct_p1$p.value), apa_p(ct_p2$p.value)),
+  r     = fmt_no_zero(c(pilot_cor_p1$estimate, pilot_cor_p2$estimate), 2),
+  t     = round(c(pilot_cor_p1$statistic, pilot_cor_p2$statistic), 2),
+  df    = c(pilot_cor_p1$parameter, pilot_cor_p2$parameter),
+  p     = c(apa_p(pilot_cor_p1$p.value), apa_p(pilot_cor_p2$p.value)),
   check.names = FALSE
 )
 names(cor_tbl_pilot) <- c("Study", "N", "r", "t", "df", "p")
@@ -1065,7 +853,7 @@ make_cor_flextable(cor_tbl_pilot)
 ```{r fig-pilot-scatter, fig.width=12, fig.height=5}
 #| label: fig-pilot-scatter
 #| fig-cap: "Pilot Studies: Self-Reported Religiosity and Seeking Moral Guidance from AI Chatbots"
-#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band in green, and a LOESS trend line with 95% confidence band in blue. Pearson correlations are annotated within each panel."
+#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band, and a LOESS trend line with 95% confidence band."
 
 p1_plot_data <- P1[P1$Religiosity %% 1 == 0, ]
 p2_plot_data <- P2[P2$Religiosity %% 1 == 0, ]
@@ -1085,21 +873,12 @@ p2_plt <- plot_scatter_cor(p2_plot_data, "Religiosity", "Q115_15",
 p1_plt | p2_plt
 ```
 
+### Regression Analyses
+
 ```{r tbl-pilot-regression}
 #| label: tbl-pilot-regression
 #| tbl-cap: "Pilot Studies: Self-Reported Religiosity Predicting Seeking Moral Guidance From AI Chatbots"
 #| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
-make_study_reg_table(
-  list(
-    "Pilot 1" = c(
-      apa_lm_summary(lm(Moral.Source._13 ~ Religiosity, data = P1), "Religiosity"),
-      apa_lm_summary(lm(Moral.Source._13 ~ Religiosity + Political_overall + Age + Income + Education + SES, data = P1), "Religiosity")
-    ),
-    "Pilot 2" = c(
-      apa_lm_summary(lm(Q115_15 ~ Religiosity, data = P2), "Religiosity"),
-      apa_lm_summary(lm(Q115_15 ~ Religiosity + Political_overall + Age + Income + Education + SES, data = P2), "Religiosity")
-    )
-  )
-)
+make_study_reg_table(reg_rows_pilot)
 ```

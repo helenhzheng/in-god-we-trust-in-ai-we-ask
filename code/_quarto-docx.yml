@@ -9,6 +9,8 @@ format:
   apaquarto-docx:
     toc: false
 
+number-sections: false
+
 execute:
   freeze: auto
   cache: true

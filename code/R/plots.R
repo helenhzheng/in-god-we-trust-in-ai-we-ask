@@ -10,6 +10,11 @@ plot_scatter_cor <- function(data, x_var, y_var, x_label = NULL, y_label = NULL)
   y_vals <- data[[y_var]]
   cor_lab <- apa_cor_label(x_vals, y_vals)
 
+  # Auto-wrap y_label if long to prevent axis text overflow
+  if (!is.null(y_label) && nchar(y_label) > 25 && !grepl("\n", y_label)) {
+    y_label <- paste(strwrap(y_label, width = 22), collapse = "\n")
+  }
+
   p <- ggplot(data, aes(x = .data[[x_var]], y = .data[[y_var]])) +
     geom_point(
       alpha = 0.6,
@@ -24,11 +29,11 @@ plot_scatter_cor <- function(data, x_var, y_var, x_label = NULL, y_label = NULL)
       method = "lm", color = CLR_ACCENT, se = TRUE,
       fill = CLR_ACCENT_FILL, linetype = "dashed"
     ) +
-    annotate("text",
-      x = min(x_vals, na.rm = TRUE) + diff(range(x_vals, na.rm = TRUE)) * 0.15,
-      y = max(y_vals, na.rm = TRUE) - diff(range(y_vals, na.rm = TRUE)) * 0.08,
-      label = cor_lab, parse = TRUE, size = 4, family = "serif"
-    ) +
+    #annotate("text",
+      #x = min(x_vals, na.rm = TRUE) + diff(range(x_vals, na.rm = TRUE)) * 0.15,
+      #y = max(y_vals, na.rm = TRUE) - diff(range(y_vals, na.rm = TRUE)) * 0.08,
+      #label = cor_lab, parse = TRUE, size = 4, family = "serif"
+    #) +
     labs(x = x_label, y = y_label) +
     apa_theme
 
@@ -36,18 +41,6 @@ plot_scatter_cor <- function(data, x_var, y_var, x_label = NULL, y_label = NULL)
   if (!is.null(y_label)) p <- p + scale_y_continuous(name = y_label, breaks = pretty_breaks(n = 5))
 
   return(p)
-}
-
-# --- Extract indirect effects from a lavaan parallel mediation fit ---
-extract_indirect <- function(fit, labels, study_label) {
-  pe <- parameterEstimates(fit, boot.ci.type = "perc", level = 0.95)
-  inds <- pe[pe$op == ":=" & grepl("^ind", pe$lhs), ]
-  df <- data.frame(
-    Study = study_label, Mediator = labels,
-    est = inds$est, lwr = inds$ci.lower,
-    upr = inds$ci.upper, sig = inds$pvalue < .05
-  )
-  df
 }
 
 # --- Coefficient extractor for path diagram labels ---
@@ -58,12 +51,11 @@ get_edge_coefs <- function(fit) {
     paste(pe$lhs, pe$op, pe$rhs),
     paste(std$lhs, std$op, std$rhs)
   )]
-  # Return "--" for NA/missing values instead of crashing
-  fn <- function(x, d = 2) {
-    if (length(x) == 0 || all(is.na(x))) {
-      return("--")
-    }
-    formatC(round(x[1], d), format = "f", digits = d)
+
+  fmt_std   <- function(x, d = 3) fmt_no_zero(x, d)
+  fmt_unstd <- function(x, d = 3) {
+    if (length(x) == 0 || all(is.na(x))) return("--")
+    sprintf("%.3f", x[1])
   }
   function(lhs_val, rhs_val) {
     row <- pe[pe$lhs == lhs_val & pe$op == "~" & pe$rhs == rhs_val, ]
@@ -72,10 +64,10 @@ get_edge_coefs <- function(fit) {
     }
     row <- row[1, ] # guard against duplicate rows
     list(
-      b    = fn(row$est),
-      beta = fn(row$beta),
-      lo   = fn(row$ci.lower),
-      hi   = fn(row$ci.upper)
+      b    = fmt_unstd(row$est),
+      beta = fmt_std(row$beta),
+      lo   = fmt_unstd(row$ci.lower),
+      hi   = fmt_unstd(row$ci.upper)
     )
   }
 }
@@ -140,36 +132,36 @@ make_path_diagram <- function(mediator_labels, coefs,
       data = a_df,
       aes(x = x, y = y, xend = xend, yend = yend),
       arrow = arrow(length = unit(0.22, "cm"), type = "closed"),
-      color = "grey45", linewidth = 0.6
+      color = CLR_SEGMENT, linewidth = 0.6
     ) +
     geom_segment(
       data = b_df,
       aes(x = x, y = y, xend = xend, yend = yend),
       arrow = arrow(length = unit(0.22, "cm"), type = "closed"),
-      color = "grey45", linewidth = 0.6
+      color = CLR_SEGMENT, linewidth = 0.6
     ) +
     annotate("segment",
-      color = "red", linetype = "dashed", linewidth = 0.55,
+      color = CLR_DIRECT_PATH, linetype = "dashed", linewidth = 0.55,
       x = x_X + bw, xend = x_X + bw, y = y_c - bh, yend = cp_y
     ) +
     annotate("segment",
-      color = "red", linetype = "dashed", linewidth = 0.55,
+      color = CLR_DIRECT_PATH, linetype = "dashed", linewidth = 0.55,
       x = x_X + bw, xend = x_Y - bw, y = cp_y, yend = cp_y
     ) +
     annotate("segment",
-      color = "red", linetype = "dashed", linewidth = 0.55,
+      color = CLR_DIRECT_PATH, linetype = "dashed", linewidth = 0.55,
       x = x_Y - bw, xend = x_Y - bw, y = cp_y, yend = y_c - bh,
       arrow = arrow(length = unit(0.22, "cm"), type = "closed")
     ) +
     geom_label(
       data = a_df, aes(x = lx, y = ly, label = lbl),
-      size = 3.8, lineheight = 0.9, fill = "white",
+      size = 3.8, lineheight = 0.9, fill = CLR_LABEL_BG,
       label.size = 0, label.r = unit(0, "pt"),
       label.padding = unit(0, "lines"), family = "serif"
     ) +
     geom_label(
       data = b_df, aes(x = lx, y = ly, label = lbl),
-      size = 3.8, lineheight = 0.9, fill = "white",
+      size = 3.8, lineheight = 0.9, fill = CLR_LABEL_BG,
       label.size = 0, label.r = unit(0, "pt"),
       label.padding = unit(0, "lines"), family = "serif"
     ) +
@@ -179,19 +171,19 @@ make_path_diagram <- function(mediator_labels, coefs,
         lbl = paste0(fmt_lbl(coefs$cp), "\nDirect Effect")
       ),
       aes(x = x, y = y, label = lbl),
-      size = 3.8, lineheight = 0.9, fill = "white",
+      size = 3.8, lineheight = 0.9, fill = CLR_LABEL_BG,
       label.size = 0, label.r = unit(0, "pt"),
       label.padding = unit(0, "lines"), family = "serif"
     ) +
     geom_rect(
       data = nodes,
       aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill),
-      color = "white", linewidth = 0.9
+      color = CLR_BOX_BORDER, linewidth = 0.9
     ) +
     scale_fill_identity() +
     geom_text(
       data = nodes, aes(x = x, y = y, label = label),
-      size = 3.8, lineheight = 0.9, color = "white", fontface = "bold",
+      size = 3.8, lineheight = 0.9, color = CLR_NODE_TEXT, fontface = "bold",
       family = "serif"
     ) +
     theme_void() +
@@ -209,7 +201,14 @@ make_path_diagram <- function(mediator_labels, coefs,
 make_mod_plot <- function(model, moderator_var, mod_vals, mod_label,
                           x_var = "R_Score",
                           x_label = "Religious Behavior Score",
-                          y_label = "Frequency of Seeking Moral Advice from AI Chatbots") {
+                          y_label = "Frequency of Seeking Moral Advice from AI Chatbots",
+                          x_limits = c(1, 7),
+                          y_limits = c(1, 7)) {
+  # Auto-wrap y_label if long to prevent axis text overflow
+  if (!is.null(y_label) && nchar(y_label) > 25 && !grepl("\n", y_label)) {
+    y_label <- paste(strwrap(y_label, width = 22), collapse = "\n")
+  }
+
   x_range <- seq(min(model$model[[x_var]], na.rm = TRUE),
     max(model$model[[x_var]], na.rm = TRUE),
     length.out = 50
@@ -224,7 +223,8 @@ make_mod_plot <- function(model, moderator_var, mod_vals, mod_label,
     rep(c("Low", "Medium", "High"), each = length(x_range)),
     levels = c("Low", "Medium", "High")
   )
-  ggplot(grid, aes(
+  
+  p <- ggplot(grid, aes(
     x = .data[[x_var]], y = fit,
     color = Access_Level, fill = Access_Level,
     group = Access_Level
@@ -235,4 +235,13 @@ make_mod_plot <- function(model, moderator_var, mod_vals, mod_label,
     scale_color_manual(values = c(CLR_PRIMARY, CLR_ACCENT, CLR_SECONDARY)) +
     scale_fill_manual(values = c(CLR_PRIMARY, CLR_ACCENT, CLR_SECONDARY)) +
     apa_theme
+
+  if (!is.null(x_limits)) {
+    p <- p + scale_x_continuous(name = x_label, breaks = if (identical(x_limits, c(1, 7))) 1:7 else pretty_breaks(n = 5), limits = x_limits)
+  }
+  if (!is.null(y_limits)) {
+    p <- p + scale_y_continuous(name = y_label, breaks = if (identical(y_limits, c(1, 7))) 1:7 else pretty_breaks(n = 5), limits = y_limits)
+  }
+
+  return(p)
 }

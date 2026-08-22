@@ -1,16 +1,26 @@
-# Supplementary-only functions and constants
-# Loaded only by supplementary.qmd (standalone) and supplementary_clean.qmd.
+# Supplementary-only functions, constants, and pre-computations
+# Loaded by supplementary.qmd and manuscript_clean.qmd.
 # Requires: R/packages.R, R/colors.R, R/helpers.R, R/plots.R sourced first.
-#
-# Functions shared with the main manuscript (plot_scatter_cor, get_edge_coefs,
-# make_path_diagram, extract_indirect, filter_sig_mediators) live in
-# R/plots.R and R/tables.R respectively.
 
 # ============================================================
 # PILOT STUDY 1 (P1) AND PILOT STUDY 2 (P2)
 # ============================================================
-# Note: P1 and P2 data loading has been moved to data-loading.R
-# to ensure it's available alongside Study 1 and Study 2 data.
+
+if (exists("P1") && exists("P2")) {
+  pilot_cor_p1 <- cor.test(P1$Religiosity, P1$Moral.Source._13)
+  pilot_cor_p2 <- cor.test(P2$Religiosity, P2$Q115_15)
+
+  pilot_reg_p1_simple <- lm(Moral.Source._13 ~ Religiosity, data = P1)
+  pilot_reg_p1_adj    <- lm(Moral.Source._13 ~ Religiosity + Political_overall + Age + Income + Education + SES, data = P1)
+
+  pilot_reg_p2_simple <- lm(Q115_15 ~ Religiosity, data = P2)
+  pilot_reg_p2_adj    <- lm(Q115_15 ~ Religiosity + Political_overall + Age + Income + Education + SES, data = P2)
+
+  reg_rows_pilot <- list(
+    "Pilot 1" = c(apa_lm_summary(pilot_reg_p1_simple, "Religiosity"), apa_lm_summary(pilot_reg_p1_adj, "Religiosity")),
+    "Pilot 2" = c(apa_lm_summary(pilot_reg_p2_simple, "Religiosity"), apa_lm_summary(pilot_reg_p2_adj, "Religiosity"))
+  )
+}
 
 
 # ── Source ranking ─────────────────────────────────────────────────────────────
@@ -65,15 +75,6 @@ ACCESS_LABELS <- c(
 )
 
 # --- Generic correlation heatmap ---
-# data      : data frame (sources or core study variables)
-# var_names : optional named/unnamed character vector of display names;
-#             when provided, only numeric columns are kept and renamed.
-#             When NULL (default), all columns are used as-is.
-# title     : optional plot title (e.g. "Study 1")
-# text_size : cell label size (default 3; reduce for large matrices)
-#
-# Returns a lower-triangle ggplot heatmap with significance stars,
-# ordered by hierarchical clustering.
 plot_cor_heatmap <- function(data, var_names = NULL, title = NULL,
                              text_size = 3) {
   if (!is.null(var_names)) {
@@ -135,80 +136,3 @@ plot_cor_heatmap <- function(data, var_names = NULL, title = NULL,
     ) +
     labs(x = NULL, y = NULL)
 }
-
-
-# ── Parallel mediation table ──────────────────────────────────────────────────
-
-# --- Format a combined parallel indirect-effects flextable ---
-fmt_parallel_table <- function(df) {
-  df$sig_flag <- ifelse(df$sig, "\u2020", "")
-  out <- data.frame(
-    Study    = df$Study,
-    Mediator = paste0(df$Mediator, df$sig_flag),
-    b        = round(df$est, 3),
-    CI       = paste0("[", round(df$lwr, 3), ", ", round(df$upr, 3), "]")
-  )
-  names(out) <- c("Study", "Mediator", "b", "95% CI")
-  flextable::flextable(out) |>
-    flextable::merge_v(j = "Study") |>
-    flextable::compose(
-      j = "b", part = "header",
-      value = flextable::as_paragraph(flextable::as_i("b"))
-    ) |>
-    flextable::align(j = 1:2, part = "body", align = "left") |>
-    flextable::align(j = 3:4, part = "body", align = "center") |>
-    flextable::align(part = "header", align = "center") |>
-    flextable::border_remove() |>
-    flextable::hline_top(
-      part = "header",
-      border = officer::fp_border(width = 1.5)
-    ) |>
-    flextable::hline_bottom(
-      part = "header",
-      border = officer::fp_border(width = 1)
-    ) |>
-    flextable::hline_bottom(
-      part = "body",
-      border = officer::fp_border(width = 1.5)
-    ) |>
-    flextable::set_table_properties(layout = "autofit", width = 1)
-}
-
-# --- Extract model evaluation stats from a fitted lavaan parallel model ---
-# Returns a list matching the inline values used in question3.qmd:
-#   r2, r2_pct   : R² for outcome variable and as a percentage
-#   tie_b/lo/hi  : total indirect effect estimate and 95% bootstrap CI
-#   cp_b, cp_p   : direct effect estimate and APA-formatted p-value
-extract_model_stats <- function(fit, outcome_var) {
-  pe  <- parameterEstimates(fit, boot.ci.type = "perc", level = 0.95)
-  tie <- pe[pe$lhs == "total_indirect" & pe$op == ":=", ]
-  cp  <- pe[pe$label == "c_prime", ]
-  r2  <- round(inspect(fit, "r2")[outcome_var], 3)
-  list(
-    r2      = r2,
-    r2_pct  = round(r2 * 100, 1),
-    tie_b   = round(tie$est,      3),
-    tie_lo  = round(tie$ci.lower, 3),
-    tie_hi  = round(tie$ci.upper, 3),
-    cp_b    = round(cp$est[1],    3),
-    cp_p    = apa_p(cp$pvalue[1])
-  )
-}
-
-# ── Label-based coefficient extractor for supplementary path diagrams ────────
-# Unlike get_edge_coefs() (which looks up by lhs/rhs variable name and can
-# return "?" if names don't match exactly), this function looks up coefficients
-# by the parameter *label* (a1, b1, c_prime) that build_parallel_model()
-# writes explicitly — guaranteeing a match every time.
-#
-# Arguments:
-#   fit : fitted lavaan sem object
-#   n   : number of mediators in the model
-#
-# Returns a named list ready to pass directly as `coefs` to make_path_diagram():
-#   a1 ... an  (predictor → mediator paths)
-#   b1 ... bn  (mediator → outcome paths)
-#   cp         (direct path)
-# Note: extract_path_coefs, filter_sig_indirect, pick_cluster_reps, and build_parallel_model
-# have been moved to R/tables.R to make them available in both question3.qmd and supplementary.qmd.
-
