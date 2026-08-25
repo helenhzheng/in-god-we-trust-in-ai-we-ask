@@ -21,6 +21,7 @@ search.json
 # ==== Manuscripts ====
 # Only tracked as source (.qmd). Final outputs are generated dynamically.
 *.docx
+!**/_extensions/**/*.docx
 *.rmarkdown
 
 # ==== Python ====
