@@ -319,7 +319,7 @@ make_study_reg_table(reg_rows_rel_int)
 
 ```{r tbl-rs-int-regression}
 #| label: tbl-rs-int-regression
-#| tbl-cap: "Religious Behavior Score Predicting Interest in Seeking Moral Advice From AI Chatbots"
+#| tbl-cap: "Religious Behavior Score Predicting Interest in Seeking Moral Advice from AI Chatbots"
 #| apa-note: "All regression coefficients are standardized. Model 1 = simple regression. Model 2 = multiple regression controlling for age, education, income, SES, and political orientation."
 
 make_study_reg_table(reg_rows_rs_int)
@@ -331,7 +331,7 @@ make_study_reg_table(reg_rows_rs_int)
 
 #### Self-Reported Religiosity → Candidate Mediators
 
-@tbl-rel-patha-s1 and @tbl-rel-patha-s2 report the regression of Self-Reported Religiosity onto each candidate mediator. These results underlie both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways, as the Religiosity → Mediator path is identical across both.
+@tbl-rel-patha-s1 and @tbl-rel-patha-s2 report the regression of Self-Reported Religiosity onto each candidate mediator. These results underline both the Self-Reported Religiosity → Frequency and Self-Reported Religiosity → Interest mediation pathways, as the Religiosity → Mediator path is identical across both.
 
 ```{r tbl-rel-patha-s1}
 #| label: tbl-rel-patha-s1
@@ -351,7 +351,7 @@ path_a_table_rel_s2
 
 #### Religious Behavior Score → Candidate Mediators
 
-@tbl-rs-patha-s1 and @tbl-rs-patha-s2 report the regression of Religious Behavior Score onto each candidate mediator. Because the predictor → mediator path is identical regardless of the downstream outcome, these estimates underlie both the Religious Behavior Score → Frequency and Religious Behavior Score → Interest mediation pathways.
+@tbl-rs-patha-s1 and @tbl-rs-patha-s2 report the regression of Religious Behavior Score onto each candidate mediator. Because the predictor → mediator path is identical regardless of the downstream outcome, these estimates underline both the Religious Behavior Score → Frequency and Religious Behavior Score → Interest mediation pathways.
 
 ```{r tbl-rs-patha-s1}
 #| label: tbl-rs-patha-s1
@@ -375,7 +375,7 @@ For the individual mediation analyses, candidate mediators were included only if
 
 #### Self-Reported Religiosity → Mediator → AI Moral Frequency
 
-```{r tbl-rel-freq-s1-mediation, cache=TRUE}
+```{r tbl-rel-freq-s1-mediation}
 #| label: tbl-rel-freq-s1-mediation
 #| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Self-Reported Religiosity → Mediator → AI Moral Frequency)"
 #| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
@@ -383,7 +383,7 @@ For the individual mediation analyses, candidate mediators were included only if
 mediation_table_from_results(ind_mediation_rel_freq_s1, selected_mediators = names(rep_mediators_rel_freq_s1$mediators))
 ```
 
-```{r tbl-rel-freq-s2-mediation, cache=TRUE}
+```{r tbl-rel-freq-s2-mediation}
 #| label: tbl-rel-freq-s2-mediation
 #| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Self-Reported Religiosity → Mediator → AI Moral Frequency)"
 #| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
@@ -393,7 +393,7 @@ mediation_table_from_results(ind_mediation_rel_freq_s2, selected_mediators = nam
 
 #### Religious Behavior Score → Mediator → AI Moral Frequency
 
-```{r tbl-rs-freq-s1-mediation, cache=TRUE}
+```{r tbl-rs-freq-s1-mediation}
 #| label: tbl-rs-freq-s1-mediation
 #| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Frequency)"
 #| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (adjusted *p < .05) in at least one regression model are included."
@@ -401,7 +401,7 @@ mediation_table_from_results(ind_mediation_rel_freq_s2, selected_mediators = nam
 mediation_table_from_results(ind_mediation_rs_freq_s1, selected_mediators = names(rep_mediators_rs_freq_s1$mediators))
 ```
 
-```{r tbl-rs-freq-s2-mediation, cache=TRUE}
+```{r tbl-rs-freq-s2-mediation}
 #| label: tbl-rs-freq-s2-mediation
 #| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Frequency)"
 #| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (adjusted *p < .05) in at least one regression model are included."
@@ -411,7 +411,7 @@ mediation_table_from_results(ind_mediation_rs_freq_s2, selected_mediators = name
 
 #### Self-Reported Religiosity → Mediator → AI Moral Interest
 
-```{r tbl-rel-int-s1-mediation, cache=TRUE}
+```{r tbl-rel-int-s1-mediation}
 #| label: tbl-rel-int-s1-mediation
 #| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Self-Reported Religiosity → Mediator → AI Moral Interest)"
 #| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
@@ -419,7 +419,7 @@ mediation_table_from_results(ind_mediation_rs_freq_s2, selected_mediators = name
 mediation_table_from_results(ind_mediation_rel_int_s1, selected_mediators = names(rep_mediators_rel_int_s1$mediators))
 ```
 
-```{r tbl-rel-int-s2-mediation, cache=TRUE}
+```{r tbl-rel-int-s2-mediation}
 #| label: tbl-rel-int-s2-mediation
 #| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Self-Reported Religiosity → Mediator → AI Moral Interest)"
 #| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
@@ -429,7 +429,7 @@ mediation_table_from_results(ind_mediation_rel_int_s2, selected_mediators = name
 
 #### Religious Behavior Score → Mediator → AI Moral Interest
 
-```{r tbl-rs-int-s1-mediation, cache=TRUE}
+```{r tbl-rs-int-s1-mediation}
 #| label: tbl-rs-int-s1-mediation
 #| tbl-cap: "Study 1: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Interest)"
 #| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."
@@ -437,7 +437,7 @@ mediation_table_from_results(ind_mediation_rel_int_s2, selected_mediators = name
 mediation_table_from_results(ind_mediation_rs_int_s1, selected_mediators = names(rep_mediators_rs_int_s1$mediators))
 ```
 
-```{r tbl-rs-int-s2-mediation, cache=TRUE}
+```{r tbl-rs-int-s2-mediation}
 #| label: tbl-rs-int-s2-mediation
 #| tbl-cap: "Study 2: Individual Statistical Mediation (Indirect Effect) Analyses (Religious Behavior Score → Mediator → AI Moral Interest)"
 #| apa-note: "All paths show standardized coefficients (β) and percentile bootstrap 95% confidence intervals based on 5,000 bootstrap simulations. Only mediators significant (p < .05) in at least one regression model are included."

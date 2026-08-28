@@ -13,7 +13,7 @@ number-sections: false
 
 execute:
   freeze: auto
-  cache: true
+  cache: false
 
 bibliography: references.bib
 fontsize: 12pt

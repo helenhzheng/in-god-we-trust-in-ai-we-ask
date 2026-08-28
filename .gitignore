@@ -1,7 +1,7 @@
 # ==== R & RStudio ====
 .Rproj.user/
 .Rhistory
-.RData
+*.RData
 .Ruserdata
 
 # ==== Quarto & Website Builds ====
@@ -21,7 +21,6 @@ search.json
 # ==== Manuscripts ====
 # Only tracked as source (.qmd). Final outputs are generated dynamically.
 *.docx
-!**/_extensions/**/*.docx
 *.rmarkdown
 
 # ==== Python ====
@@ -36,3 +35,7 @@ _*.tsv
 # ==== OS System Files ====
 .DS_Store
 Thumbs.db
+
+# ==== Quarto Extensions ====
+!**/_extensions/**
+

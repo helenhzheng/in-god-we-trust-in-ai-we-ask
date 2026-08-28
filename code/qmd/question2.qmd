@@ -13,6 +13,18 @@ if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
 
 While self-reported religiosity captures self-identification as being religious, behavioral measures may provide a more nuanced and less socially desirable index of religious engagement. **Religious Behavior Score** was constructed by averaging the frequency of religious service attendance and prayer, capturing both social and individual aspects of religious engagement. Religious Behavior Score was positively and significantly correlated with the frequency of seeking moral advice from AI chatbots in both Study 1 (`r fmt_cor_apa(correlation_rs_freq_s1, power_correlation_rs_freq_s1)`) and Study 2 (`r fmt_cor_apa(correlation_rs_freq_s2, power_correlation_rs_freq_s2)`) as shown in @fig-q2-collage.
 
+Follow-up linear regression analyses confirmed that behavioral religiosity significantly and positively predicted the frequency of seeking moral advice from AI chatbots. In multiple regression models controlling for age, education, income, SES and political leaning, Religious Behavior Score remained a significant predictor in both Study 1 (`r fmt_lm_apa(regression_rs_freq_s1, "R_Score", include_ci = FALSE)`) and Study 2 (`r fmt_lm_apa(regression_rs_freq_s2, "R_Score", include_ci = FALSE)`) as shown in @tbl-rs-freq-regression in the Supplementary Materials.
+
+```{r setup-q2-inline-variables, include=FALSE}
+# --- Pre-extracted beta estimates for comparison paragraph ---
+beta_regression_rs_freq_s1  <- apa_lm_summary(regression_rs_freq_s1, "R_Score")["Estimate"]
+beta_regression_rs_freq_s2  <- apa_lm_summary(regression_rs_freq_s2, "R_Score")["Estimate"]
+beta_regression_rel_freq_s1 <- apa_lm_summary(regression_rel_freq_s1, "Religiosity")["Estimate"]
+beta_regression_rel_freq_s2 <- apa_lm_summary(regression_rel_freq_s2, "Religiosity")["Estimate"]
+```
+
+Religious Behavior Score is consistently and positively associated with the frequency of seeking moral advice from AI chatbots in both studies, with effects that were robust to the inclusion of demographic covariates. Although self-reported religiosity reflects symbolic self-identification of being religious, we cannot deduce how they engage with religion in day to day life. In contrast, the constructed Religious Behavior Score averages concrete, self-reported frequencies of religious service attendance and prayer with frequency anchors ranging from never to once a day or more, capturing both social (attendance) and individual (prayer) facets of religious practice. In both studies, the effect sizes for Religious Behavior Score consistently exceeded those of self-reported religiosity (multiple regression models: Study 1, $\beta_{RBS} = `r beta_regression_rs_freq_s1`$ vs. $\beta_{Religiosity} = `r beta_regression_rel_freq_s1`$; Study 2, $\beta_{RBS} = `r beta_regression_rs_freq_s2`$ vs. $\beta_{Religiosity} = `r beta_regression_rel_freq_s2`$). This pattern suggests that active, ongoing religious behavior, rather than passive identity alone, is the stronger predictor of the inclination to consult AI chatbots on moral issues. Henceforth, all subsequent analyses in the main text focus on Religious Behavior Score results while parallel results for self-reported religiosity are reported in the Supplementary Materials.
+
 ```{r fig-q2-collage, fig.width=12, fig.height=3.6}
 #| label: fig-q2-collage
 #| fig-cap: "Religious Behavior Score and Frequency of Seeking Moral Advice from AI Chatbots"
@@ -30,15 +42,3 @@ s2_plt <- plot_scatter_cor(s2_core, "R_Score", "AI_Moral_Frequency",
 
 s1_plt | s2_plt
 ```
-
-Follow-up linear regression analyses confirmed that behavioral religiosity significantly and positively predicted the frequency of seeking moral advice from AI chatbots. In multiple regression models controlling for age, education, income, SES and political leaning, Religious Behavior Score remained a significant predictor in both Study 1 (`r fmt_lm_apa(regression_rs_freq_s1, "R_Score", include_ci = FALSE)`) and Study 2 (`r fmt_lm_apa(regression_rs_freq_s2, "R_Score", include_ci = FALSE)`) as shown in @tbl-rs-freq-regression in the Supplementary Materials.
-
-```{r setup-q2-inline-variables, include=FALSE}
-# --- Pre-extracted beta estimates for comparison paragraph ---
-beta_regression_rs_freq_s1  <- apa_lm_summary(regression_rs_freq_s1, "R_Score")["Estimate"]
-beta_regression_rs_freq_s2  <- apa_lm_summary(regression_rs_freq_s2, "R_Score")["Estimate"]
-beta_regression_rel_freq_s1 <- apa_lm_summary(regression_rel_freq_s1, "Religiosity")["Estimate"]
-beta_regression_rel_freq_s2 <- apa_lm_summary(regression_rel_freq_s2, "Religiosity")["Estimate"]
-```
-
-Religious Behavior Score is consistently and positively associated with the frequency of seeking moral advice from AI chatbots in both studies, with effects that were robust to the inclusion of demographic covariates. Although self-reported religiosity reflects symbolic self-identification of being religious, we cannot deduce how they engage with religion in day to day life. In contrast, the constructed Religious Behavior Score averages concrete, self-reported frequencies of religious service attendance and prayer with frequency anchors ranging from never to once a day or more, capturing both social (attendance) and individual (prayer) facets of religious practice. In both studies, the effect sizes for Religious Behavior Score consistently exceeded those of self-reported religiosity (multiple regression models: Study 1, $\beta_{RBS} = `r beta_regression_rs_freq_s1`$ vs. $\beta_{Religiosity} = `r beta_regression_rel_freq_s1`$; Study 2, $\beta_{RBS} = `r beta_regression_rs_freq_s2`$ vs. $\beta_{Religiosity} = `r beta_regression_rel_freq_s2`$). This pattern suggests that active, ongoing religious behavior, rather than passive identity alone, is the stronger predictor of the inclination to consult AI chatbots on moral issues. Henceforth, all subsequent analyses in the main text focus on Religious Behavior Score results while parallel results for self-reported religisotiy are reported in the Supplementary Materials.
