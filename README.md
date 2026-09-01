@@ -79,3 +79,10 @@ This repository is designed to be fully self-contained. Downloading this reposit
 ## License
 
 This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](LICENSE).
+
+## 🙏 Acknowledgements & Extension Attributions
+
+This project utilizes the **[apaquarto](https://github.com/wjschne/apaquarto)** extension developed by W. Joel Schneider for APA 7th edition manuscript formatting in Quarto documents. 
+
+> **Extension Customization Note:** 
+> We customized the extension's Lua word count filter ([`_extensions/wjschne/apaquarto/wordcount.lua`](file:///c:/Users/helen/Desktop/Moral%20Alignment/Analysis%20and%20Manuscript/analysis_code/_extensions/wjschne/apaquarto/wordcount.lua)) to allow appending the **Supplementary Materials** section directly into the main manuscript file (`manuscript.qmd`) after the references page, without including the supplementary section in the main manuscript word count.
