@@ -1,0 +1,110 @@
+---
+title: 'In God We Trust, In AI We Ask: Religiosity and Moral Advice Seeking in the AI Age'
+shorttitle: "In God We Trust, In AI We Ask"
+authors:
+  - name: Helen Huiting Zheng
+    corresponding: true
+    orcid: 0009-0006-2119-5531
+    email: helen.zheng@bc.edu
+    roles: [Conceptualization, Data Curation, Formal Analysis, Funding Acquisition, Methodology, Project Administration, Visualization, Writing - original draft, Writing - reviewing & editing]
+    affiliation:
+      - id: id1
+        name: "Boston College"
+        department: Department of Psychology and Neuroscience
+  - name: Kyle Fiore Law
+    orcid: 0000-0001-5911-4772
+    email: kyle.fiore.law@utah.edu
+    roles: [Conceptualization, Methodology, Writing - reviewing & editing]
+    affiliation:
+      - id: id2
+        name: "University of Utah"
+        department: Department of Psychology
+  - name: Sara M Haman
+    email: sara.haman@bc.edu
+    roles: [Validation, Writing - reviewing & editing]
+    affiliation:
+      - ref: id1
+  - name: David DeSteno
+    email: d.desteno@northeastern.edu
+    roles: [Methodology, Writing - reviewing & editing]
+    affiliation:
+      - id: id3
+        name: "Northeastern University"
+        department: Department of Psychology
+  - name: Liane Young
+    email: liane.young@bc.edu
+    roles: [Conceptualization, Funding Acquisition, Methodology, Supervision, Writing - reviewing & editing]
+    affiliation:
+      - ref: id1
+date: "August 12 2026"
+abstract: As AI chatbots begin to offer moral guidance, questions arise about how they intersect with religion. Although religions have long incorporated moral guidance from nonhuman, supernatural sources, religious institutions’ caution toward AI and documented aversion to AI in sensitive social roles might suggest that religious individuals would reject AI in moral matters. We found the opposite. Across two pre-registered studies (stratified U.S. samples, N=695), religious engagement and identity were consistently associated with greater openness to seeking AI moral advice, not lesser. In a first-pass attempt to understand intervening psychological factors, parallel mediation models suggested the relationship was statistically accounted for primarily by a disposition to seek multi-source moral guidance, and secondarily by heightened perceptions of authority surrounding AI. Given the cross-sectional design, these pathways are candidate mechanisms rather than causal claims. Nonetheless, these findings carry societal implications for AI-mediated moral guidance, requiring coordinated attention from technologists, faith communities, and policymakers.
+keywords:
+  - Religiosity
+  - Moral Advice Seeking
+  - Human-Computer Interaction
+author-note:
+  blank-lines-above-author-note: 2
+  disclosures:
+    study-registration: "Both studies were pre-registered at AsPredicted (Study 1: https://aspredicted.org/mv2z-t7dw.pdf; Study 2: https://aspredicted.org/z378hg.pdf)."
+    data-sharing: "Datasets, code, and other research materials can be found at (https://osf.io/qfv9d)."
+    related-report: "A preprint of this manuscript is available at (https://osf.io/preprints/psyarxiv/z3y5d_v3)."
+    conflict-of-interest: "The authors have no conflicts of interest to disclose."
+    financial-support: "This study was supported by the Alfred P. Sloan Foundation (G-2024-22462)."
+    gratitude: "We thank Ehri Ryu for statistics advice, Tal Eyal and two anonymous reviewers for feedback on an earlier version of this manuscript."
+word-count: true
+mask: false
+suppress-credit-statement: true
+floatsintext: true
+number-sections: false
+number-offset: 1
+bibliography: references.bib
+fontsize: 12pt
+prefer-html: true
+format:
+  apaquarto-docx:
+    toc: false
+---
+
+```{r setup_manuscript, include=FALSE}
+# --- Global Settings ---
+# BOOTSTRAP_SIMS: 5000 for full publication quality; set to 50 for rapid testing
+BOOTSTRAP_SIMS  <- 5000
+# PLOT_COLOR_MODE: "bw" for print submission, "color" for online materials
+PLOT_COLOR_MODE <- "bw"
+source("R/packages.R")
+source("R/colors.R")
+source("R/helpers.R")
+source("R/tables.R")
+source("R/plots.R")
+source("R/data-loading.R")
+source("R/supplementary.R")
+source("R/main-analysis.R")
+MANUSCRIPT_MODE <- TRUE
+```
+
+{{< include qmd/introduction.qmd >}}
+
+{{< include qmd/methods.qmd >}}
+
+## Results
+
+{{< include qmd/question1.qmd >}}
+
+{{< include qmd/question2.qmd >}}
+
+{{< include qmd/question3.qmd >}}
+
+{{< include qmd/question4.qmd >}}
+
+{{< include qmd/discussion.qmd >}}
+
+{{< pagebreak >}}
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
+
+# Supplementary Materials {.unnumbered .unlisted}
+
+{{< include qmd/supplementary.qmd >}}

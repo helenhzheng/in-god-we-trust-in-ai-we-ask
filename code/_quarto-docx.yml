@@ -1,0 +1,19 @@
+project:
+  type: manuscript
+  execute-dir: project
+
+manuscript:
+  article: manuscript.qmd
+
+format:
+  apaquarto-docx:
+    toc: false
+
+number-sections: false
+
+execute:
+  freeze: auto
+  cache: false
+
+bibliography: references.bib
+fontsize: 12pt

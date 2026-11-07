@@ -1,0 +1,36 @@
+```{r setup_q1, include=FALSE}
+if (!exists("MANUSCRIPT_MODE") || !MANUSCRIPT_MODE) {
+  source("R/packages.R")
+  source("R/colors.R")
+  source("R/helpers.R")
+  source("R/tables.R")
+  source("R/plots.R")
+  source("R/data-loading.R")
+}
+```
+
+### Question 1: Is Self-Reported Religiosity Positively Associated With the Frequency of Seeking Moral Advice From AI Chatbots?
+
+Across two pilot studies (see [Pilot Studies](#sec-supp-pilot-studies) in the Supplementary Materials) and two pre-registered studies, self-reported religiosity was positively and significantly correlated with the frequency of seeking moral advice from AI chatbots (Study 1: `r fmt_cor_apa(correlation_rel_freq_s1, power_correlation_rel_freq_s1)`; Study 2: `r fmt_cor_apa(correlation_rel_freq_s2, power_correlation_rel_freq_s2)`).
+
+```{r fig-q1-collage, fig.width=12, fig.height=3.6}
+#| label: fig-q1-collage
+#| fig-cap: "Self-Reported Religiosity and Frequency of Seeking Moral Advice from AI Chatbots"
+#| apa-note: "Each panel shows jittered raw data points, a linear regression fit with 95% confidence band, and a LOESS trend line with 95% confidence band."
+
+s1_plt <- plot_scatter_cor(s1_core, "Religiosity", "AI_Moral_Frequency",
+             x_label = "Self-Reported Religiosity",
+             y_label = "Frequency of Seeking Moral Advice from AI Chatbots") +
+  scale_x_continuous(name = "Self-Reported Religiosity", breaks = 1:5) +
+  ggtitle("Study 1")
+
+s2_plt <- plot_scatter_cor(s2_core, "Religiosity", "AI_Moral_Frequency",
+             x_label = "Self-Reported Religiosity",
+             y_label = "Frequency of Seeking Moral Advice from AI Chatbots") +
+  scale_x_continuous(name = "Self-Reported Religiosity", breaks = 1:7) +
+  ggtitle("Study 2")
+
+s1_plt | s2_plt
+```
+
+Follow-up linear regression analyses confirmed that self-reported religiosity is positively associated with the frequency of seeking moral advice from AI chatbots. In multiple regression models controlling for age, education, income, socioeconomic status, and political orientation, self-reported religiosity remained a significant positive predictor in both Study 1 (`r fmt_lm_apa(regression_rel_freq_s1, "Religiosity", include_ci = FALSE)`) and Study 2 (`r fmt_lm_apa(regression_rel_freq_s2, "Religiosity", include_ci = FALSE)`), as shown in @tbl-rel-freq-regression in the Supplementary Materials.

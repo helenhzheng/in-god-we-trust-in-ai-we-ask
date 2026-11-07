@@ -1,0 +1,19 @@
+---
+title: "In God We Trust, In AI We Ask"
+subtitle: "Religiosity and Moral Advice Seeking in the Age of Generative AI"
+---
+
+## Abstract
+
+As AI chatbots begin to offer moral guidance, questions arise about how they intersect with religion. Although religions have long incorporated moral guidance from nonhuman, supernatural sources, religious institutions’ caution toward AI and documented aversion to AI in sensitive social roles might suggest that religious individuals would reject AI in moral matters. We found the opposite. Across two pre-registered studies (stratified U.S. samples, N=695), religious engagement and identity were consistently associated with greater openness to seeking AI moral advice, not lesser. In a first-pass attempt to understand intervening psychological factors, parallel mediation models suggested the relationship was statistically accounted for primarily by a disposition to seek multi-source moral guidance, and secondarily by heightened perceptions of authority surrounding AI. Given the cross-sectional design, these pathways are candidate mechanisms rather than causal claims. Nonetheless, these findings carry societal implications for AI-mediated moral guidance, requiring coordinated attention from technologists, faith communities, and policymakers.
+
+# Quick Links
+
+-   [Introduction](qmd/introduction.qmd) — Literature review and study overview
+-   [Method](qmd/methods.qmd) — Materials and Procedure
+-   [Q1: Self-Reported Religiosity](qmd/question1.qmd) — Does self-reported religiosity predict AI moral advice seeking?
+-   [Q2: Religious Behavior Score](qmd/question2.qmd) — Does Religious Behavior Score predict AI moral advice frequency?
+-   [Q3: Mediation](qmd/question3.qmd) — What Statistically Accounts for the Relationship Between Religiosity and the Frequency of Seeking Moral Advice from AI Chatbots?
+-   [Q4: Moderation](qmd/question4.qmd) — Does Access to Sources of Moral Advice Moderate the Relationship between Religiosity and Seeking Moral Advice from AI Chatbots?
+-   [Discussion](qmd/discussion.qmd) — General discussion, Implication and Limitation
+-   [Supplementary](qmd/supplementary.qmd) — Additional analyses
